@@ -8,3 +8,4 @@ GauntletEditor/GauntletEditor.sln
 GauntletEditor/Assembly-CSharp-Editor.csproj
 GauntletEditor/.vs/
 GauntletEditor/obj/
+*.csproj
