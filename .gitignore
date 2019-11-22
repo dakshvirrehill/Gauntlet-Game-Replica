@@ -3,3 +3,8 @@ GauntletEditor/Logs/
 Gauntlet Game/Game/.vs/
 Gauntlet Game/Game/Intermediate/
 GauntletEditor/Temp/
+*.meta
+GauntletEditor/GauntletEditor.sln
+GauntletEditor/Assembly-CSharp-Editor.csproj
+GauntletEditor/.vs/
+GauntletEditor/obj/
