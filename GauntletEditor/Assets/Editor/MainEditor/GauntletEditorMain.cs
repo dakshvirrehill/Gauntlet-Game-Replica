@@ -18,16 +18,14 @@ public class GauntletEditorMain : EditorWindow, IBindable
             mWindow = null;
         }
         mWindow = GetWindow<GauntletEditorMain>();
+        mWindow.minSize = new Vector2(1100, 700);
         mWindow.titleContent = new GUIContent("Gauntlet Game Editor Main");
     }
 
     public void OnEnable()
     {
-        if(mMainStyle != null)
-        {
-            mMainStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/StyleSheets/GauntletEditorMain.uss");
-            rootVisualElement.styleSheets.Add(mMainStyle);
-        }
+        mMainStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/StyleSheets/GauntletEditorMain.uss");
+        rootVisualElement.styleSheets.Add(mMainStyle);
         CreateMainMenu();
     }
 
@@ -40,7 +38,6 @@ public class GauntletEditorMain : EditorWindow, IBindable
         VisualTreeAsset aMainMenuTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/MainMenu.uxml");
         mMainMenu = aMainMenuTree.CloneTree();
         rootVisualElement.Add(mMainMenu);
-
     }
 
     public IBinding binding { get; set; }

@@ -3,6 +3,9 @@
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="mainMenu">
-    
+    <Button text ="Level Editor" name ="display_level_editor" class ="menuButton"/>
+    <Button text ="Add Asset Files" name ="display_asset_editor" class ="menuButton"/>
+    <Button text ="Game Object Editor" name ="display_gameobject_editor" class ="menuButton"/>
+    <Button text ="Player Editor" name ="display_player_editor" class ="menuButton"/>
   </VisualElement>
 </UXML>

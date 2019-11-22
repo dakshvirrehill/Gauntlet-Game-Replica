@@ -6,3 +6,10 @@
     flex-grow : 1;
     flex-shrink : 0.5;
 }
+
+.menuButton {
+    flex-direction: column;
+    flex-grow: 0.5;
+    flex-shrink: 0.5;
+    min-height: 50px;
+}
