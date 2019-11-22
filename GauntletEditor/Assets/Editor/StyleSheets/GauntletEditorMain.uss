@@ -1,0 +1,8 @@
+/*Main Stylesheet for all USS*/
+
+.mainMenu
+{
+    flex-direction : row;
+    flex-grow : 1;
+    flex-shrink : 0.5;
+}

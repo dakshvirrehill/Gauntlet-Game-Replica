@@ -4,34 +4,46 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
 
-public class GauntletEditorMain : EditorWindow
+public class GauntletEditorMain : EditorWindow, IBindable
 {
-    [MenuItem("Window/UIElements/GauntletEditorMain")]
-    public static void ShowExample()
+    static GauntletEditorMain mWindow;
+    VisualElement mMainMenu;
+    StyleSheet mMainStyle;
+    [MenuItem("Gauntlet Editor/Main Window")]
+    public static void OpenMainWindow()
     {
-        GauntletEditorMain wnd = GetWindow<GauntletEditorMain>();
-        wnd.titleContent = new GUIContent("GauntletEditorMain");
+        if(mWindow != null)
+        {
+            mWindow.Close();
+            mWindow = null;
+        }
+        mWindow = GetWindow<GauntletEditorMain>();
+        mWindow.titleContent = new GUIContent("Gauntlet Game Editor Main");
     }
 
     public void OnEnable()
     {
-        // Each editor window contains a root VisualElement object
-        VisualElement root = rootVisualElement;
-
-        // VisualElements objects can contain other VisualElement following a tree hierarchy.
-        VisualElement label = new Label("Hello World! From C#");
-        root.Add(label);
-
-        // Import UXML
-        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/GauntletEditorMain.uxml");
-        VisualElement labelFromUXML = visualTree.CloneTree();
-        root.Add(labelFromUXML);
-
-        // A stylesheet can be added to a VisualElement.
-        // The style will be applied to the VisualElement and all of its children.
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/GauntletEditorMain.uss");
-        VisualElement labelWithStyle = new Label("Hello World! With Style");
-        labelWithStyle.styleSheets.Add(styleSheet);
-        root.Add(labelWithStyle);
+        if(mMainStyle != null)
+        {
+            mMainStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/StyleSheets/GauntletEditorMain.uss");
+            rootVisualElement.styleSheets.Add(mMainStyle);
+        }
+        CreateMainMenu();
     }
+
+    void CreateMainMenu()
+    {
+        if(mMainMenu != null)
+        {
+            rootVisualElement.Remove(mMainMenu);
+        }
+        VisualTreeAsset aMainMenuTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/MainMenu.uxml");
+        mMainMenu = aMainMenuTree.CloneTree();
+        rootVisualElement.Add(mMainMenu);
+
+    }
+
+    public IBinding binding { get; set; }
+    public string bindingPath { get; set; }
+
 }
