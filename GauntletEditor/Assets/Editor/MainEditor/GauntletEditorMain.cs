@@ -26,7 +26,18 @@ public class GauntletEditorMain : EditorWindow, IBindable
     {
         mMainStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/StyleSheets/GauntletEditorMain.uss");
         rootVisualElement.styleSheets.Add(mMainStyle);
+        Label aMainLabel = new Label("Gauntlet Game Editor");
+        aMainLabel.AddToClassList("mainHeader");
+        rootVisualElement.Add(aMainLabel);
         CreateMainMenu();
+        //if(LevelEditor.GetCurrentLevelEditorUI() != null)
+        //{
+        //    rootVisualElement.Add(LevelEditor.GetCurrentLevelEditorUI());
+        //}
+        //else
+        //{
+            rootVisualElement.Add(LevelEditor.CreateNewLevelEditorUI());
+        //}
     }
 
     void CreateMainMenu()
