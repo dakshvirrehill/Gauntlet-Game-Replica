@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEditor.ShortcutManagement;
 
 
 public class GauntletEditorMain : EditorWindow, IBindable
@@ -29,6 +30,8 @@ public class GauntletEditorMain : EditorWindow, IBindable
     VisualElement mCurrentEditor;
     #endregion
     StyleSheet mMainStyle;
+
+    [Shortcut("Refresh Gauntlet Editor", KeyCode.F9)]
     [MenuItem("Gauntlet Editor/Main Window")]
     public static void OpenMainWindow()
     {
