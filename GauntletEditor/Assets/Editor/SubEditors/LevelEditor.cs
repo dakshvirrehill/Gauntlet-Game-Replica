@@ -15,12 +15,6 @@ public class LevelEditor
         }
     }
 
-    //public static VisualElement GetCurrentLevelEditorUI()
-    //{
-    //    CreateInstance();
-    //    return mInstance.mLevelEditorUI;
-    //}
-
     public static VisualElement CreateNewLevelEditorUI()
     {
         CreateInstance();
