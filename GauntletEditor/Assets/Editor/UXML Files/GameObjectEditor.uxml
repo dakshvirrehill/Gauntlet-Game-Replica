@@ -6,7 +6,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
     <VisualElement class ="editorMain">
       <Label text="Game Object Editor" class ="header"/>
       <VisualElement class ="editorData" name="gobj_editor_data">
-        <uieed:EnumField name="gobj_type" class="enumField" type =""/>
+        <uieed:EnumField name="gobj_type" class="enumField" type ="" label="Game Object Type"/>
         <uieed:ObjectField name ="scriptable_gobj_field" allow-scene-objects="false" label ="Editable GameObject" class ="objectField"/>
         <TextField name="gobj_name" binding-path ="mName" label="Game Object Name" class ="rowData"/>
       </VisualElement>

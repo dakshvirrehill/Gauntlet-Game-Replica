@@ -16,6 +16,7 @@ public class GameObjectEditor
     }
     static GameObjectEditor mInstance;
     VisualElement mGameObjectEditorUI = null;
+    VisualElement mEditoryBlock = null;
     GameObjectType mActiveType = GameObjectType.None;
     GameScriptable mScriptable;
     EnumField mTypeEnum;
@@ -42,6 +43,7 @@ public class GameObjectEditor
         mInstance.mSelectionField = mInstance.mGameObjectEditorUI.Q<ObjectField>("scriptable_gobj_field");
         mInstance.mSelectionField.RegisterCallback<ChangeEvent<Object>>((aEv) => mInstance.OnSelectionChanged(aEv.newValue));
         mInstance.mSelectionField.SetEnabled(false);
+        mInstance.mEditoryBlock = mInstance.mGameObjectEditorUI.Q<VisualElement>("gobj_editor_data");
         return mInstance.mGameObjectEditorUI;
     }
 
@@ -74,9 +76,9 @@ public class GameObjectEditor
 
     void RemoveCurrentObjectVE()
     {
-        if(mCurrentObjectElement != null && mGameObjectEditorUI.Contains(mCurrentObjectElement))
+        if(mCurrentObjectElement != null && mEditoryBlock.Contains(mCurrentObjectElement))
         {
-            mGameObjectEditorUI.Remove(mCurrentObjectElement);
+            mEditoryBlock.Remove(mCurrentObjectElement);
         }
         mCurrentObjectElement = null;
     }
@@ -90,18 +92,26 @@ public class GameObjectEditor
                 return;
             case GameObjectType.Pickable:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PickableEditor.uxml");
+                mCurrentObjectElement = aAsset.CloneTree();
+                EnumField aItemType = mCurrentObjectElement.Q<EnumField>("item_type");
+                aItemType.Init(Item.Type.TempType1);
+                //aItemType.RegisterCallback<>
                 break;
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
+                mCurrentObjectElement = aAsset.CloneTree();
                 break;
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
+                mCurrentObjectElement = aAsset.CloneTree();
                 break;
             case GameObjectType.Enemy:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
+                mCurrentObjectElement = aAsset.CloneTree();
                 break;
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
+                mCurrentObjectElement = aAsset.CloneTree();
                 break;
             default:
                 return;
@@ -110,9 +120,8 @@ public class GameObjectEditor
         {
             return;
         }
-        mCurrentObjectElement = aAsset.CloneTree();
         mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
-        mGameObjectEditorUI.Add(mCurrentObjectElement);
+        mEditoryBlock.Add(mCurrentObjectElement);
     }
 
     void OnTypeChanged(GameObjectType pNewType)

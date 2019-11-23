@@ -4,5 +4,10 @@ using UnityEngine;
 
 public class Item : GameScriptable
 {
-    
+    public enum Type
+    {
+        TempType1,
+        TempType2,
+        TempType3
+    }
 }
