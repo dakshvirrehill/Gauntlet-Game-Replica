@@ -32,7 +32,7 @@
     background-color : rgb(255, 255, 255);
 }
 
-.levelEditor {
+.editorMain {
     margin: 5px;
     background-color: rgb(128, 128, 128);
 }

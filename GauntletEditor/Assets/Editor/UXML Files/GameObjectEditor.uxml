@@ -3,7 +3,7 @@
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="editor">
-    <VisualElement class ="levelEditor">
+    <VisualElement class ="editorMain">
       <Label text="Game Object Editor" class ="header"/>
     </VisualElement>
   </VisualElement>
