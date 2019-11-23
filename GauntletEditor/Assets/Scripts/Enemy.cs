@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : ScriptableObject
+public class Enemy : GameScriptable
 {
     
 }
