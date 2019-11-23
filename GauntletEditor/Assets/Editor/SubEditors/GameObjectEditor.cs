@@ -15,6 +15,7 @@ public class GameObjectEditor
     }
     static GameObjectEditor mInstance;
     VisualElement mGameObjectEditorUI = null;
+    GameObjectType mActiveType = GameObjectType.None;
     GameScriptable mScriptable;
     EnumField mTypeEnum;
     static void CreateInstance()
@@ -32,7 +33,18 @@ public class GameObjectEditor
         mInstance.mGameObjectEditorUI = aGameObjectEditorAsset.CloneTree();
         mInstance.mTypeEnum = mInstance.mGameObjectEditorUI.Q<EnumField>("gobj_type");
         mInstance.mTypeEnum.Init(GameObjectType.None);
+        mInstance.mTypeEnum.RegisterCallback<ChangeEvent<GameObjectType>>((aEv) => mInstance.OnTypeChanged(aEv.newValue));
         return mInstance.mGameObjectEditorUI;
+    }
+
+    void OnTypeChanged(GameObjectType pNewType)
+    {
+        if(mScriptable != null)
+        {
+            mTypeEnum.value = mActiveType;
+            return;
+        }
+
     }
 
 }
