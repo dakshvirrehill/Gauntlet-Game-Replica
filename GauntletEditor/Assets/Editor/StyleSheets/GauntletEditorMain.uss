@@ -33,11 +33,15 @@
 }
 
 .editorMain {
+    flex-direction : column;
     margin: 5px;
-    background-color: rgb(128, 128, 128);
+    background-color: rgb(56, 56, 56);
 }
 
 .header {
+    margin-top : 5px;
+    margin-bottom : 5px;
+    flex-direction : row;
     font-size : 20px;
     align-self : center;
     color : rgb(255, 216, 0);
@@ -47,4 +51,44 @@
     font-size : 30px;
     align-self : center;
     color : rgb(255, 0, 0);
+}
+
+.editorData {
+    flex-direction : column;
+    flex-grow : 1;
+    font-size : 12px;
+    color : rgb(255, 255, 255);
+}
+
+.enumField
+{
+    flex-direction : row;
+    margin-bottom : 10px;
+}
+
+.objectField {
+    flex-direction : row;
+    margin-bottom : 10px;
+}
+
+.assetData {
+    flex-direction : column;
+    margin : 10px;
+}
+
+.imguiContainer {
+    flex-direction : row;
+    margin : 10px;
+}
+
+.rowData {
+    flex-direction: row;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.columnData {
+    flex-direction: column;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

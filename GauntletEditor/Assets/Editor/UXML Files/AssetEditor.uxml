@@ -5,6 +5,17 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
   <VisualElement class ="editor">
     <VisualElement class ="editorMain">
       <Label text="Asset Editor" class ="header"/>
+      <VisualElement class ="editorData" name ="asset_editor_data">
+        <uieed:EnumField name="asset_type" class ="enumField" type =""/>
+        <uieed:ObjectField name ="asset_field" allow-scene-objects="false" label ="Asset File" class ="objectField"/>
+        <VisualElement name ="asset_data" class ="assetData">
+          <VisualElement class ="columnData">
+            <TextField binding-path="mAssetFilePath" readonly="true" label ="File Path" class ="rowData"/>
+            <TextField binding-path="mGUID" label="GUID" class ="rowData"/>
+          </VisualElement>
+          <Button name ="asset_meta_data" text="Save Asset Meta Data" class ="columnData"/>
+        </VisualElement> 
+      </VisualElement>
     </VisualElement>
   </VisualElement>
 </UXML>
