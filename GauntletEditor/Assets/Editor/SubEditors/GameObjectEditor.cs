@@ -95,6 +95,8 @@ public class GameObjectEditor
                 mCurrentObjectElement = aAsset.CloneTree();
                 EnumField aItemType = mCurrentObjectElement.Q<EnumField>("item_type");
                 aItemType.Init(Item.Type.TempType1);
+                mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
+                mCurrentObjectElement.Q<ObjectField>("item_idle_sprite").objectType = typeof(Sprite);
                 //aItemType.RegisterCallback<>
                 break;
             case GameObjectType.Projectile:
