@@ -24,6 +24,8 @@ public class GameObjectEditor
 
     VisualElement mCurrentObjectElement;
 
+    IMGUIContainer mProjectileImgui;
+
     static void CreateInstance()
     {
         if(mInstance == null)
@@ -102,6 +104,8 @@ public class GameObjectEditor
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
+                mProjectileImgui = mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites");
+                mProjectileImgui.onGUIHandler = ProjectileOnGUI;
                 break;
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
@@ -149,5 +153,14 @@ public class GameObjectEditor
         Debug.Log("Save Scriptable Asset Function Called");
         mTypeEnum.value = GameObjectType.None;
     }
+
+
+    #region IMGUI OnGUIs
+    void ProjectileOnGUI()
+    {
+        EditorGUI.DrawRect(new Rect(0, 0, 1050, 350), Color.white);
+
+    }
+    #endregion
 
 }

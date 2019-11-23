@@ -79,6 +79,8 @@
 .imguiContainer {
     flex-direction : row;
     margin : 10px;
+    min-height : 350px;
+    min-width : 1050px;
 }
 
 .rowData {
