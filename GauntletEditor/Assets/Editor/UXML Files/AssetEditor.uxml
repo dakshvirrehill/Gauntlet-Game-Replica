@@ -6,7 +6,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
     <VisualElement class ="editorMain">
       <Label text="Asset Editor" class ="header"/>
       <VisualElement class ="editorData" name ="asset_editor_data">
-        <uieed:EnumField name="asset_type" class ="enumField" type =""/>
+        <uieed:EnumField name="asset_type" class ="enumField" type ="" label="Asset Type"/>
         <uieed:ObjectField name ="asset_field" allow-scene-objects="false" label ="Asset File" class ="objectField"/>
         <VisualElement name ="asset_data" class ="assetData">
           <VisualElement class ="columnData">
