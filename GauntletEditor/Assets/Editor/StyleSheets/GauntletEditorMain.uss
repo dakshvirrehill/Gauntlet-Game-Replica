@@ -5,28 +5,36 @@
     flex-direction : row;
     flex-grow : 1;
     flex-shrink : 0.8;
+    margin: 10px;
 }
 
 .menuButton {
+    margin: 5px;
+    min-height: 40px;
+}
+
+.selected {
     flex-direction: column;
     flex-grow: 0.5;
     flex-shrink: 0.5;
-    min-height: 50px;
+    background-color: rgb(255, 106, 0);
 }
 
-.menuButtonSelected {
-
+.unselected {
+    flex-direction: column;
+    flex-grow: 0.5;
+    flex-shrink: 0.5;
 }
 
 .editor {
     flex-grow : 1;
     flex-shrink : 0.2;
-    border-radius : 3px;
-    border-color : rgb(255, 255, 255);
+    background-color : rgb(255, 255, 255);
 }
 
 .levelEditor {
-
+    margin: 5px;
+    background-color: rgb(128, 128, 128);
 }
 
 .header {
