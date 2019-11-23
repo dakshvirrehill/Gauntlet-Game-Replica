@@ -38,9 +38,10 @@ public class GameObjectEditor
         mInstance.mGameObjectEditorUI = aGameObjectEditorAsset.CloneTree();
         mInstance.mTypeEnum = mInstance.mGameObjectEditorUI.Q<EnumField>("gobj_type");
         mInstance.mTypeEnum.Init(GameObjectType.None);
-        mInstance.mTypeEnum.RegisterCallback<ChangeEvent<GameObjectType>>((aEv) => mInstance.OnTypeChanged(aEv.newValue));
+        mInstance.mTypeEnum.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => mInstance.OnTypeChanged((GameObjectType)aEv.newValue));
         mInstance.mSelectionField = mInstance.mGameObjectEditorUI.Q<ObjectField>("scriptable_gobj_field");
         mInstance.mSelectionField.RegisterCallback<ChangeEvent<Object>>((aEv) => mInstance.OnSelectionChanged(aEv.newValue));
+        mInstance.mSelectionField.SetEnabled(false);
         return mInstance.mGameObjectEditorUI;
     }
 
@@ -52,6 +53,9 @@ public class GameObjectEditor
         {
             case GameObjectType.None:
                 mSelectionField.SetEnabled(false);
+                break;
+            case GameObjectType.Enemy:
+                mSelectionField.objectType = typeof(Enemy);
                 break;
             case GameObjectType.Pickable:
                 mSelectionField.objectType = typeof(Item);
