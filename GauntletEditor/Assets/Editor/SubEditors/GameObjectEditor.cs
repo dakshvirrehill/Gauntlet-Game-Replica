@@ -28,12 +28,15 @@ public class GameObjectEditor
 
     ReorderableList mProjectileAnimList;
     List<AnimationData> mSelectedProjAnimData;
-    int mObjectPickerId = -1;
+    Vector2 mProjectileGUIScrollPos;
 
     ObjectField mSObjSprite;
 
     ReorderableList mEnemyAnimList;
     List<AnimationData> mEnemyAnimations;
+    Vector2 mEnemyGUIScrollPos;
+
+    Vector2 mStaticGUIScrollPos;
 
     static void CreateInstance()
     {
@@ -196,12 +199,15 @@ public class GameObjectEditor
     #region IMGUI OnGUIs
     void ProjectileOnGUI()
     {
+        mProjectileGUIScrollPos = EditorGUILayout.BeginScrollView(mProjectileGUIScrollPos,GUILayout.Width(1050),GUILayout.Height(350));
         mProjectileAnimList.DoLayoutList();
+        EditorGUILayout.EndScrollView();
     }
     void StaticObjectOnGUI()
     {
         if(mSObjSprite.value != null)
         {
+            mStaticGUIScrollPos = EditorGUILayout.BeginScrollView(mStaticGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(350));
             Sprite aSprite = (Sprite)mSObjSprite.value;
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
@@ -226,11 +232,14 @@ public class GameObjectEditor
             GUILayout.Space(50);
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndScrollView();
         }
     }
     void EnemyOnGUI()
     {
+        mEnemyGUIScrollPos = EditorGUILayout.BeginScrollView(mEnemyGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(350));
         mEnemyAnimList.DoLayoutList();
+        EditorGUILayout.EndScrollView();
     }
 
     void DrawTexturePreview(Rect position, Sprite sprite)

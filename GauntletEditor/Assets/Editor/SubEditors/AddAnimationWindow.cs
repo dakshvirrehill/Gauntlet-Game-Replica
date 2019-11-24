@@ -17,7 +17,7 @@ public class AddAnimationWindow : EditorWindow
     AnimationData mAnimationData;
     int mObjectPickerId = -1;
     static bool mIsPlayer;
-
+    Vector2 mAnimationScroll;
     public static void OpenAnimationWindow(bool pIsPlayer = false)
     {
         if (mWindow != null)
@@ -40,7 +40,7 @@ public class AddAnimationWindow : EditorWindow
 
     void OnGUI()
     {
-        EditorGUILayout.BeginVertical();
+        mAnimationScroll = EditorGUILayout.BeginScrollView(mAnimationScroll, GUILayout.Width(500), GUILayout.Height(450));
         EditorGUILayout.BeginHorizontal();
         mAnimationData.mAnimationName = EditorGUILayout.TextField("Name: ", mAnimationData.mAnimationName);
         EditorGUILayout.EndHorizontal();
@@ -56,6 +56,7 @@ public class AddAnimationWindow : EditorWindow
         }
         mAnimations.DoLayoutList();
         EditorGUILayout.EndVertical();
+        EditorGUILayout.EndScrollView();
         EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("Save Animation"))
         {
@@ -71,7 +72,6 @@ public class AddAnimationWindow : EditorWindow
             }
         }
         EditorGUILayout.EndHorizontal();
-        EditorGUILayout.EndVertical();
     }
 
     void UpdateAnimationList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)

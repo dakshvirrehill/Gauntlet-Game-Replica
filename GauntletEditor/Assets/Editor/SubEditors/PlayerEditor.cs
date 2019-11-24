@@ -11,7 +11,7 @@ public class PlayerEditor
     VisualElement mPlayerEditorUI = null;
     List<AnimationData> mAnimationData;
     ReorderableList mAnimationList;
-    
+    Vector2 mPlayerGUIScrollPos;
 
     static void CreateInstance()
     {
@@ -50,7 +50,9 @@ public class PlayerEditor
 
     void PlayerOnGUI()
     {
+        mPlayerGUIScrollPos = EditorGUILayout.BeginScrollView(mPlayerGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(350));
         mAnimationList.DoLayoutList();
+        EditorGUILayout.EndScrollView();
     }
 
     void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)

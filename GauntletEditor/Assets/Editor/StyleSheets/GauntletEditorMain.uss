@@ -77,10 +77,24 @@
 }
 
 .imguiContainer {
+    flex-direction: row;
+    margin: 10px;
+    min-width: 1050px;
+    min-height: 350px;
+}
+
+.imguiContainerSmall {
+    flex-direction : column;
+    margin: 10px;
+    min-width: 1050px;
+    min-height: 50px;
+}
+
+.imguiContainerSquareHalf {
     flex-direction : row;
     margin : 10px;
-    min-height : 350px;
-    min-width : 1050px;
+    min-width: 600px;
+    min-height: 250px;
 }
 
 .rowData {
