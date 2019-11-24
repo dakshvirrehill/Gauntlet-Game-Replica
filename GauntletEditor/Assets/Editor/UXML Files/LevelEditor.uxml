@@ -5,7 +5,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
   <VisualElement class ="editor">
     <VisualElement class ="editorMain">
       <Label text="Level Map Editor" class ="header"/>
-      <VisualElement class ="editorData">
+      <VisualElement class ="editorData" name ="editor_data">
         <Label text ="Select Current Levels to Edit or Add New"/>
         <IMGUIContainer class ="imguiContainerSmall" name="level_list"/>
         <VisualElement name ="main_data_display">
@@ -22,6 +22,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
             <IMGUIContainer class ="imguiContainerSquareHalf" name ="level_map"/>
             <IMGUIContainer class ="imguiContainerSquareHalf" name ="placeable_objects"/>
           </VisualElement>
+          <Button name ="level_data" text="Save Level Data" class ="columnData"/>
         </VisualElement>
       </VisualElement>
     </VisualElement>
