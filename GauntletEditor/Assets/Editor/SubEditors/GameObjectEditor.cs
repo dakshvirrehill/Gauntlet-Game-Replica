@@ -125,6 +125,12 @@ public class GameObjectEditor
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
+                mCurrentObjectElement.Q<ObjectField>("spawn_enemy").objectType = typeof(Enemy);
+                mCurrentObjectElement.Q<ObjectField>("spawn_sound").objectType = typeof(AudioClip);
+                mCurrentObjectElement.Q<ObjectField>("item_1").objectType = typeof(Item);
+                mCurrentObjectElement.Q<ObjectField>("item_2").objectType = typeof(Item);
+                mCurrentObjectElement.Q<ObjectField>("item_3").objectType = typeof(Item);
+                mCurrentObjectElement.Q<ObjectField>("factory_sprite").objectType = typeof(Sprite);
                 break;
             case GameObjectType.Enemy:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
