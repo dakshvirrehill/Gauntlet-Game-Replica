@@ -236,6 +236,31 @@ public class GameObjectEditor
     {
         mEnemyAnimList.DoLayoutList();
     }
+
+    void DrawTexturePreview(Rect position, Sprite sprite)
+    {
+        Vector2 fullSize = new Vector2(sprite.texture.width, sprite.texture.height);
+        Vector2 size = new Vector2(sprite.textureRect.width, sprite.textureRect.height);
+
+        Rect coords = sprite.textureRect;
+        coords.x /= fullSize.x;
+        coords.width /= fullSize.x;
+        coords.y /= fullSize.y;
+        coords.height /= fullSize.y;
+
+        Vector2 ratio;
+        ratio.x = position.width / size.x;
+        ratio.y = position.height / size.y;
+        float minRatio = Mathf.Min(ratio.x, ratio.y);
+
+        Vector2 center = position.center;
+        position.width = size.x * minRatio;
+        position.height = size.y * minRatio;
+        position.center = center;
+
+        GUI.DrawTextureWithTexCoords(position, sprite.texture, coords);
+    }
+
     #endregion
     #region Reorderable Helpers
     void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
@@ -266,29 +291,16 @@ public class GameObjectEditor
         EditorGUIUtility.ShowObjectPicker<Sprite>(null, false, "", mObjectPickerId);
     }
 
-    void DrawTexturePreview(Rect position, Sprite sprite)
+    public static void AddToCurrentAnimationList(AnimationData pData)
     {
-        Vector2 fullSize = new Vector2(sprite.texture.width, sprite.texture.height);
-        Vector2 size = new Vector2(sprite.textureRect.width, sprite.textureRect.height);
-
-        Rect coords = sprite.textureRect;
-        coords.x /= fullSize.x;
-        coords.width /= fullSize.x;
-        coords.y /= fullSize.y;
-        coords.height /= fullSize.y;
-
-        Vector2 ratio;
-        ratio.x = position.width / size.x;
-        ratio.y = position.height / size.y;
-        float minRatio = Mathf.Min(ratio.x, ratio.y);
-
-        Vector2 center = position.center;
-        position.width = size.x * minRatio;
-        position.height = size.y * minRatio;
-        position.center = center;
-
-        GUI.DrawTextureWithTexCoords(position, sprite.texture, coords);
+        switch (mInstance.mActiveType)
+        {
+            case GameObjectType.Enemy:
+                mInstance.mEnemyAnimations.Add(pData);
+                break;
+        }
     }
+
     #endregion
 
 }

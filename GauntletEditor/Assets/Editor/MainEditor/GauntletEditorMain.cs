@@ -41,7 +41,7 @@ public class GauntletEditorMain : EditorWindow, IBindable
             mWindow = null;
         }
         mWindow = GetWindow<GauntletEditorMain>();
-        mWindow.minSize = new Vector2(1100, 700);
+        mWindow.minSize = new Vector2(1100, 800);
         mWindow.titleContent = new GUIContent("Gauntlet Game Editor Main");
     }
 
