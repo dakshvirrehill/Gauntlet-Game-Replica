@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:uieed="UnityEditor.UIElements"
+xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
+UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
+  <VisualElement>
+    <VisualElement>
+      <TextField binding-path="mName" name="level_name" label="Level Name" class ="rowData"/>
+      <Slider label ="Level Time" binding-path="mTime" name ="level_time" class ="rowData" low-value="60" high-value="600"/>
+      <uieed:ObjectField name ="gameplay_music" allow-scene-objects="false" label ="Game Play Music" class ="objectField"/>
+      <VisualElement>
+        <SliderInt label ="Number of Rows" name ="row_size" binding-path="mRows" class ="rowData" low-value="32" high-value="120"/>
+        <SliderInt label ="Number of Columns" name="column_size" binding-path="mColumns" class ="rowData" low-value="32" high-value="120"/>
+      </VisualElement>
+    </VisualElement>
+    <IMGUIContainer class ="imguiContainer" name ="level_map"/>
+    <Button name ="level_data" text="Save Level Data" class ="columnData"/>
+  </VisualElement>
+</UXML>
