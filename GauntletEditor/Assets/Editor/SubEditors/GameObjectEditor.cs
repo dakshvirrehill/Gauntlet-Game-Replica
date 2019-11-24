@@ -242,28 +242,28 @@ public class GameObjectEditor
         EditorGUILayout.EndScrollView();
     }
 
-    void DrawTexturePreview(Rect position, Sprite sprite)
+    void DrawTexturePreview(Rect pPosition, Sprite pSprite)
     {
-        Vector2 fullSize = new Vector2(sprite.texture.width, sprite.texture.height);
-        Vector2 size = new Vector2(sprite.textureRect.width, sprite.textureRect.height);
+        Vector2 fullSize = new Vector2(pSprite.texture.width, pSprite.texture.height);
+        Vector2 size = new Vector2(pSprite.textureRect.width, pSprite.textureRect.height);
 
-        Rect coords = sprite.textureRect;
+        Rect coords = pSprite.textureRect;
         coords.x /= fullSize.x;
         coords.width /= fullSize.x;
         coords.y /= fullSize.y;
         coords.height /= fullSize.y;
 
         Vector2 ratio;
-        ratio.x = position.width / size.x;
-        ratio.y = position.height / size.y;
+        ratio.x = pPosition.width / size.x;
+        ratio.y = pPosition.height / size.y;
         float minRatio = Mathf.Min(ratio.x, ratio.y);
 
-        Vector2 center = position.center;
-        position.width = size.x * minRatio;
-        position.height = size.y * minRatio;
-        position.center = center;
+        Vector2 center = pPosition.center;
+        pPosition.width = size.x * minRatio;
+        pPosition.height = size.y * minRatio;
+        pPosition.center = center;
 
-        GUI.DrawTextureWithTexCoords(position, sprite.texture, coords);
+        GUI.DrawTextureWithTexCoords(pPosition, pSprite.texture, coords);
     }
 
     #endregion
