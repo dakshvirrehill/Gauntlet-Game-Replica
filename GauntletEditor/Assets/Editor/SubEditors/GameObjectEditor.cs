@@ -32,6 +32,9 @@ public class GameObjectEditor
 
     ObjectField mSObjSprite;
 
+    ReorderableList mEnemyAnimList;
+    List<AnimationData> mEnemyAnimations;
+
     static void CreateInstance()
     {
         if(mInstance == null)
@@ -126,6 +129,20 @@ public class GameObjectEditor
             case GameObjectType.Enemy:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
+                mCurrentObjectElement.Q<ObjectField>("enemy_attack_sound").objectType = typeof(AudioClip);
+                mCurrentObjectElement.Q<ObjectField>("enemy_death_sound").objectType = typeof(AudioClip);
+                EnumField aEnemyType = mCurrentObjectElement.Q<EnumField>("enemy_type");
+                mCurrentObjectElement.Q<ObjectField>("enemy_projectile").objectType = typeof(Projectile);                
+                aEnemyType.Init(Enemy.Type.Collider);
+                mEnemyAnimations = new List<AnimationData>();
+                mEnemyAnimList = new ReorderableList(mEnemyAnimations, typeof(AnimationData));
+                mEnemyAnimList.drawHeaderCallback = (Rect aRect) =>
+                {
+                    EditorGUI.LabelField(aRect, "Move Animation Sprites");
+                };
+                mEnemyAnimList.drawElementCallback = UpdateEnemyAnimationList;
+                mEnemyAnimList.onAddCallback = AddNewAnimation;
+                mCurrentObjectElement.Q<IMGUIContainer>("enemy_animation_sprites").onGUIHandler = EnemyOnGUI;
                 break;
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
@@ -215,6 +232,10 @@ public class GameObjectEditor
             EditorGUILayout.EndHorizontal();
         }
     }
+    void EnemyOnGUI()
+    {
+        mEnemyAnimList.DoLayoutList();
+    }
     #endregion
     #region Reorderable Helpers
     void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
@@ -222,6 +243,21 @@ public class GameObjectEditor
         var aElement = (Sprite)mProjectileAnimList.list[aIx];
         aRect.y += 2;
         EditorGUI.LabelField(new Rect(aRect.x, aRect.y, 100, EditorGUIUtility.singleLineHeight), aElement.name);
+    }
+
+    void UpdateEnemyAnimationList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
+    {
+        AnimationData aElement = (AnimationData)mEnemyAnimList.list[aIx];
+        aRect.y += 2;
+        EditorGUI.LabelField(new Rect(aRect.x, aRect.y, 100, EditorGUIUtility.singleLineHeight), aElement.mAnimationName);
+    }
+
+    void AddNewAnimation(ReorderableList pList)
+    {
+        if(!AddAnimationWindow.IsWindowOpen())
+        {
+            AddAnimationWindow.OpenAnimationWindow();
+        }
     }
 
     void NewAnimationSpriteAdd(ReorderableList aList)

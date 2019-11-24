@@ -4,5 +4,10 @@ using UnityEngine;
 
 public class Enemy : GameScriptable
 {
-    
+    public enum Type
+    {
+        Collider,
+        CloseRangeAttacker,
+        ProjectileThrower
+    }
 }
