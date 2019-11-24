@@ -5,6 +5,17 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
   <VisualElement class ="editor">
     <VisualElement class ="editorMain">
       <Label text="Main Player Editor" class ="header"/>
+      <VisualElement class ="editorData" name ="player_editor_data">
+        <Slider label ="Move Speed" binding-path="mSpeed" name ="player_speed" class ="rowData" low-value="4" high-value="30" value="4"/>
+        <SliderInt label ="Health" binding-path="mHealth" name ="player_speed" class ="rowData" low-value="3" high-value="10" value="4"/>
+        <uieed:ObjectField name ="player_projectile" class ="objectField" allow-scene-objects="false" label="Player Projectile"/>
+        <uieed:ObjectField name ="player_spawn_sound" class ="objectField" allow-scene-objects="false" label="Player Spawn Sound"/>
+        <uieed:ObjectField name ="player_attack_sound" class ="objectField" allow-scene-objects="false" label="Player Attack Sound"/>
+        <uieed:ObjectField name ="player_death_sound" class ="objectField" allow-scene-objects="false" label="Player Death Sound"/>
+        <uieed:ObjectField name ="player_teleport_sound" class ="objectField" allow-scene-objects="false" label="Player Teleport Sound"/>
+        <IMGUIContainer name="player_animation_sprites" class ="imguiContainer"/>
+        <Button name ="player_asset_data" text="Save Main Player" class ="columnData"/>
+      </VisualElement>
     </VisualElement>
   </VisualElement>
 </UXML>

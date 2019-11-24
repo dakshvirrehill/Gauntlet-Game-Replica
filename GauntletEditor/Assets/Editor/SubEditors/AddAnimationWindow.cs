@@ -64,6 +64,11 @@ public class AddAnimationWindow : EditorWindow
                 GameObjectEditor.AddToCurrentAnimationList(mAnimationData);
                 mWindow.Close();
             }
+            else
+            {
+                PlayerEditor.AddToPlayerAnimation(mAnimationData);
+                mWindow.Close();
+            }
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
