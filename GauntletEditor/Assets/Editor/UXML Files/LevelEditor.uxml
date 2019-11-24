@@ -5,6 +5,25 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
   <VisualElement class ="editor">
     <VisualElement class ="editorMain">
       <Label text="Level Map Editor" class ="header"/>
+      <VisualElement class ="editorData">
+        <Label text ="Select Current Levels to Edit or Add New"/>
+        <IMGUIContainer class ="imguiContainerSmall" name="level_list"/>
+        <VisualElement name ="main_data_display">
+          <VisualElement>
+            <TextField binding-path="mName" name="level_name" label="Level Name" class ="rowData"/>
+            <Slider label ="Level Time" binding-path="mTime" name ="level_time" class ="rowData" low-value="60" high-value="600" value="60"/>
+            <uieed:ObjectField name ="gameplay_music" allow-scene-objects="false" label ="Game Play Music" class ="objectField"/>
+            <VisualElement>
+              <SliderInt label ="Number of Rows" name ="row_size" binding-path="mRows" class ="rowData" low-value="32" high-value="120" value="32"/>
+              <SliderInt label ="Number of Columns" name="column_size" binding-path="mColumns" class ="rowData" low-value="32" high-value="120" value="32"/>
+            </VisualElement>
+          </VisualElement>
+          <VisualElement class ="columnData">
+            <IMGUIContainer class ="imguiContainerSquareHalf" name ="level_map"/>
+            <IMGUIContainer class ="imguiContainerSquareHalf" name ="placeable_objects"/>
+          </VisualElement>
+        </VisualElement>
+      </VisualElement>
     </VisualElement>
   </VisualElement>
 </UXML>
