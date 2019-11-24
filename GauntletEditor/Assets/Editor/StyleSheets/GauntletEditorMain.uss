@@ -87,14 +87,14 @@
     flex-direction : column;
     margin: 10px;
     min-width: 1050px;
-    min-height: 50px;
+    min-height: 70px;
 }
 
 .imguiContainerSquareHalf {
     flex-direction : row;
     margin : 10px;
     min-width: 600px;
-    min-height: 250px;
+    min-height: 200px;
 }
 
 .rowData {

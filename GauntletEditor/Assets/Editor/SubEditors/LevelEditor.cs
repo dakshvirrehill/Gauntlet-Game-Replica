@@ -48,6 +48,7 @@ public class LevelEditor : IBindable
         mLevelData.Q<ObjectField>("gameplay_music").objectType = typeof(AudioClip);
         mLevelData.Q<SliderInt>("row_size").RegisterCallback<ChangeEvent<int>>((aEv) => UpdateLevelMapGrid());
         mLevelData.Q<SliderInt>("column_size").RegisterCallback<ChangeEvent<int>>((aEv) => UpdateLevelMapGrid());
+        mLevelData.Q<Button>("level_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mEditorMain.Q<IMGUIContainer>("level_list").onGUIHandler = LevelListOnGUI;
         mMapContainer = mLevelData.Q<IMGUIContainer>("level_map");
         mPlaceableObjectContainer = mLevelData.Q<IMGUIContainer>("placeable_objects");
@@ -73,21 +74,21 @@ public class LevelEditor : IBindable
     #region IMGUI
     void LevelListOnGUI()
     {
-        mLevelListGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelListGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(50));
+        mLevelListGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelListGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(70));
         mLevelList.DoLayoutList();
         EditorGUILayout.EndScrollView();
     }
 
     void LevelMapOnGUI()
     {
-        mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos, GUILayout.Width(600), GUILayout.Height(250));
+        mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos, GUILayout.Width(600), GUILayout.Height(200));
         //draw grid
         EditorGUILayout.EndScrollView();
     }
 
     void PlaceableObjectListOnGUI()
     {
-        mPlaceableObjectsGUIScrollPos = EditorGUILayout.BeginScrollView(mPlaceableObjectsGUIScrollPos, GUILayout.Width(600), GUILayout.Height(250));
+        mPlaceableObjectsGUIScrollPos = EditorGUILayout.BeginScrollView(mPlaceableObjectsGUIScrollPos, GUILayout.Width(600), GUILayout.Height(200));
         //draw objects
         EditorGUILayout.EndScrollView();
     }
@@ -135,6 +136,11 @@ public class LevelEditor : IBindable
     void ClickPlaceable(MouseUpEvent pEvent)
     {
         Debug.Log("Placeable Clicked");
+    }
+
+    void SaveAsScriptableAsset()
+    {
+        Debug.Log("Save As Scriptable Asset Clicked");
     }
 
     #endregion
