@@ -27,7 +27,7 @@ public class GameObjectEditor
     VisualElement mCurrentObjectElement;
 
     ReorderableList mProjectileAnimList;
-    List<Sprite> mSelectedAnimSprites;
+    List<AnimationData> mSelectedProjAnimData;
     int mObjectPickerId = -1;
 
     ObjectField mSObjSprite;
@@ -113,13 +113,13 @@ public class GameObjectEditor
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                mSelectedAnimSprites = new List<Sprite>();
-                mProjectileAnimList = new ReorderableList(mSelectedAnimSprites, typeof(Sprite));
+                mSelectedProjAnimData = new List<AnimationData>();
+                mProjectileAnimList = new ReorderableList(mSelectedProjAnimData, typeof(AnimationData));
                 mProjectileAnimList.drawHeaderCallback = (Rect aRect) => {
                     EditorGUI.LabelField(aRect, "Move Animation Sprites");
                 };
                 mProjectileAnimList.drawElementCallback = UpdateAnimList;
-                mProjectileAnimList.onAddCallback = NewAnimationSpriteAdd;
+                mProjectileAnimList.onAddCallback = AddNewAnimation;
                 mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
                 break;
             case GameObjectType.SpawnFactory:
@@ -196,17 +196,7 @@ public class GameObjectEditor
     #region IMGUI OnGUIs
     void ProjectileOnGUI()
     {
-        if (Event.current.commandName == "ObjectSelectorUpdated" && mObjectPickerId == EditorGUIUtility.GetObjectPickerControlID())
-        {
-            Sprite a = (Sprite)EditorGUIUtility.GetObjectPickerObject();
-            mObjectPickerId = -1;
-            if (a != null)
-            {
-                mSelectedAnimSprites.Add(a);
-            }
-        }
         mProjectileAnimList.DoLayoutList();
-        
     }
     void StaticObjectOnGUI()
     {
@@ -271,9 +261,9 @@ public class GameObjectEditor
     #region Reorderable Helpers
     void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
     {
-        var aElement = (Sprite)mProjectileAnimList.list[aIx];
+        var aElement = (AnimationData)mProjectileAnimList.list[aIx];
         aRect.y += 2;
-        EditorGUI.LabelField(new Rect(aRect.x, aRect.y, 100, EditorGUIUtility.singleLineHeight), aElement.name);
+        EditorGUI.LabelField(new Rect(aRect.x, aRect.y, 100, EditorGUIUtility.singleLineHeight), aElement.mAnimationName);
     }
 
     void UpdateEnemyAnimationList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
@@ -291,18 +281,15 @@ public class GameObjectEditor
         }
     }
 
-    void NewAnimationSpriteAdd(ReorderableList aList)
-    {
-        mObjectPickerId = EditorGUIUtility.GetControlID(FocusType.Passive) + 100;
-        EditorGUIUtility.ShowObjectPicker<Sprite>(null, false, "", mObjectPickerId);
-    }
-
     public static void AddToCurrentAnimationList(AnimationData pData)
     {
         switch (mInstance.mActiveType)
         {
             case GameObjectType.Enemy:
                 mInstance.mEnemyAnimations.Add(pData);
+                break;
+            case GameObjectType.Projectile:
+                mInstance.mSelectedProjAnimData.Add(pData);
                 break;
         }
     }
