@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:uieed="UnityEditor.UIElements"
+xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
+UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
+  <VisualElement class ="assetData">
+    <uieed:ObjectField name ="static_object_sprite" class ="objectField" allow-scene-objects="false" label="Object Sprite"/>
+    <IMGUIContainer name="static_object_collider" class ="imguiContainer"/>
+    <Button name="gobj_data" text="Save Game Object Data" class ="columnData"/>
+  </VisualElement>
+</UXML>

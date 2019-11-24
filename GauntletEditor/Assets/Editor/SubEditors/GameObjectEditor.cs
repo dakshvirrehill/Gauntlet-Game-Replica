@@ -29,6 +29,9 @@ public class GameObjectEditor
     ReorderableList mProjectileAnimList;
     List<Sprite> mSelectedAnimSprites;
     int mObjectPickerId = -1;
+
+    ObjectField mSObjSprite;
+
     static void CreateInstance()
     {
         if(mInstance == null)
@@ -127,6 +130,9 @@ public class GameObjectEditor
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
+                mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
+                mSObjSprite.objectType = typeof(Sprite);
+                mCurrentObjectElement.Q<IMGUIContainer>("static_object_collider").onGUIHandler = StaticObjectOnGUI;
                 break;
             default:
                 return;
@@ -167,7 +173,6 @@ public class GameObjectEditor
     #region IMGUI OnGUIs
     void ProjectileOnGUI()
     {
-        EditorGUI.DrawRect(new Rect(0, 0, 1050, 350), Color.white);
         if (Event.current.commandName == "ObjectSelectorUpdated" && mObjectPickerId == EditorGUIUtility.GetObjectPickerControlID())
         {
             Sprite a = (Sprite)EditorGUIUtility.GetObjectPickerObject();
@@ -180,6 +185,38 @@ public class GameObjectEditor
         mProjectileAnimList.DoLayoutList();
         
     }
+    void StaticObjectOnGUI()
+    {
+        if(mSObjSprite.value != null)
+        {
+            Sprite aSprite = (Sprite)mSObjSprite.value;
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginVertical();
+            EditorGUI.DrawRect(new Rect(100, 0, 2, aSprite.rect.height), Color.white);
+            EditorGUI.DrawRect(new Rect(100 + aSprite.rect.width, 0, 2, aSprite.rect.height), Color.white);
+            EditorGUI.DrawRect(new Rect(100, 0, aSprite.rect.width, 2), Color.white);
+            EditorGUI.DrawRect(new Rect(100, aSprite.rect.height, aSprite.rect.width, 2), Color.white);
+            DrawTexturePreview(new Rect(100,0, aSprite.rect.width,aSprite.rect.height), aSprite);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginVertical();
+            GUILayout.Space(50);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginVertical();
+            if(GUILayout.Button("Create Collider"))
+            {
+                Debug.Log("Collider Created");
+            }
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginVertical();
+            GUILayout.Space(50);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+    #endregion
+    #region Reorderable Helpers
     void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
     {
         var aElement = (Sprite)mProjectileAnimList.list[aIx];
@@ -191,6 +228,30 @@ public class GameObjectEditor
     {
         mObjectPickerId = EditorGUIUtility.GetControlID(FocusType.Passive) + 100;
         EditorGUIUtility.ShowObjectPicker<Sprite>(null, false, "", mObjectPickerId);
+    }
+
+    void DrawTexturePreview(Rect position, Sprite sprite)
+    {
+        Vector2 fullSize = new Vector2(sprite.texture.width, sprite.texture.height);
+        Vector2 size = new Vector2(sprite.textureRect.width, sprite.textureRect.height);
+
+        Rect coords = sprite.textureRect;
+        coords.x /= fullSize.x;
+        coords.width /= fullSize.x;
+        coords.y /= fullSize.y;
+        coords.height /= fullSize.y;
+
+        Vector2 ratio;
+        ratio.x = position.width / size.x;
+        ratio.y = position.height / size.y;
+        float minRatio = Mathf.Min(ratio.x, ratio.y);
+
+        Vector2 center = position.center;
+        position.width = size.x * minRatio;
+        position.height = size.y * minRatio;
+        position.center = center;
+
+        GUI.DrawTextureWithTexCoords(position, sprite.texture, coords);
     }
     #endregion
 
