@@ -90,13 +90,6 @@
     min-height: 70px;
 }
 
-.imguiContainerSquareHalf {
-    flex-direction : row;
-    margin : 10px;
-    min-width: 600px;
-    min-height: 200px;
-}
-
 .rowData {
     flex-direction: row;
     margin-left: 5px;
