@@ -1,7 +1,9 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEditorInternal;
 
 public class GameObjectEditor
 {
@@ -24,8 +26,9 @@ public class GameObjectEditor
 
     VisualElement mCurrentObjectElement;
 
-    IMGUIContainer mProjectileImgui;
-
+    ReorderableList mProjectileAnimList;
+    List<Sprite> mSelectedAnimSprites;
+    int mObjectPickerId = -1;
     static void CreateInstance()
     {
         if(mInstance == null)
@@ -104,8 +107,14 @@ public class GameObjectEditor
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                mProjectileImgui = mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites");
-                mProjectileImgui.onGUIHandler = ProjectileOnGUI;
+                mSelectedAnimSprites = new List<Sprite>();
+                mProjectileAnimList = new ReorderableList(mSelectedAnimSprites, typeof(Sprite));
+                mProjectileAnimList.drawHeaderCallback = (Rect aRect) => {
+                    EditorGUI.LabelField(aRect, "Move Animation Sprites");
+                };
+                mProjectileAnimList.drawElementCallback = UpdateAnimList;
+                mProjectileAnimList.onAddCallback = NewAnimationSpriteAdd;
+                mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
                 break;
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
@@ -159,7 +168,29 @@ public class GameObjectEditor
     void ProjectileOnGUI()
     {
         EditorGUI.DrawRect(new Rect(0, 0, 1050, 350), Color.white);
+        if (Event.current.commandName == "ObjectSelectorUpdated" && mObjectPickerId == EditorGUIUtility.GetObjectPickerControlID())
+        {
+            Sprite a = (Sprite)EditorGUIUtility.GetObjectPickerObject();
+            mObjectPickerId = -1;
+            if (a != null)
+            {
+                mSelectedAnimSprites.Add(a);
+            }
+        }
+        mProjectileAnimList.DoLayoutList();
+        
+    }
+    void UpdateAnimList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)
+    {
+        var aElement = (Sprite)mProjectileAnimList.list[aIx];
+        aRect.y += 2;
+        EditorGUI.LabelField(new Rect(aRect.x, aRect.y, 100, EditorGUIUtility.singleLineHeight), aElement.name);
+    }
 
+    void NewAnimationSpriteAdd(ReorderableList aList)
+    {
+        mObjectPickerId = EditorGUIUtility.GetControlID(FocusType.Passive) + 100;
+        EditorGUIUtility.ShowObjectPicker<Sprite>(null, false, "", mObjectPickerId);
     }
     #endregion
 
