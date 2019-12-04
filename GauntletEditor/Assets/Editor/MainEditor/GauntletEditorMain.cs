@@ -45,6 +45,11 @@ public class GauntletEditorMain : EditorWindow, IBindable
         mWindow.titleContent = new GUIContent("Gauntlet Game Editor Main");
     }
 
+    public static void DoRepaint()
+    {
+        mWindow.Repaint();
+    }
+
     public void OnEnable()
     {
         mMainStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/StyleSheets/GauntletEditorMain.uss");
