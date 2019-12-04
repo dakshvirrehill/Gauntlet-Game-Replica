@@ -44,21 +44,13 @@ public class LevelEditor : IBindable
     IMGUIContainer mMapContainer;
 
     List<LevelObjectsDisplay> mAllPlaceableObjects;
-
+    List<Vector2Int> mPosToDraw;
+    List<int> mPosToPick;
     static void CreateInstance()
     {
         if(mInstance == null)
         {
             mInstance = new LevelEditor();
-            mInstance.mAllPlaceableObjects = new List<LevelObjectsDisplay>();
-            LevelObjectsDisplay aStartPoint = new LevelObjectsDisplay();
-            aStartPoint.mObjectName = "Start Point";
-            aStartPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/StartPoint.png");
-            mInstance.mAllPlaceableObjects.Add(aStartPoint);
-            LevelObjectsDisplay aEndPoint = new LevelObjectsDisplay();
-            aEndPoint.mObjectName = "End Point";
-            aEndPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/EndPoint.png");
-            mInstance.mAllPlaceableObjects.Add(aEndPoint);
         }
     }
 
@@ -100,6 +92,17 @@ public class LevelEditor : IBindable
         mLevelData.Q<ObjectField>("gameplay_music").objectType = typeof(AudioClip);
         mLevelData.Q<Button>("level_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mMapContainer = mLevelData.Q<IMGUIContainer>("level_map");
+        mAllPlaceableObjects = new List<LevelObjectsDisplay>();
+        LevelObjectsDisplay aStartPoint = new LevelObjectsDisplay();
+        mPosToDraw = new List<Vector2Int>();
+        mPosToPick = new List<int>();
+        aStartPoint.mObjectName = "Start Point";
+        aStartPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/StartPoint.png");
+        mAllPlaceableObjects.Add(aStartPoint);
+        LevelObjectsDisplay aEndPoint = new LevelObjectsDisplay();
+        aEndPoint.mObjectName = "End Point";
+        aEndPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/EndPoint.png");
+        mAllPlaceableObjects.Add(aEndPoint);
         mMapContainer.onGUIHandler = LevelMapOnGUI;
         mMapContainer.RegisterCallback<MouseUpEvent>(ClickGrid);
     }
@@ -131,10 +134,14 @@ public class LevelEditor : IBindable
             {
                 EditorGUI.DrawRect(new Rect(aI * mCellSize, 0, 2, mActiveLevel.mRows * mCellSize), new Color(0.9245283f, 0.8049799f, 0.6585084f));
             }
+            foreach(Vector2Int aPositions in mPosToDraw)
+            {
+                EditorGUI.DrawRect(new Rect(aPositions.x * mCellSize, aPositions.y * mCellSize, mCellSize, mCellSize), Color.white);
+            }
+            EditorGUILayout.EndScrollView();
+            GUILayout.Space(20);
+            PlaceableObjectListOnGUI();
         }
-        EditorGUILayout.EndScrollView();
-        GUILayout.Space(20);
-        PlaceableObjectListOnGUI();
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
     }
@@ -148,7 +155,7 @@ public class LevelEditor : IBindable
         GUILayout.Space(100);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Current Draw Layer: ");
-        mActiveLayer = (LayerTypes)EditorGUILayout.EnumPopup((System.Enum)mActiveLayer);
+        mActiveLayer = (LayerTypes)EditorGUILayout.EnumPopup(mActiveLayer);
         mShowAll = EditorGUILayout.Toggle("Show All", mShowAll);
         EditorGUILayout.EndHorizontal();
     }
@@ -159,8 +166,12 @@ public class LevelEditor : IBindable
         mPlaceableObjectsGUIScrollPos = EditorGUILayout.BeginScrollView(mPlaceableObjectsGUIScrollPos, true, true, GUILayout.Width(mPlaceableObjectsScrollerSize.x), GUILayout.Height(mPlaceableObjectsScrollerSize.y));
         EditorGUILayout.BeginVertical();
         EditorGUILayout.LabelField("Game Objects", GUILayout.Width(mPlaceableObjectsScrollerSize.x));
-        EditorGUILayout.Space();
+        GUILayout.Space(10);
         int aI = 0;
+        foreach(int aPos in mPosToPick)
+        {
+            EditorGUI.DrawRect(new Rect(10, aPos * (mCellSize + 25) + 45, mCellSize, mCellSize), Color.white);
+        }
         foreach (LevelObjectsDisplay aDisplayData in mAllPlaceableObjects)
         {
             EditorGUILayout.LabelField(aDisplayData.mObjectName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
@@ -227,14 +238,48 @@ public class LevelEditor : IBindable
 
     void ClickGrid(MouseUpEvent pEvent)
     {
-        if(pEvent.localMousePosition.x <= mLevelMapScrollerSize.x - 15)
+        if(pEvent.localMousePosition.x <= (mLevelMapScrollerSize.x - 15))
         {
             if (pEvent.localMousePosition.y >= 20 && pEvent.localMousePosition.y <= (mLevelMapScrollerSize.y + 5))
             {
-                Debug.Log("In The Real Map");
+                Vector2 postion = pEvent.localMousePosition + mLevelMapGUIScrollPos + new Vector2(0, -20);
+                Vector2Int actP = new Vector2Int((int)postion.x / mCellSize, (int)postion.y / mCellSize);
+                if (actP.x >= mActiveLevel.mColumns || actP.y >= mActiveLevel.mRows)
+                {
+                    return;
+                }
+                if(mPosToDraw.Contains(actP))
+                {
+                    mPosToDraw.Remove(actP);
+                }
+                else
+                {
+                    mPosToDraw.Add(actP);
+                }
+                GauntletEditorMain.DoRepaint();
             }
         }
-        Debug.LogFormat("Grid Clicked \n{0} {1} {2}\n\n", pEvent.localMousePosition, mLevelMapGUIScrollPos, mPlaceableObjectsGUIScrollPos);
+        else if(pEvent.localMousePosition.x > (mLevelMapScrollerSize.x + 15) && pEvent.localMousePosition.x < (mLevelMapScrollerSize.x + mPlaceableObjectsScrollerSize.x))
+        {
+            if (pEvent.localMousePosition.y >= 45 && pEvent.localMousePosition.y <= (mPlaceableObjectsScrollerSize.y + 5))
+            {
+                Vector2 postion = pEvent.localMousePosition + mPlaceableObjectsGUIScrollPos + new Vector2(0, -45);
+                int actP = (int)postion.y / (mCellSize + 25);
+                if(actP >= mAllPlaceableObjects.Count)
+                {
+                    return;
+                }
+                if (mPosToPick.Contains(actP))
+                {
+                    mPosToPick.Remove(actP);
+                }
+                else
+                {
+                    mPosToPick.Add(actP);
+                }
+                GauntletEditorMain.DoRepaint();
+            }
+        }
     }
 
     void SaveAsScriptableAsset()
