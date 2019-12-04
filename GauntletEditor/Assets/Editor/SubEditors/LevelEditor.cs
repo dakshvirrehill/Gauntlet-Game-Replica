@@ -5,10 +5,19 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
+public enum LayerTypes
+{
+    Environment,
+    StartingObjects,
+    Enemies,
+    Players
+}
+
 public struct LevelObjectsDisplay
 {
     public string mObjectName;
     public Sprite mDisplaySprite;
+    public GameScriptable mScriptableObject;
 }
 
 public class LevelEditor : IBindable
@@ -21,9 +30,15 @@ public class LevelEditor : IBindable
 
     Vector2 mLevelListGUIScrollPos;
     Vector2 mLevelMapGUIScrollPos;
+    Vector2 mLevelMapScrollerSize = new Vector2(900, 350);
     Vector2 mPlaceableObjectsGUIScrollPos;
-    int mCellSize = 32;
+    Vector2 mPlaceableObjectsScrollerSize = new Vector2(150, 350);
+    int mMaxCellSize = 100;
+    int mCellSize = 64;
+    int mMinCellSize = 16;
     Level mActiveLevel;
+    LayerTypes mActiveLayer;
+    bool mShowAll;
     VisualElement mLevelData;
     VisualElement mEditorMain;
     IMGUIContainer mMapContainer;
@@ -101,49 +116,59 @@ public class LevelEditor : IBindable
     {
         EditorGUILayout.BeginVertical();
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Select Objects To Place on Map from Right and Place them on the left");
-        EditorGUILayout.Space();
+        ZoomInOut();
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Click on objects on map to delete them from the map");
-        EditorGUILayout.Space();
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Space();
-        EditorGUILayout.BeginHorizontal();
-        mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos, GUILayout.Width(800), GUILayout.Height(350));
+        mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos,true,true, GUILayout.Width(mLevelMapScrollerSize.x), GUILayout.Height(mLevelMapScrollerSize.y));
         if(mActiveLevel != null)
         {
             EditorGUILayout.LabelField("", GUILayout.Width(mActiveLevel.mColumns * mCellSize + 10), GUILayout.Height(mActiveLevel.mRows * mCellSize + 10));
             for (int aI = 0; aI <= mActiveLevel.mRows; aI ++)
             {
-                EditorGUI.DrawRect(new Rect(0, aI * mCellSize, mActiveLevel.mColumns * mCellSize, 2), Color.red);
+                EditorGUI.DrawRect(new Rect(0, aI * mCellSize, mActiveLevel.mColumns * mCellSize, 2), new Color(0.9245283f, 0.8049799f, 0.6585084f));
             }
             for(int aI = 0; aI <= mActiveLevel.mColumns; aI ++)
             {
-                EditorGUI.DrawRect(new Rect(aI * mCellSize, 0, 2, mActiveLevel.mRows * mCellSize), Color.red);
+                EditorGUI.DrawRect(new Rect(aI * mCellSize, 0, 2, mActiveLevel.mRows * mCellSize), new Color(0.9245283f, 0.8049799f, 0.6585084f));
             }
         }
         EditorGUILayout.EndScrollView();
+        GUILayout.Space(20);
         PlaceableObjectListOnGUI();
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
     }
 
+    void ZoomInOut()
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Current Map Zoom: ");
+        mCellSize = EditorGUILayout.IntSlider(mCellSize, mMinCellSize, mMaxCellSize);
+        EditorGUILayout.EndHorizontal();
+        GUILayout.Space(100);
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Current Draw Layer: ");
+        mActiveLayer = (LayerTypes)EditorGUILayout.EnumPopup((System.Enum)mActiveLayer);
+        mShowAll = EditorGUILayout.Toggle("Show All", mShowAll);
+        EditorGUILayout.EndHorizontal();
+    }
+
+
     void PlaceableObjectListOnGUI()
     {
-        mPlaceableObjectsGUIScrollPos = EditorGUILayout.BeginScrollView(mPlaceableObjectsGUIScrollPos, GUILayout.Width(250), GUILayout.Height(350));
-        EditorGUILayout.LabelField("Currently Created Game Objects");
+        mPlaceableObjectsGUIScrollPos = EditorGUILayout.BeginScrollView(mPlaceableObjectsGUIScrollPos, true, true, GUILayout.Width(mPlaceableObjectsScrollerSize.x), GUILayout.Height(mPlaceableObjectsScrollerSize.y));
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.LabelField("Game Objects", GUILayout.Width(mPlaceableObjectsScrollerSize.x));
         EditorGUILayout.Space();
         int aI = 0;
         foreach (LevelObjectsDisplay aDisplayData in mAllPlaceableObjects)
         {
-            EditorGUILayout.LabelField(aDisplayData.mObjectName);
+            EditorGUILayout.LabelField(aDisplayData.mObjectName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
             GUILayout.Space(mCellSize + 5);
             DrawTexturePreview(new Rect(10, aI * (mCellSize + 25) + 45, mCellSize, mCellSize), aDisplayData.mDisplaySprite);
             aI++;
         }
+        EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView();
     }
     #endregion
@@ -202,7 +227,14 @@ public class LevelEditor : IBindable
 
     void ClickGrid(MouseUpEvent pEvent)
     {
-        Debug.Log("Grid Clicked");
+        if(pEvent.localMousePosition.x <= mLevelMapScrollerSize.x - 15)
+        {
+            if (pEvent.localMousePosition.y >= 20 && pEvent.localMousePosition.y <= (mLevelMapScrollerSize.y + 5))
+            {
+                Debug.Log("In The Real Map");
+            }
+        }
+        Debug.LogFormat("Grid Clicked \n{0} {1} {2}\n\n", pEvent.localMousePosition, mLevelMapGUIScrollPos, mPlaceableObjectsGUIScrollPos);
     }
 
     void SaveAsScriptableAsset()
