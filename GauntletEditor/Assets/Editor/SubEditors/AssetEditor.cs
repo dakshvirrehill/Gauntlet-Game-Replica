@@ -68,7 +68,11 @@ public class AssetEditor
 
     void SetSelectedObjectData(Object pObject)
     {
-        switch((AssetMetaData.AssetType)mTypeOfAsset.value)
+        if(pObject == null)
+        {
+            return;
+        }
+        switch ((AssetMetaData.AssetType)mTypeOfAsset.value)
         {
             case AssetMetaData.AssetType.None:
                 return;
