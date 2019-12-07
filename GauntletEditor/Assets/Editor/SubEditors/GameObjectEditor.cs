@@ -20,9 +20,10 @@ public class GameObjectEditor
     VisualElement mGameObjectEditorUI = null;
     VisualElement mEditoryBlock = null;
     GameObjectType mActiveType = GameObjectType.None;
-    GameScriptable mScriptable;
     EnumField mTypeEnum;
     ObjectField mSelectionField;
+    Button mCreateNewButton;
+    TextField mNameField;
 
     VisualElement mCurrentObjectElement;
 
@@ -30,13 +31,13 @@ public class GameObjectEditor
     List<AnimationData> mSelectedProjAnimData;
     Vector2 mProjectileGUIScrollPos;
 
-    ObjectField mSObjSprite;
-
     ReorderableList mEnemyAnimList;
     List<AnimationData> mEnemyAnimations;
     Vector2 mEnemyGUIScrollPos;
 
     Vector2 mStaticGUIScrollPos;
+
+    GameScriptable mActiveGameObjectAsset;
 
     static void CreateInstance()
     {
@@ -51,24 +52,30 @@ public class GameObjectEditor
         CreateInstance();
         VisualTreeAsset aGameObjectEditorAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/GameObjectEditor.uxml");
         mInstance.mGameObjectEditorUI = aGameObjectEditorAsset.CloneTree();
-        mInstance.mTypeEnum = mInstance.mGameObjectEditorUI.Q<EnumField>("gobj_type");
+        mInstance.mEditoryBlock = mInstance.mGameObjectEditorUI.Q<VisualElement>("gobj_editor_data");
+        mInstance.mTypeEnum = mInstance.mEditoryBlock.Q<EnumField>("gobj_type");
         mInstance.mTypeEnum.Init(GameObjectType.None);
         mInstance.mTypeEnum.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => mInstance.OnTypeChanged((GameObjectType)aEv.newValue));
-        mInstance.mSelectionField = mInstance.mGameObjectEditorUI.Q<ObjectField>("scriptable_gobj_field");
+        mInstance.mSelectionField = mInstance.mEditoryBlock.Q<ObjectField>("scriptable_gobj_field");
         mInstance.mSelectionField.RegisterCallback<ChangeEvent<Object>>((aEv) => mInstance.OnSelectionChanged(aEv.newValue));
         mInstance.mSelectionField.SetEnabled(false);
-        mInstance.mEditoryBlock = mInstance.mGameObjectEditorUI.Q<VisualElement>("gobj_editor_data");
+        mInstance.mCreateNewButton = mInstance.mEditoryBlock.Q<Button>("gobj_create_new");
+        mInstance.mCreateNewButton.RegisterCallback<MouseUpEvent>((aEv) => mInstance.OnCreateNewObject());
+        mInstance.mCreateNewButton.SetEnabled(false);
+        mInstance.mNameField = mInstance.mEditoryBlock.Q<TextField>("gobj_name");
         return mInstance.mGameObjectEditorUI;
     }
 
     void SetObjectFieldType()
     {
-        mSelectionField.SetValueWithoutNotify(null);
+        mSelectionField.value = null;
         mSelectionField.SetEnabled(true);
+        mCreateNewButton.SetEnabled(true);
         switch (mActiveType)
         {
             case GameObjectType.None:
                 mSelectionField.SetEnabled(false);
+                mCreateNewButton.SetEnabled(false);
                 break;
             case GameObjectType.Enemy:
                 mSelectionField.objectType = typeof(Enemy);
@@ -111,7 +118,7 @@ public class GameObjectEditor
                 aItemType.Init(Item.Type.TempType1);
                 mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
                 mCurrentObjectElement.Q<ObjectField>("item_idle_sprite").objectType = typeof(Sprite);
-                //aItemType.RegisterCallback<>
+                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
@@ -124,6 +131,7 @@ public class GameObjectEditor
                 mProjectileAnimList.drawElementCallback = UpdateAnimList;
                 mProjectileAnimList.onAddCallback = AddNewAnimation;
                 mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
+                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
@@ -134,6 +142,7 @@ public class GameObjectEditor
                 mCurrentObjectElement.Q<ObjectField>("item_2").objectType = typeof(Item);
                 mCurrentObjectElement.Q<ObjectField>("item_3").objectType = typeof(Item);
                 mCurrentObjectElement.Q<ObjectField>("factory_sprite").objectType = typeof(Sprite);
+                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.Enemy:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
@@ -152,13 +161,15 @@ public class GameObjectEditor
                 mEnemyAnimList.drawElementCallback = UpdateEnemyAnimationList;
                 mEnemyAnimList.onAddCallback = AddNewAnimation;
                 mCurrentObjectElement.Q<IMGUIContainer>("enemy_animation_sprites").onGUIHandler = EnemyOnGUI;
+                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
-                mSObjSprite.objectType = typeof(Sprite);
-                mCurrentObjectElement.Q<IMGUIContainer>("static_object_collider").onGUIHandler = StaticObjectOnGUI;
+                ObjectField aSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
+                aSObjSprite.objectType = typeof(Sprite);
+                aSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
+
                 break;
             default:
                 return;
@@ -167,31 +178,164 @@ public class GameObjectEditor
         {
             return;
         }
-        mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mEditoryBlock.Add(mCurrentObjectElement);
+    }
+
+    void SaveCurrentActiveAsset()
+    {
+        if (mActiveGameObjectAsset != null)
+        {
+            EditorUtility.SetDirty(mActiveGameObjectAsset);
+            AssetDatabase.SaveAssets();
+            mActiveGameObjectAsset = null;
+        }
     }
 
     void OnTypeChanged(GameObjectType pNewType)
     {
-        if(mScriptable != null)
-        {
-            mTypeEnum.value = mActiveType;
-            return;
-        }
+        SaveCurrentActiveAsset();
         RemoveCurrentObjectVE();
         mActiveType = pNewType;
         SetObjectFieldType();
-        CreateNewObjectVE();
     }
 
     void OnSelectionChanged(Object pSelectedObject)
     {
-        //setup values according to the object type
+        if(pSelectedObject == null)
+        {
+            return;
+        }
+        SaveCurrentActiveAsset();
+        RemoveCurrentObjectVE();
+        CreateNewObjectVE();
+        mActiveGameObjectAsset = (GameScriptable)pSelectedObject;
+        switch(mActiveType)
+        {
+            case GameObjectType.Enemy:
+                Enemy aEnemy = (Enemy)pSelectedObject;
+                //do enemy specific things like setting up the anim values
+                mCurrentObjectElement.Bind(new SerializedObject(aEnemy));
+                break;
+            case GameObjectType.Pickable:
+                Item aItem = (Item)pSelectedObject;
+                //do item specific things
+                mCurrentObjectElement.Bind(new SerializedObject(aItem));
+                break;
+            case GameObjectType.Projectile:
+                Projectile aProjectile = (Projectile)pSelectedObject;
+                //do projectile specific things
+                mCurrentObjectElement.Bind(new SerializedObject(aProjectile));
+                break;
+            case GameObjectType.SpawnFactory:
+                SpawnFactory aFactory = (SpawnFactory)pSelectedObject;
+                //do spawn factory specific things
+                mCurrentObjectElement.Bind(new SerializedObject(aFactory));
+                break;
+            case GameObjectType.StaticObject:
+                StaticObject aStObj = (StaticObject)pSelectedObject;
+
+                mCurrentObjectElement.Bind(new SerializedObject(aStObj));
+                break;
+        }
+        EditorUtility.SetDirty(mActiveGameObjectAsset);
+    }
+
+    void OnCreateNewObject()
+    {
+        if(mActiveType == GameObjectType.None)
+        {
+            return;
+        }
+        if(string.IsNullOrEmpty(mNameField.value))
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/GameObjects/" };
+        System.Type aAssetType = null;
+        switch(mActiveType)
+        {
+            case GameObjectType.Enemy:
+                aAssetFolder[0] = aAssetFolder[0] + "Enemy";
+                aAssetType = typeof(Enemy);
+                break;
+            case GameObjectType.Pickable:
+                aAssetFolder[0] = aAssetFolder[0] + "Item";
+                aAssetType = typeof(Item);
+                break;
+            case GameObjectType.Projectile:
+                aAssetFolder[0] = aAssetFolder[0] + "Projectile";
+                aAssetType = typeof(Projectile);
+                break;
+            case GameObjectType.SpawnFactory:
+                aAssetFolder[0] = aAssetFolder[0] + "Spawn Factory";
+                aAssetType = typeof(SpawnFactory);
+                break;
+            case GameObjectType.StaticObject:
+                aAssetFolder[0] = aAssetFolder[0] + "Static Object";
+                aAssetType = typeof(StaticObject);
+                break;
+        }
+
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(mNameField.value, aAssetFolder);
+        if(aAssetGUIDs.Length > 0)
+        {
+            foreach(string aAssetGUID in aAssetGUIDs)
+            {
+                string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUID);
+                if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == aAssetType)
+                {
+                    GameScriptable aTempAsset = (GameScriptable)AssetDatabase.LoadAssetAtPath(aPath, aAssetType);
+                    if(aTempAsset.mName == mNameField.value)
+                    {
+                        mSelectionField.value = aTempAsset;
+                        return;
+                    }
+                }
+            }
+        }
+
+        SaveCurrentActiveAsset();
+
+        mActiveGameObjectAsset = (GameScriptable)ScriptableObject.CreateInstance(aAssetType);
+        mActiveGameObjectAsset.mName = mNameField.value;
+        AssetDatabase.CreateAsset(mActiveGameObjectAsset, aAssetFolder[0] + "/" + mNameField.value + ".asset");
+        mSelectionField.value = mActiveGameObjectAsset;
+    }
+
+    void OnStaticSpriteSelection(Sprite pNewSprite)
+    {
+        if(pNewSprite == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            //launch warning and set sprite selection to null
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pNewSprite.texture.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                
+            }
+            else
+            {
+                //launch warning and set sprite selection to null
+            }
+        }
+        else
+        {
+            //launch warning and set sprite selection to null
+        }
     }
 
     void SaveAsScriptableAsset()
     {
-        Debug.Log("Save Scriptable Asset Function Called");
+        SaveCurrentActiveAsset();
         mTypeEnum.value = GameObjectType.None;
     }
 
@@ -203,67 +347,11 @@ public class GameObjectEditor
         mProjectileAnimList.DoLayoutList();
         EditorGUILayout.EndScrollView();
     }
-    void StaticObjectOnGUI()
-    {
-        if(mSObjSprite.value != null)
-        {
-            mStaticGUIScrollPos = EditorGUILayout.BeginScrollView(mStaticGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(350));
-            Sprite aSprite = (Sprite)mSObjSprite.value;
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.BeginVertical();
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.BeginVertical();
-            EditorGUI.DrawRect(new Rect(100, 0, 2, aSprite.rect.height), Color.white);
-            EditorGUI.DrawRect(new Rect(100 + aSprite.rect.width, 0, 2, aSprite.rect.height), Color.white);
-            EditorGUI.DrawRect(new Rect(100, 0, aSprite.rect.width, 2), Color.white);
-            EditorGUI.DrawRect(new Rect(100, aSprite.rect.height, aSprite.rect.width, 2), Color.white);
-            DrawTexturePreview(new Rect(100,0, aSprite.rect.width,aSprite.rect.height), aSprite);
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.BeginVertical();
-            GUILayout.Space(50);
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.BeginVertical();
-            if(GUILayout.Button("Create Collider"))
-            {
-                Debug.Log("Collider Created");
-            }
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.BeginVertical();
-            GUILayout.Space(50);
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndScrollView();
-        }
-    }
     void EnemyOnGUI()
     {
         mEnemyGUIScrollPos = EditorGUILayout.BeginScrollView(mEnemyGUIScrollPos, GUILayout.Width(1050), GUILayout.Height(350));
         mEnemyAnimList.DoLayoutList();
         EditorGUILayout.EndScrollView();
-    }
-
-    void DrawTexturePreview(Rect pPosition, Sprite pSprite)
-    {
-        Vector2 aFullSize = new Vector2(pSprite.texture.width, pSprite.texture.height);
-        Vector2 aSize = new Vector2(pSprite.textureRect.width, pSprite.textureRect.height);
-
-        Rect aCoords = pSprite.textureRect;
-        aCoords.x /= aFullSize.x;
-        aCoords.width /= aFullSize.x;
-        aCoords.y /= aFullSize.y;
-        aCoords.height /= aFullSize.y;
-
-        Vector2 ratio;
-        ratio.x = pPosition.width / aSize.x;
-        ratio.y = pPosition.height / aSize.y;
-        float minRatio = Mathf.Min(ratio.x, ratio.y);
-
-        Vector2 center = pPosition.center;
-        pPosition.width = aSize.x * minRatio;
-        pPosition.height = aSize.y * minRatio;
-        pPosition.center = center;
-
-        GUI.DrawTextureWithTexCoords(pPosition, pSprite.texture, aCoords);
     }
 
     #endregion

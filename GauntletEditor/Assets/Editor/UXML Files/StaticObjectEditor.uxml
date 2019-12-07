@@ -2,9 +2,10 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:uieed="UnityEditor.UIElements"
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
-  <VisualElement class ="assetData">
+  <VisualElement class ="objectData">
     <uieed:ObjectField name ="static_object_sprite" class ="objectField" allow-scene-objects="false" label="Object Sprite"/>
-    <IMGUIContainer name="static_object_collider" class ="imguiContainer"/>
-    <Button name="gobj_data" text="Save Game Object Data" class ="columnData"/>
+    <uieed:EnumField name="static_object_collider" class ="enumField" type ="" label="Collider Type" binding-path="mColliderType"/>
+    <Toggle label="Trigger" name="static_trigger" class ="rowData" binding-path="mIsTrigger"/>
+    <Button name="gobj_data" text="Save Game Object Data" class ="rowData"/>
   </VisualElement>
 </UXML>
