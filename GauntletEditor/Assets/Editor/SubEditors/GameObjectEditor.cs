@@ -244,26 +244,26 @@ public class GameObjectEditor
 
     void DrawTexturePreview(Rect pPosition, Sprite pSprite)
     {
-        Vector2 fullSize = new Vector2(pSprite.texture.width, pSprite.texture.height);
-        Vector2 size = new Vector2(pSprite.textureRect.width, pSprite.textureRect.height);
+        Vector2 aFullSize = new Vector2(pSprite.texture.width, pSprite.texture.height);
+        Vector2 aSize = new Vector2(pSprite.textureRect.width, pSprite.textureRect.height);
 
-        Rect coords = pSprite.textureRect;
-        coords.x /= fullSize.x;
-        coords.width /= fullSize.x;
-        coords.y /= fullSize.y;
-        coords.height /= fullSize.y;
+        Rect aCoords = pSprite.textureRect;
+        aCoords.x /= aFullSize.x;
+        aCoords.width /= aFullSize.x;
+        aCoords.y /= aFullSize.y;
+        aCoords.height /= aFullSize.y;
 
         Vector2 ratio;
-        ratio.x = pPosition.width / size.x;
-        ratio.y = pPosition.height / size.y;
+        ratio.x = pPosition.width / aSize.x;
+        ratio.y = pPosition.height / aSize.y;
         float minRatio = Mathf.Min(ratio.x, ratio.y);
 
         Vector2 center = pPosition.center;
-        pPosition.width = size.x * minRatio;
-        pPosition.height = size.y * minRatio;
+        pPosition.width = aSize.x * minRatio;
+        pPosition.height = aSize.y * minRatio;
         pPosition.center = center;
 
-        GUI.DrawTextureWithTexCoords(pPosition, pSprite.texture, coords);
+        GUI.DrawTextureWithTexCoords(pPosition, pSprite.texture, aCoords);
     }
 
     #endregion
