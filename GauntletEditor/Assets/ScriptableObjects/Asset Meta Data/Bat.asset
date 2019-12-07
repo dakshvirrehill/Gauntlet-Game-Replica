@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: Bat
   m_EditorClassIdentifier: 
   mType: 1
-  mAssetUnityGUID: 1c0c47c07214b1340b9c9272f39d2940
-  mAssetFilePath: ../Assets/Resources/Bat.png
-  mGUID: 67713b6a-998e-4864-a5ca-d06cf86bb7ad
+  mAssetFilePath: ../Assets/Resources/Textures/Bat.png
+  mGUID: 1c0c47c07214b1340b9c9272f39d2940

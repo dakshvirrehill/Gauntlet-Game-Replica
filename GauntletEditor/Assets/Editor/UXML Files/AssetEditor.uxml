@@ -11,7 +11,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
         <VisualElement name ="asset_data" class ="assetData">
           <VisualElement class ="columnData">
             <TextField binding-path="mAssetFilePath" readonly="true" label ="File Path" class ="rowData"/>
-            <TextField binding-path="mGUID" label="GUID" class ="rowData"/>
+            <TextField binding-path="mGUID" readonly="true"  label="GUID" class ="rowData"/>
           </VisualElement>
           <Button name ="asset_meta_data" text="Save Asset Meta Data" class ="columnData"/>
         </VisualElement> 

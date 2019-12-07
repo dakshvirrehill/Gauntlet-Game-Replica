@@ -13,7 +13,6 @@ public class AssetMetaData : ScriptableObject
         PrefabAsset
     }
     public AssetType mType;
-    public string mAssetUnityGUID;
     public string mAssetFilePath;
     public string mGUID;
 }

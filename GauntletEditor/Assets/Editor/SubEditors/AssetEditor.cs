@@ -47,7 +47,7 @@ public class AssetEditor : IBindable
         if(mInstance.mCurrentAssetData != null)
         {
             mInstance.SetObjectFieldType((AssetMetaData.AssetType)mInstance.mTypeOfAsset.value);
-            string aAssetPath = AssetDatabase.GUIDToAssetPath(mInstance.mCurrentAssetData.mAssetUnityGUID);
+            string aAssetPath = AssetDatabase.GUIDToAssetPath(mInstance.mCurrentAssetData.mGUID);
             mInstance.mSelectionField.value = AssetDatabase.LoadAssetAtPath(aAssetPath, AssetDatabase.GetMainAssetTypeAtPath(aAssetPath));
         }
         else
@@ -114,23 +114,23 @@ public class AssetEditor : IBindable
         {
             return;
         }
-        string aAssetExtension = "";
+        string aAssetExtension = pObject.name;
         switch ((AssetMetaData.AssetType)mTypeOfAsset.value)
         {
             case AssetMetaData.AssetType.None:
                 return;
             case AssetMetaData.AssetType.TextureAsset:
-                aAssetExtension = Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
+                aAssetExtension = "Textures/" + aAssetExtension + Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
                 break;
             case AssetMetaData.AssetType.AudioAsset:
-                aAssetExtension = Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
+                aAssetExtension = "Audios/" + aAssetExtension + Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
                 break;
             case AssetMetaData.AssetType.FontAsset:
-                aAssetExtension = Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
+                aAssetExtension = "Fonts/" + aAssetExtension + Path.GetExtension(AssetDatabase.GetAssetPath(pObject));
                 break;
             case AssetMetaData.AssetType.PrefabAsset:
                 ((GameScriptable)pObject).mIsPrefab = true;
-                aAssetExtension = ".json";
+                aAssetExtension = "Prefabs/" + aAssetExtension + ".json";
                 break;
         }
         string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
@@ -155,9 +155,9 @@ public class AssetEditor : IBindable
         if (mCurrentAssetData == null)
         {
             mCurrentAssetData = (AssetMetaData)ScriptableObject.CreateInstance(typeof(AssetMetaData));
-            mCurrentAssetData.mAssetFilePath = "../Assets/Resources/" + pObject.name + aAssetExtension;
+            mCurrentAssetData.mAssetFilePath = "../Assets/Resources/" + aAssetExtension;
             mCurrentAssetData.mType = (AssetMetaData.AssetType)mTypeOfAsset.value;
-            mCurrentAssetData.mAssetUnityGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(pObject));
+            mCurrentAssetData.mGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(pObject));
             AssetDatabase.CreateAsset(mCurrentAssetData, aAssetFolder[0] + "/" + pObject.name + ".asset");
         }
         EditorUtility.SetDirty(mCurrentAssetData);
