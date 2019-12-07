@@ -4,7 +4,7 @@ xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:sch
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="objectData">
     <uieed:ObjectField name ="static_object_sprite" class ="objectField" allow-scene-objects="false" label="Object Sprite"/>
-    <uieed:EnumField name="static_object_collider" class ="enumField" type ="" label="Collider Type" binding-path="mColliderType"/>
+    <uieed:EnumField name="static_object_collider" class ="enumField" type ="" label="Collider Type"/>
     <Toggle label="Trigger" name="static_trigger" class ="rowData" binding-path="mIsTrigger"/>
     <Button name="gobj_data" text="Save Game Object Data" class ="rowData"/>
   </VisualElement>

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using UnityEditorInternal;
 
-public class GameObjectEditor
+public class GameObjectEditor : IBindable
 {
     public enum GameObjectType
     {
@@ -44,6 +44,8 @@ public class GameObjectEditor
     Vector2 mEnemyGUIScrollPos;
     #endregion
 
+    public IBinding binding { get; set; }
+    public string bindingPath { get; set; }
 
 
     static void CreateInstance()
@@ -125,7 +127,6 @@ public class GameObjectEditor
                 aItemType.Init(Item.Type.TempType1);
                 mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
                 mCurrentObjectElement.Q<ObjectField>("item_idle_sprite").objectType = typeof(Sprite);
-                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
@@ -138,7 +139,6 @@ public class GameObjectEditor
                 mProjectileAnimList.drawElementCallback = UpdateAnimList;
                 mProjectileAnimList.onAddCallback = AddNewAnimation;
                 mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
-                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.SpawnFactory:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
@@ -149,7 +149,6 @@ public class GameObjectEditor
                 mCurrentObjectElement.Q<ObjectField>("item_2").objectType = typeof(Item);
                 mCurrentObjectElement.Q<ObjectField>("item_3").objectType = typeof(Item);
                 mCurrentObjectElement.Q<ObjectField>("factory_sprite").objectType = typeof(Sprite);
-                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.Enemy:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
@@ -168,7 +167,6 @@ public class GameObjectEditor
                 mEnemyAnimList.drawElementCallback = UpdateEnemyAnimationList;
                 mEnemyAnimList.onAddCallback = AddNewAnimation;
                 mCurrentObjectElement.Q<IMGUIContainer>("enemy_animation_sprites").onGUIHandler = EnemyOnGUI;
-                mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
                 break;
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
@@ -187,6 +185,7 @@ public class GameObjectEditor
         {
             return;
         }
+        mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mEditoryBlock.Add(mCurrentObjectElement);
     }
 
@@ -210,12 +209,12 @@ public class GameObjectEditor
 
     void OnSelectionChanged(Object pSelectedObject)
     {
-        if(pSelectedObject == null)
+        SaveCurrentActiveAsset();
+        RemoveCurrentObjectVE();
+        if (pSelectedObject == null)
         {
             return;
         }
-        SaveCurrentActiveAsset();
-        RemoveCurrentObjectVE();
         CreateNewObjectVE();
         mActiveGameObjectAsset = (GameScriptable)pSelectedObject;
         switch(mActiveType)
@@ -242,13 +241,7 @@ public class GameObjectEditor
                 break;
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
-                if(!string.IsNullOrEmpty(aStObj.mTextureGUID))
-                {
-                    Sprite[] aAllSprites = (Sprite[]) AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(aStObj.mTextureGUID));
-                    mSObjSprite.SetEnabled(false);
-                    mSObjSprite.value = aAllSprites[aStObj.mSpriteIndex];
-                    mSObjSprite.SetEnabled(true);
-                }
+                ResetSpriteSelection(aStObj);
                 mColliderType.value = aStObj.mColliderType;
                 mCurrentObjectElement.Bind(new SerializedObject(aStObj));
                 break;
@@ -341,7 +334,8 @@ public class GameObjectEditor
         string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
         if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
         {
-            //launch warning and set sprite selection to null
+            ResetSpriteSelectionWithWarning();
+            return;
         }
         string[] aAssetGUIDs = AssetDatabase.FindAssets(pNewSprite.texture.name, aAssetFolder);
         if (aAssetGUIDs.Length > 0)
@@ -350,16 +344,59 @@ public class GameObjectEditor
             if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
             {
                 AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
-                
+                if(aCurrentAssetData.mType == AssetMetaData.AssetType.TextureAsset)
+                {
+                    StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
+                    aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
+                    Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(pNewSprite.texture));
+                    for(int aI = 0; aI < aAllSprites.Length; aI ++)
+                    {
+                        if(pNewSprite.GetInstanceID() == aAllSprites[aI].GetInstanceID())
+                        {
+                            aTempObj.mSpriteIndex = aI;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    ResetSpriteSelectionWithWarning();
+                    return;
+                }
             }
             else
             {
-                //launch warning and set sprite selection to null
+                ResetSpriteSelectionWithWarning();
+                return;
             }
         }
         else
         {
-            //launch warning and set sprite selection to null
+            ResetSpriteSelectionWithWarning();
+            return;
+        }
+    }
+
+    void ResetSpriteSelectionWithWarning()
+    {
+        EditorUtility.DisplayDialog("Warning Sprite Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning the sprite to a Game Object", "Okay");
+        ResetSpriteSelection((StaticObject)mActiveGameObjectAsset);
+    }
+
+    void ResetSpriteSelection(StaticObject pStObj)
+    {
+        if (!string.IsNullOrEmpty(pStObj.mTextureGUID))
+        {
+            Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(pStObj.mTextureGUID));
+            mSObjSprite.SetEnabled(false);
+            mSObjSprite.value = aAllSprites[pStObj.mSpriteIndex];
+            mSObjSprite.SetEnabled(true);
+        }
+        else
+        {
+            mSObjSprite.SetEnabled(false);
+            mSObjSprite.value = null;
+            mSObjSprite.SetEnabled(true);
         }
     }
 
