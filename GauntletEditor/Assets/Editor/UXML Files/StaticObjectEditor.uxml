@@ -2,7 +2,8 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:uieed="UnityEditor.UIElements"
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
-  <VisualElement class ="objectData">
+  <VisualElement class ="assetData">
+    <uieed:EnumField name ="gobj_layer" class ="enumField" type ="" label="Render Layer" />
     <uieed:ObjectField name ="static_object_sprite" class ="objectField" allow-scene-objects="false" label="Object Sprite"/>
     <uieed:EnumField name="static_object_collider" class ="enumField" type ="" label="Collider Type"/>
     <Toggle label="Trigger" name="static_trigger" class ="rowData" binding-path="mIsTrigger"/>

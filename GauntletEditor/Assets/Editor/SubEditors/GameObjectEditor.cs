@@ -26,6 +26,7 @@ public class GameObjectEditor : IBindable
     TextField mNameField;
     VisualElement mCurrentObjectElement;
     GameScriptable mActiveGameObjectAsset;
+    EnumField mLayerType;
 
     #region Static Object Elements
     ObjectField mSObjSprite;
@@ -185,6 +186,9 @@ public class GameObjectEditor : IBindable
         {
             return;
         }
+        mLayerType = mCurrentObjectElement.Q<EnumField>("gobj_layer");
+        mLayerType.Init(Level.LayerTypes.Environment);
+        mLayerType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnLayerChanged((Level.LayerTypes) aEv.newValue));
         mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mEditoryBlock.Add(mCurrentObjectElement);
     }
@@ -309,6 +313,19 @@ public class GameObjectEditor : IBindable
         mActiveGameObjectAsset.mName = mNameField.value;
         AssetDatabase.CreateAsset(mActiveGameObjectAsset, aAssetFolder[0] + "/" + mNameField.value + ".asset");
         mSelectionField.value = mActiveGameObjectAsset;
+    }
+
+    void OnLayerChanged(Level.LayerTypes pType)
+    {
+        if(mActiveGameObjectAsset == null)
+        {
+            return;
+        }
+        if(pType == mActiveGameObjectAsset.mRenderLayer)
+        {
+            return;
+        }
+        mActiveGameObjectAsset.mRenderLayer = pType;
     }
 
     #region Static Objects Callbacks
