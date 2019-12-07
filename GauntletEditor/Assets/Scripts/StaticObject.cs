@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class StaticObject : GameScriptable
 {
-    
+    [HideInInspector]
+    public string mTextureGUID;
+    [HideInInspector]
+    public Rect mDimensions;
 }
