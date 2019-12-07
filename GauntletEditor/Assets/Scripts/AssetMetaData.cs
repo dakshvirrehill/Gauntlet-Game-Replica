@@ -12,7 +12,10 @@ public class AssetMetaData : ScriptableObject
         FontAsset,
         PrefabAsset
     }
+    [HideInInspector]
     public AssetType mType;
+    [HideInInspector]
     public string mAssetFilePath;
+    [HideInInspector]
     public string mGUID;
 }
