@@ -35,7 +35,6 @@ public class GameObjectEditor : IBindable
 
     #region Projectile Elements
     ReorderableList mProjectileAnimList;
-    List<AnimationData> mSelectedProjAnimData;
     Vector2 mProjectileGUIScrollPos;
     #endregion
 
@@ -132,8 +131,8 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                mSelectedProjAnimData = new List<AnimationData>();
-                mProjectileAnimList = new ReorderableList(mSelectedProjAnimData, typeof(AnimationData));
+                
+                mProjectileAnimList = new ReorderableList(new List<AnimationData>(), typeof(AnimationData));
                 mProjectileAnimList.drawHeaderCallback = (Rect aRect) => {
                     EditorGUI.LabelField(aRect, "Move Animation Sprites");
                 };
@@ -235,7 +234,12 @@ public class GameObjectEditor : IBindable
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)pSelectedObject;
-                //do projectile specific things
+                mLayerType.value = aProjectile.mRenderLayer;
+                if (aProjectile.mProjectileAnimation == null)
+                {
+                    aProjectile.mProjectileAnimation = new List<AnimationData>();
+                }
+                mProjectileAnimList.list = aProjectile.mProjectileAnimation;
                 mCurrentObjectElement.Bind(new SerializedObject(aProjectile));
                 break;
             case GameObjectType.SpawnFactory:
@@ -246,6 +250,7 @@ public class GameObjectEditor : IBindable
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
                 ResetSpriteSelection(aStObj);
+                mLayerType.value = aStObj.mRenderLayer;
                 mColliderType.value = aStObj.mColliderType;
                 mCurrentObjectElement.Bind(new SerializedObject(aStObj));
                 break;
@@ -365,6 +370,7 @@ public class GameObjectEditor : IBindable
                 {
                     StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
                     aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
+                    aTempObj.mDimensions = new Rect(pNewSprite.rect.x, (pNewSprite.texture.height - pNewSprite.rect.y), pNewSprite.rect.width, pNewSprite.rect.height);
                     Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(pNewSprite.texture));
                     for(int aI = 0; aI < aAllSprites.Length; aI ++)
                     {
@@ -470,9 +476,11 @@ public class GameObjectEditor : IBindable
         {
             case GameObjectType.Enemy:
                 mInstance.mEnemyAnimations.Add(pData);
+                EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
                 break;
             case GameObjectType.Projectile:
-                mInstance.mSelectedProjAnimData.Add(pData);
+                ((Projectile)mInstance.mActiveGameObjectAsset).mProjectileAnimation.Add(pData);
+                EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
                 break;
         }
     }

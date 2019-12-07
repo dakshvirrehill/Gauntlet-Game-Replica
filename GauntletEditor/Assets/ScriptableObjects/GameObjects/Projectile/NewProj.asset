@@ -9,19 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5949f0df2435cc419ef0c0d7c2b27fb, type: 3}
-  m_Name: MyFirstWall
+  m_Script: {fileID: 11500000, guid: 07ad14815db9bb3418ccfc5d0e6675ed, type: 3}
+  m_Name: NewProj
   m_EditorClassIdentifier: 
   mIsPrefab: 0
-  mColliderType: 1
+  mColliderType: 0
   mIsTrigger: 0
-  mName: MyFirstWall
-  mRenderLayer: 0
-  mTextureGUID: 2439332a10b084e43b3670f1578ade3b
-  mSpriteIndex: 16
-  mDimensions:
-    serializedVersion: 2
-    x: 320
-    y: 128
-    width: 64
-    height: 64
+  mName: NewProj
+  mRenderLayer: 3
+  mSpeed: 7.76392
+  mPoolCount: 11

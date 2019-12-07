@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct AnimationData
+{
+    public string mAnimationName;
+    public float mAnimSpeed;
+    public string mTextureAssetGUID;
+    public List<Sprite> mSprites;
+}
 public class GameScriptable : ScriptableObject
 {
     public enum ColliderType

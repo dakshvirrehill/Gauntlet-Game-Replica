@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47b98f0c0d1555a4abafcd6c83d5745c, type: 3}
+  m_Name: EndPoint
+  m_EditorClassIdentifier: 
+  mType: 1
+  mAssetFilePath: ../Assets/Resources/Textures/EndPoint.png
+  mGUID: 10184f610a5102d4ba02a7a6a4e8cf8a

@@ -4,12 +4,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public struct AnimationData
-{
-    public string mAnimationName;
-    public List<Sprite> mSprites;
-}
-
 public class AddAnimationWindow : EditorWindow
 {
     static AddAnimationWindow mWindow;
@@ -43,6 +37,7 @@ public class AddAnimationWindow : EditorWindow
         mAnimationScroll = EditorGUILayout.BeginScrollView(mAnimationScroll, GUILayout.Width(500), GUILayout.Height(450));
         EditorGUILayout.BeginHorizontal();
         mAnimationData.mAnimationName = EditorGUILayout.TextField("Name: ", mAnimationData.mAnimationName);
+        mAnimationData.mAnimSpeed = EditorGUILayout.Slider(mAnimationData.mAnimSpeed, 0, 50);
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginVertical();
         if (Event.current.commandName == "ObjectSelectorUpdated" && mObjectPickerId == EditorGUIUtility.GetObjectPickerControlID())
@@ -51,7 +46,25 @@ public class AddAnimationWindow : EditorWindow
             mObjectPickerId = -1;
             if (a != null)
             {
-                mAnimationData.mSprites.Add(a);
+                if(mAnimationData.mSprites.Count > 0)
+                {
+                    if(AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(a.texture)) != mAnimationData.mTextureAssetGUID)
+                    {
+                        EditorUtility.DisplayDialog("Cannot Add Sprite", "Sprite Not Part of The Same Texture Asset", "Okay");
+                    }
+                    else
+                    {
+                        mAnimationData.mSprites.Add(a);
+                    }
+                }
+                else
+                {
+                    mAnimationData.mTextureAssetGUID = DoesAssetExists(a);
+                    if (mAnimationData.mTextureAssetGUID != null)
+                    {
+                        mAnimationData.mSprites.Add(a);
+                    }
+                }
             }
         }
         mAnimations.DoLayoutList();
@@ -85,6 +98,33 @@ public class AddAnimationWindow : EditorWindow
     {
         mObjectPickerId = EditorGUIUtility.GetControlID(FocusType.Passive) + 100;
         EditorGUIUtility.ShowObjectPicker<Sprite>(null, false, "", mObjectPickerId);
+    }
+
+    string DoesAssetExists(Sprite pNewSprite)
+    {
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            return null;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pNewSprite.texture.name, aAssetFolder);
+        if (aAssetGUIDs.Length <= 0)
+        {
+            return null;
+        }
+        string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+        if (AssetDatabase.GetMainAssetTypeAtPath(aPath) != typeof(AssetMetaData))
+        {
+            return null;
+        }
+
+        AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+        if(aCurrentAssetData.mType != AssetMetaData.AssetType.TextureAsset)
+        {
+            return null;
+        }
+
+        return aCurrentAssetData.mGUID;
     }
 
     public static bool IsWindowOpen()
