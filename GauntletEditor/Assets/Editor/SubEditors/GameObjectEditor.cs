@@ -24,20 +24,27 @@ public class GameObjectEditor
     ObjectField mSelectionField;
     Button mCreateNewButton;
     TextField mNameField;
-
     VisualElement mCurrentObjectElement;
+    GameScriptable mActiveGameObjectAsset;
 
+    #region Static Object Elements
+    ObjectField mSObjSprite;
+    EnumField mColliderType;
+    #endregion
+
+    #region Projectile Elements
     ReorderableList mProjectileAnimList;
     List<AnimationData> mSelectedProjAnimData;
     Vector2 mProjectileGUIScrollPos;
+    #endregion
 
+    #region Enemy Elements
     ReorderableList mEnemyAnimList;
     List<AnimationData> mEnemyAnimations;
     Vector2 mEnemyGUIScrollPos;
+    #endregion
 
-    Vector2 mStaticGUIScrollPos;
 
-    GameScriptable mActiveGameObjectAsset;
 
     static void CreateInstance()
     {
@@ -166,10 +173,12 @@ public class GameObjectEditor
             case GameObjectType.StaticObject:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                ObjectField aSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
-                aSObjSprite.objectType = typeof(Sprite);
-                aSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
-
+                mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
+                mSObjSprite.objectType = typeof(Sprite);
+                mSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
+                mColliderType = mCurrentObjectElement.Q<EnumField>("static_object_collider");
+                mColliderType.Init(GameScriptable.ColliderType.None);
+                mColliderType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnColliderTypeChanged((GameScriptable.ColliderType) aEv.newValue));
                 break;
             default:
                 return;
@@ -233,7 +242,14 @@ public class GameObjectEditor
                 break;
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
-
+                if(!string.IsNullOrEmpty(aStObj.mTextureGUID))
+                {
+                    Sprite[] aAllSprites = (Sprite[]) AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(aStObj.mTextureGUID));
+                    mSObjSprite.SetEnabled(false);
+                    mSObjSprite.value = aAllSprites[aStObj.mSpriteIndex];
+                    mSObjSprite.SetEnabled(true);
+                }
+                mColliderType.value = aStObj.mColliderType;
                 mCurrentObjectElement.Bind(new SerializedObject(aStObj));
                 break;
         }
@@ -302,6 +318,20 @@ public class GameObjectEditor
         mSelectionField.value = mActiveGameObjectAsset;
     }
 
+    #region Static Objects Callbacks
+    void OnColliderTypeChanged(GameScriptable.ColliderType pType)
+    {
+        if(mActiveGameObjectAsset == null)
+        {
+            return;
+        }
+        if (pType == mActiveGameObjectAsset.mColliderType)
+        {
+            return;
+        }
+        mActiveGameObjectAsset.mColliderType = pType;
+    }
+
     void OnStaticSpriteSelection(Sprite pNewSprite)
     {
         if(pNewSprite == null)
@@ -332,6 +362,8 @@ public class GameObjectEditor
             //launch warning and set sprite selection to null
         }
     }
+
+    #endregion
 
     void SaveAsScriptableAsset()
     {
