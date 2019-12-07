@@ -5,14 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-public enum LayerTypes
-{
-    Environment,
-    StartingObjects,
-    Enemies,
-    Players
-}
-
 public struct LevelObjectsDisplay
 {
     public string mObjectName;
@@ -37,7 +29,7 @@ public class LevelEditor : IBindable
     int mCellSize = 64;
     int mMinCellSize = 16;
     Level mActiveLevel;
-    LayerTypes mActiveLayer;
+    Level.LayerTypes mActiveLayer;
     bool mShowAll;
     VisualElement mLevelData;
     VisualElement mEditorMain;
@@ -155,7 +147,7 @@ public class LevelEditor : IBindable
         GUILayout.Space(100);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Current Draw Layer: ");
-        mActiveLayer = (LayerTypes)EditorGUILayout.EnumPopup(mActiveLayer);
+        mActiveLayer = (Level.LayerTypes)EditorGUILayout.EnumPopup(mActiveLayer);
         mShowAll = EditorGUILayout.Toggle("Show All", mShowAll);
         EditorGUILayout.EndHorizontal();
     }

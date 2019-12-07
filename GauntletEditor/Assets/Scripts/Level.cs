@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class Level : GameScriptable
 {
-    public string mName;
+
+    public enum LayerTypes
+    {
+        Environment,
+        StartingObjects,
+        Enemies,
+        Players
+    }
+
     public int mRows;
     public int mColumns;
     public float mTime;
