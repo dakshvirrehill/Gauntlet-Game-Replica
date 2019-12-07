@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AssetMetaData : GameScriptable
+public class AssetMetaData : ScriptableObject
 {
     public enum AssetType
     {
@@ -13,6 +13,7 @@ public class AssetMetaData : GameScriptable
         PrefabAsset
     }
     public AssetType mType;
+    public string mAssetUnityGUID;
     public string mAssetFilePath;
     public string mGUID;
 }
