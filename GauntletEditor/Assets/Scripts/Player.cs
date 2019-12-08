@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class Player : GameScriptable
 {
-    
+    public override void Init()
+    {
+        mType = ObjectType.Player;
+    }
 }

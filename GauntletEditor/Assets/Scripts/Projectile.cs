@@ -10,4 +10,9 @@ public class Projectile : GameScriptable
     public int mPoolCount;
     [HideInInspector]
     public List<AnimationData> mProjectileAnimation;
+
+    public override void Init()
+    {
+        mType = ObjectType.Projectile;
+    }
 }

@@ -10,4 +10,9 @@ public class Item : GameScriptable
         TempType2,
         TempType3
     }
+
+    public override void Init()
+    {
+        mType = ObjectType.Item;
+    }
 }

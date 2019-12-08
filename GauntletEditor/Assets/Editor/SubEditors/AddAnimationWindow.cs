@@ -34,12 +34,10 @@ public class AddAnimationWindow : EditorWindow
 
     void OnGUI()
     {
-        mAnimationScroll = EditorGUILayout.BeginScrollView(mAnimationScroll, GUILayout.Width(500), GUILayout.Height(450));
-        EditorGUILayout.BeginHorizontal();
-        mAnimationData.mAnimationName = EditorGUILayout.TextField("Name: ", mAnimationData.mAnimationName);
-        mAnimationData.mAnimSpeed = EditorGUILayout.Slider(mAnimationData.mAnimSpeed, 0, 50);
-        EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginVertical();
+        mAnimationData.mAnimationName = EditorGUILayout.TextField("Name: ", mAnimationData.mAnimationName);
+        mAnimationData.mAnimSpeed = EditorGUILayout.Slider("Animation Speed: ", mAnimationData.mAnimSpeed, 0, 50);
+        mAnimationScroll = EditorGUILayout.BeginScrollView(mAnimationScroll, GUILayout.Width(500), GUILayout.Height(450));
         if (Event.current.commandName == "ObjectSelectorUpdated" && mObjectPickerId == EditorGUIUtility.GetObjectPickerControlID())
         {
             Sprite a = (Sprite)EditorGUIUtility.GetObjectPickerObject();
@@ -68,9 +66,7 @@ public class AddAnimationWindow : EditorWindow
             }
         }
         mAnimations.DoLayoutList();
-        EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView();
-        EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("Save Animation"))
         {
             if(!mIsPlayer)
@@ -84,7 +80,7 @@ public class AddAnimationWindow : EditorWindow
                 mWindow.Close();
             }
         }
-        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
     }
 
     void UpdateAnimationList(Rect aRect, int aIx, bool aIsActive, bool aIsFocused)

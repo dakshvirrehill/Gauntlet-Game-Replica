@@ -199,6 +199,7 @@ public class GameObjectEditor : IBindable
             EditorUtility.SetDirty(mActiveGameObjectAsset);
             AssetDatabase.SaveAssets();
             mActiveGameObjectAsset = null;
+            mNameField.value = "";
         }
     }
 
@@ -315,6 +316,7 @@ public class GameObjectEditor : IBindable
         SaveCurrentActiveAsset();
 
         mActiveGameObjectAsset = (GameScriptable)ScriptableObject.CreateInstance(aAssetType);
+        mActiveGameObjectAsset.Init();
         mActiveGameObjectAsset.mName = mNameField.value;
         AssetDatabase.CreateAsset(mActiveGameObjectAsset, aAssetFolder[0] + "/" + mNameField.value + ".asset");
         mSelectionField.value = mActiveGameObjectAsset;
@@ -371,6 +373,7 @@ public class GameObjectEditor : IBindable
                     StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
                     aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
                     aTempObj.mDimensions = new Rect(pNewSprite.rect.x, (pNewSprite.texture.height - pNewSprite.rect.y), pNewSprite.rect.width, pNewSprite.rect.height);
+                    aTempObj.mDisplaySprite = pNewSprite;
                     Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(pNewSprite.texture));
                     for(int aI = 0; aI < aAllSprites.Length; aI ++)
                     {
@@ -477,10 +480,13 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Enemy:
                 mInstance.mEnemyAnimations.Add(pData);
                 EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
+                AssetDatabase.SaveAssets();
                 break;
             case GameObjectType.Projectile:
                 ((Projectile)mInstance.mActiveGameObjectAsset).mProjectileAnimation.Add(pData);
+                mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
                 EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
+                AssetDatabase.SaveAssets();
                 break;
         }
     }

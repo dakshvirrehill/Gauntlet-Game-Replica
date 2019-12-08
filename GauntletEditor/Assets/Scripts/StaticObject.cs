@@ -10,4 +10,9 @@ public class StaticObject : GameScriptable
     public int mSpriteIndex;
     [HideInInspector]
     public Rect mDimensions;
+
+    public override void Init()
+    {
+        mType = ObjectType.StaticObject;
+    }
 }

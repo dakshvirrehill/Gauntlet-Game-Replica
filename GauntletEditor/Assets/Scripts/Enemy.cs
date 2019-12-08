@@ -10,4 +10,10 @@ public class Enemy : GameScriptable
         CloseRangeAttacker,
         ProjectileThrower
     }
+
+    public override void Init()
+    {
+        mType = ObjectType.Enemy;
+    }
+
 }

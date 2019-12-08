@@ -3,6 +3,7 @@
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="assetData">
+    <uieed:EnumField name ="gobj_layer" class ="enumField" type ="" label="Render Layer" />
     <uieed:EnumField name ="item_type" class ="enumField" type ="" label ="Item Type"/>
     <uieed:ObjectField name ="item_collect_sound" class ="objectField" allow-scene-objects="false" label="Collect Sound"/>
     <uieed:ObjectField name ="item_idle_sprite" class ="objectField" allow-scene-objects="false" label="Idle Sprite"/>

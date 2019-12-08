@@ -10,12 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07ad14815db9bb3418ccfc5d0e6675ed, type: 3}
-  m_Name: NewProj
+  m_Name: Test1
   m_EditorClassIdentifier: 
   mIsPrefab: 0
   mColliderType: 0
   mIsTrigger: 0
-  mName: NewProj
+  mName: Test1
   mRenderLayer: 3
-  mSpeed: 7.76392
-  mPoolCount: 11
+  mType: 3
+  mDisplaySprite: {fileID: -1229858627709956937, guid: bfcf2e62fde23844eb11486ed1e84b69,
+    type: 3}
+  mBrushId: -1
+  mSpeed: 9.906459
+  mPoolCount: 20

@@ -10,18 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5949f0df2435cc419ef0c0d7c2b27fb, type: 3}
-  m_Name: MyFirstWall
+  m_Name: hdd
   m_EditorClassIdentifier: 
   mIsPrefab: 0
-  mColliderType: 1
+  mColliderType: 0
   mIsTrigger: 0
-  mName: MyFirstWall
+  mName: hdd
   mRenderLayer: 0
+  mType: 5
+  mDisplaySprite: {fileID: -38836230159333514, guid: 2439332a10b084e43b3670f1578ade3b,
+    type: 3}
+  mBrushId: -1
   mTextureGUID: 2439332a10b084e43b3670f1578ade3b
-  mSpriteIndex: 16
+  mSpriteIndex: 32
   mDimensions:
     serializedVersion: 2
-    x: 320
-    y: 128
+    x: 64
+    y: 256
     width: 64
     height: 64

@@ -11,6 +11,15 @@ public struct AnimationData
 }
 public class GameScriptable : ScriptableObject
 {
+    public enum ObjectType {
+        Enemy,
+        Item,
+        Player,
+        Projectile,
+        SpawnFactory,
+        StaticObject
+    }
+
     public enum ColliderType
     {
         None,
@@ -27,4 +36,12 @@ public class GameScriptable : ScriptableObject
     public string mName;
     [HideInInspector]
     public Level.LayerTypes mRenderLayer;
+    [HideInInspector]
+    public ObjectType mType;
+    [HideInInspector]
+    public Sprite mDisplaySprite;
+    [HideInInspector]
+    public int mBrushId = -1;
+    public virtual void Init() { }
+
 }

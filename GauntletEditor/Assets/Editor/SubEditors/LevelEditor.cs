@@ -5,13 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-public struct LevelObjectsDisplay
-{
-    public string mObjectName;
-    public Sprite mDisplaySprite;
-    public GameScriptable mScriptableObject;
-}
-
 public class LevelEditor : IBindable
 {
     static LevelEditor mInstance;
@@ -34,10 +27,9 @@ public class LevelEditor : IBindable
     VisualElement mLevelData;
     VisualElement mEditorMain;
     IMGUIContainer mMapContainer;
-
-    List<LevelObjectsDisplay> mAllPlaceableObjects;
-    List<Vector2Int> mPosToDraw;
-    List<int> mPosToPick;
+    Dictionary<Level.LayerTypes, List<GameScriptable>> mBrushes;
+    int mActiveBrushesCount = 0;
+    int mActiveBrushId = -1;
     static void CreateInstance()
     {
         if(mInstance == null)
@@ -59,6 +51,15 @@ public class LevelEditor : IBindable
     void CreateReorderableList()
     {
         mAllLevels = new List<Level>();
+        string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
+        foreach(string aCurLevelGUID in aCurLevels)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aCurLevelGUID);
+            if(AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(Level))
+            {
+                mAllLevels.Add(AssetDatabase.LoadAssetAtPath<Level>(aPath));
+            }
+        }
         mLevelList = new ReorderableList(mAllLevels, typeof(Level));
         mLevelList.drawHeaderCallback = (Rect aRect) => {
             EditorGUI.LabelField(aRect, "Current Levels In Order");
@@ -84,19 +85,31 @@ public class LevelEditor : IBindable
         mLevelData.Q<ObjectField>("gameplay_music").objectType = typeof(AudioClip);
         mLevelData.Q<Button>("level_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mMapContainer = mLevelData.Q<IMGUIContainer>("level_map");
-        mAllPlaceableObjects = new List<LevelObjectsDisplay>();
-        LevelObjectsDisplay aStartPoint = new LevelObjectsDisplay();
-        mPosToDraw = new List<Vector2Int>();
-        mPosToPick = new List<int>();
-        aStartPoint.mObjectName = "Start Point";
-        aStartPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/StartPoint.png");
-        mAllPlaceableObjects.Add(aStartPoint);
-        LevelObjectsDisplay aEndPoint = new LevelObjectsDisplay();
-        aEndPoint.mObjectName = "End Point";
-        aEndPoint.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GameAssets/Asset Files/EndPoint.png");
-        mAllPlaceableObjects.Add(aEndPoint);
+        mActiveBrushId = -1;
+        GetAllScriptableObjects();
         mMapContainer.onGUIHandler = LevelMapOnGUI;
         mMapContainer.RegisterCallback<MouseUpEvent>(ClickGrid);
+    }
+
+    void GetAllScriptableObjects()
+    {
+        string[] aAllAssetGUIDs = AssetDatabase.FindAssets("", new[] { "Assets/ScriptableObjects/GameObjects" });
+        mBrushes = new Dictionary<Level.LayerTypes, List<GameScriptable>>(aAllAssetGUIDs.Length)
+        {
+            {Level.LayerTypes.Environment, new List<GameScriptable>() },
+            {Level.LayerTypes.StaticObjects, new List<GameScriptable>() },
+            {Level.LayerTypes.Enemies, new List<GameScriptable>() },
+            {Level.LayerTypes.Players, new List<GameScriptable>() }
+        };
+        foreach (string aAssetGUID in aAllAssetGUIDs)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUID);
+            GameScriptable aAsset = AssetDatabase.LoadAssetAtPath<GameScriptable>(aPath);
+            if(aAsset != null)
+            {
+                mBrushes[aAsset.mRenderLayer].Add(aAsset);
+            }
+        }
     }
 
     #region IMGUI
@@ -114,9 +127,9 @@ public class LevelEditor : IBindable
         ZoomInOut();
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
-        mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos,true,true, GUILayout.Width(mLevelMapScrollerSize.x), GUILayout.Height(mLevelMapScrollerSize.y));
         if(mActiveLevel != null)
         {
+            mLevelMapGUIScrollPos = EditorGUILayout.BeginScrollView(mLevelMapGUIScrollPos, true, true, GUILayout.Width(mLevelMapScrollerSize.x), GUILayout.Height(mLevelMapScrollerSize.y));
             EditorGUILayout.LabelField("", GUILayout.Width(mActiveLevel.mColumns * mCellSize + 10), GUILayout.Height(mActiveLevel.mRows * mCellSize + 10));
             for (int aI = 0; aI <= mActiveLevel.mRows; aI ++)
             {
@@ -126,9 +139,13 @@ public class LevelEditor : IBindable
             {
                 EditorGUI.DrawRect(new Rect(aI * mCellSize, 0, 2, mActiveLevel.mRows * mCellSize), new Color(0.9245283f, 0.8049799f, 0.6585084f));
             }
-            foreach(Vector2Int aPositions in mPosToDraw)
+            if(!mShowAll)
             {
-                EditorGUI.DrawRect(new Rect(aPositions.x * mCellSize, aPositions.y * mCellSize, mCellSize, mCellSize), Color.white);
+                RenderLayerOnly();
+            }
+            else
+            {
+                RenderAll();
             }
             EditorGUILayout.EndScrollView();
             GUILayout.Space(20);
@@ -136,6 +153,51 @@ public class LevelEditor : IBindable
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
+    }
+
+    void RenderAll()
+    {
+        //if(mActiveLevel.mLayerVsScriptable.ContainsKey(Level.LayerTypes.Environment))
+        //{
+        //    foreach(GameScriptable aScriptable in mActiveLevel.mLayerVsScriptable[Level.LayerTypes.Environment])
+        //    {
+        //        DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+        //    }
+        //}
+        //will change design as this doesn't guarantee proper rendering in tool right now
+        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        {
+            foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+            {
+                DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+            }
+        }
+    }
+
+    void RenderLayerOnly()
+    {
+        if (mActiveLayer == Level.LayerTypes.Players)
+        {
+            if(mActiveLevel.mStartPosition.mWorldPosition.x != -1)
+            {
+                DrawTexturePreview(new Rect(mActiveLevel.mStartPosition.mWorldPosition.x * mCellSize, mActiveLevel.mStartPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mStartPosition.mDisplaySprite);
+            }
+            if(mActiveLevel.mEndPosition.mWorldPosition.x != -1)
+            {
+                DrawTexturePreview(new Rect(mActiveLevel.mEndPosition.mWorldPosition.x * mCellSize, mActiveLevel.mEndPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mEndPosition.mDisplaySprite);
+            }
+        }
+
+        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        {
+            foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+            {
+                if (aScriptable.mRenderLayer == mActiveLayer)
+                {
+                    DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                }
+            }
+        }
     }
 
     void ZoomInOut()
@@ -147,7 +209,13 @@ public class LevelEditor : IBindable
         GUILayout.Space(100);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Current Draw Layer: ");
-        mActiveLayer = (Level.LayerTypes)EditorGUILayout.EnumPopup(mActiveLayer);
+        Level.LayerTypes aLayer = (Level.LayerTypes)EditorGUILayout.EnumPopup(mActiveLayer);
+        if(aLayer != mActiveLayer)
+        {
+            mActiveLayer = aLayer;
+            mActiveBrushId = -1;
+            mActiveBrushesCount = 0;
+        }
         mShowAll = EditorGUILayout.Toggle("Show All", mShowAll);
         EditorGUILayout.EndHorizontal();
     }
@@ -159,17 +227,47 @@ public class LevelEditor : IBindable
         EditorGUILayout.BeginVertical();
         EditorGUILayout.LabelField("Game Objects", GUILayout.Width(mPlaceableObjectsScrollerSize.x));
         GUILayout.Space(10);
-        int aI = 0;
-        foreach(int aPos in mPosToPick)
+        mActiveBrushesCount = 0;
+        if(mActiveLayer == Level.LayerTypes.Players)
         {
-            EditorGUI.DrawRect(new Rect(10, aPos * (mCellSize + 25) + 45, mCellSize, mCellSize), Color.white);
-        }
-        foreach (LevelObjectsDisplay aDisplayData in mAllPlaceableObjects)
-        {
-            EditorGUILayout.LabelField(aDisplayData.mObjectName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
+            EditorGUILayout.LabelField(mActiveLevel.mStartPosition.mDisplayName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
             GUILayout.Space(mCellSize + 5);
-            DrawTexturePreview(new Rect(10, aI * (mCellSize + 25) + 45, mCellSize, mCellSize), aDisplayData.mDisplaySprite);
-            aI++;
+            Rect aImgRect = new Rect(10, mActiveBrushesCount * (mCellSize + 25) + 45, mCellSize, mCellSize);
+            DrawTexturePreview(aImgRect, mActiveLevel.mStartPosition.mDisplaySprite);
+            if (mActiveBrushesCount == mActiveBrushId)
+            {
+                EditorGUI.DrawRect(aImgRect, new Color(Color.green.r, Color.green.g, Color.green.b, 0.5f));
+            }
+            mActiveBrushesCount++;
+            aImgRect = new Rect(10, mActiveBrushesCount * (mCellSize + 25) + 45, mCellSize, mCellSize);
+            EditorGUILayout.LabelField(mActiveLevel.mEndPosition.mDisplayName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
+            GUILayout.Space(mCellSize + 5);
+            DrawTexturePreview(aImgRect, mActiveLevel.mEndPosition.mDisplaySprite);
+            if (mActiveBrushesCount == mActiveBrushId)
+            {
+                EditorGUI.DrawRect(aImgRect, new Color(Color.green.r, Color.green.g, Color.green.b, 0.5f));
+            }
+            mActiveBrushesCount++;
+        }
+        foreach (GameScriptable aBrush in mBrushes[mActiveLayer])
+        {
+            if(!aBrush.mIsPrefab)
+            {
+                EditorGUILayout.LabelField(aBrush.mName, GUILayout.Width(mPlaceableObjectsScrollerSize.x));
+                GUILayout.Space(mCellSize + 5);
+                Rect aImgRect = new Rect(10, mActiveBrushesCount * (mCellSize + 25) + 45, mCellSize, mCellSize);
+                DrawTexturePreview(aImgRect, aBrush.mDisplaySprite);
+                aBrush.mBrushId = mActiveBrushesCount;
+                if(aBrush.mBrushId == mActiveBrushId)
+                {
+                    EditorGUI.DrawRect(aImgRect, new Color(Color.green.r,Color.green.g,Color.green.b, 0.5f));
+                }
+                mActiveBrushesCount++;
+            }
+            else
+            {
+                aBrush.mBrushId = -1;
+            }
         }
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView();
@@ -216,7 +314,17 @@ public class LevelEditor : IBindable
 
     void AddNewLevel(ReorderableList pList)
     {
-        mActiveLevel = new Level();
+        SaveAsScriptableAsset();
+        mActiveLevel = ScriptableObject.CreateInstance<Level>();
+        mActiveLevel.Init();
+        mActiveLevel.mStartPosition.mDisplayName = "Start Point";
+        mActiveLevel.mStartPosition.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/StartPoint.png");
+        mActiveLevel.mStartPosition.mWorldPosition = mActiveLevel.mEndPosition.mWorldPosition = new Vector2Int(-1, -1);
+        mActiveLevel.mEndPosition.mDisplayName = "End Point";
+        mActiveLevel.mEndPosition.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/EndPoint.png");
+        string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
+        int aLevelId = aCurLevels.Length + 1;
+        AssetDatabase.CreateAsset(mActiveLevel, "Assets/ScriptableObjects/Level Data/Level" + aLevelId + ".asset");
         mAllLevels.Add(mActiveLevel);
         pList.index = pList.list.IndexOf(mActiveLevel);
         SetupNewLevel();
@@ -224,8 +332,21 @@ public class LevelEditor : IBindable
 
     void SelectLevel(ReorderableList pList)
     {
+        SaveAsScriptableAsset();
         mActiveLevel = (Level)pList.list[pList.index];
         SetupNewLevel();
+    }
+
+    GameScriptable GetActiveBrushObject()
+    {
+        foreach (GameScriptable aBrush in mBrushes[mActiveLayer])
+        {
+            if(aBrush.mBrushId == mActiveBrushId)
+            {
+                return aBrush;
+            }
+        }
+        return null;
     }
 
     void ClickGrid(MouseUpEvent pEvent)
@@ -240,13 +361,40 @@ public class LevelEditor : IBindable
                 {
                     return;
                 }
-                if(mPosToDraw.Contains(actP))
+
+                if(mActiveBrushId == -1)
                 {
-                    mPosToDraw.Remove(actP);
+                    return;
+                }
+                if(mActiveLayer == Level.LayerTypes.Players && mActiveBrushId <= 1)
+                {
+                    if(mActiveBrushId == 0)
+                    {
+                        mActiveLevel.SetResetStartPosition(actP);
+                    }
+                    else
+                    {
+                        mActiveLevel.SetResetEndPosition(actP);
+                    }
                 }
                 else
                 {
-                    mPosToDraw.Add(actP);
+                    GameScriptable aObject = GetActiveBrushObject();
+                    if (aObject != null)
+                    {
+                        if(mActiveLevel.IsScriptablePresent(actP,aObject))
+                        {
+                            mActiveLevel.RemoveScriptable(actP, aObject);
+                        }
+                        else
+                        {
+                            if(!mActiveLevel.IsLayerObjectPresent(actP, mActiveLayer))
+                            {
+                                mActiveLevel.AddScriptable(actP, aObject);
+                            }
+                        }
+                    }
+
                 }
                 GauntletEditorMain.DoRepaint();
             }
@@ -257,18 +405,11 @@ public class LevelEditor : IBindable
             {
                 Vector2 postion = pEvent.localMousePosition + mPlaceableObjectsGUIScrollPos + new Vector2(0, -45);
                 int actP = (int)postion.y / (mCellSize + 25);
-                if(actP >= mAllPlaceableObjects.Count)
+                if(actP >= mActiveBrushesCount)
                 {
                     return;
                 }
-                if (mPosToPick.Contains(actP))
-                {
-                    mPosToPick.Remove(actP);
-                }
-                else
-                {
-                    mPosToPick.Add(actP);
-                }
+                mActiveBrushId = actP;
                 GauntletEditorMain.DoRepaint();
             }
         }
@@ -276,7 +417,12 @@ public class LevelEditor : IBindable
 
     void SaveAsScriptableAsset()
     {
-        Debug.Log("Save As Scriptable Asset Clicked");
+        if(mActiveLevel != null)
+        {
+            EditorUtility.SetDirty(mActiveLevel);
+            AssetDatabase.SaveAssets();
+            mActiveLevel = null;
+        }
     }
 
     #endregion
