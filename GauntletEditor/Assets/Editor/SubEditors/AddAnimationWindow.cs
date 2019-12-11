@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
+
 public class AddAnimationWindow : EditorWindow
 {
     static AddAnimationWindow mWindow;
@@ -23,7 +24,7 @@ public class AddAnimationWindow : EditorWindow
         mWindow.minSize = new Vector2(500, 500);
         mWindow.titleContent = new GUIContent("Add New Animation");
         mIsPlayer = pIsPlayer;
-        mWindow.mAnimationData.mSprites = new List<Sprite>();
+        mWindow.mAnimationData.mSprites = new SpriteList();
         mWindow.mAnimations = new ReorderableList(mWindow.mAnimationData.mSprites, typeof(Sprite));
         mWindow.mAnimations.drawHeaderCallback = (Rect aRect) => {
             EditorGUI.LabelField(aRect, "Animation Sprites");
@@ -53,6 +54,7 @@ public class AddAnimationWindow : EditorWindow
                     else
                     {
                         mAnimationData.mSprites.Add(a);
+                        mWindow.Repaint();
                     }
                 }
                 else
@@ -61,6 +63,7 @@ public class AddAnimationWindow : EditorWindow
                     if (mAnimationData.mTextureAssetGUID != null)
                     {
                         mAnimationData.mSprites.Add(a);
+                        mWindow.Repaint();
                     }
                 }
             }

@@ -165,7 +165,7 @@ public class LevelEditor : IBindable
         //    }
         //}
         //will change design as this doesn't guarantee proper rendering in tool right now
-        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        foreach (KeyValuePair<Vector2Int, GameScriptableList> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
         {
             foreach (GameScriptable aScriptable in aPlacedObjs.Value)
             {
@@ -188,7 +188,7 @@ public class LevelEditor : IBindable
             }
         }
 
-        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        foreach (KeyValuePair<Vector2Int, GameScriptableList> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
         {
             foreach (GameScriptable aScriptable in aPlacedObjs.Value)
             {

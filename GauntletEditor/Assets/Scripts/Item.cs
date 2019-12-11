@@ -6,12 +6,14 @@ public class Item : GameScriptable
 {
     public enum Type
     {
-        TempType1,
-        TempType2,
-        TempType3
+        HealthBoost,
+        ScoreMultiplier,
+        Invincibility
     }
 
     public string mTextureGUID;
+    public Type mItemType;
+
 
     public override void Init()
     {
