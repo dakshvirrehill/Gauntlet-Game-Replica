@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class LayerTypesList : List<Level.LayerTypes> { }
+
+[System.Serializable]
+public class GameScriptableList : List<GameScriptable> { }
+[System.Serializable]
+public class PositionsVsLayerTypesDict : Dictionary<Vector2Int, LayerTypesList> { }
+[System.Serializable]
+public class PositionsVsGameScriptableDict : Dictionary<Vector2Int, GameScriptableList> { }
+
 public class Level : ScriptableObject
 {
     public enum LayerTypes
@@ -31,8 +41,10 @@ public class Level : ScriptableObject
     public GamePositions mStartPosition;
     [HideInInspector]
     public GamePositions mEndPosition;
-    public Dictionary<Vector2Int, List<LayerTypes>> mLevelData;
-    public Dictionary<Vector2Int, List<GameScriptable>> mLevelDataScriptable;
+    public PositionsVsLayerTypesDict mLevelData;
+    public PositionsVsGameScriptableDict mLevelDataScriptable;
+    //public Dictionary<Vector2Int, List<LayerTypes>> mLevelData;
+    //public Dictionary<Vector2Int, List<GameScriptable>> mLevelDataScriptable;
     //public Dictionary<LayerTypes, List<GameScriptable>> mLayerVsScriptable;
     public void Init()
     {
@@ -40,8 +52,8 @@ public class Level : ScriptableObject
         mColumns = 32;
         mRows = 32;
         mTime = 60;
-        mLevelData = new Dictionary<Vector2Int, List<LayerTypes>>();
-        mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
+        mLevelData = new PositionsVsLayerTypesDict();
+        mLevelDataScriptable = new PositionsVsGameScriptableDict();
         //mLayerVsScriptable = new Dictionary<LayerTypes, List<GameScriptable>>();
     }
 
@@ -83,20 +95,20 @@ public class Level : ScriptableObject
     {
         if(mLevelData == null)
         {
-            mLevelData = new Dictionary<Vector2Int, List<LayerTypes>>();
+            mLevelData = new PositionsVsLayerTypesDict();
         }
         if(!mLevelData.ContainsKey(pPosition))
         {
-            mLevelData.Add(pPosition, new List<LayerTypes>());
+            mLevelData.Add(pPosition, new LayerTypesList());
         }
         mLevelData[pPosition].Add(pObject.mRenderLayer);
         if(mLevelDataScriptable == null)
         {
-            mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
+            mLevelDataScriptable = new PositionsVsGameScriptableDict();
         }
         if(!mLevelDataScriptable.ContainsKey(pPosition))
         {
-            mLevelDataScriptable.Add(pPosition, new List<GameScriptable>());
+            mLevelDataScriptable.Add(pPosition, new GameScriptableList());
         }
         mLevelDataScriptable[pPosition].Add(pObject);
         //if(!mLayerVsScriptable.ContainsKey(pObject.mRenderLayer))
