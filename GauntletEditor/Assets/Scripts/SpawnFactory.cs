@@ -8,4 +8,8 @@ public class SpawnFactory : GameScriptable
     {
         mType = ObjectType.SpawnFactory;
     }
+
+    [HideInInspector]
+    public string mTextureGUID;
+
 }

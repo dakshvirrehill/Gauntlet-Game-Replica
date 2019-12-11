@@ -13,7 +13,8 @@ public class Item : GameScriptable
 
     public string mTextureGUID;
     public Type mItemType;
-
+    public string mSoundGUID;
+    public AudioClip mItemCollectSound;
 
     public override void Init()
     {

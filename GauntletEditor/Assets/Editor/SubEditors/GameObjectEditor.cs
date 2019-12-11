@@ -40,6 +40,7 @@ public class GameObjectEditor : IBindable
 
     #region Item Elements
     ObjectField mItemSprite;
+    ObjectField mItemSound;
     EnumField mItemType;
     #endregion
 
@@ -59,6 +60,11 @@ public class GameObjectEditor : IBindable
         {
             mInstance = new GameObjectEditor();
         }
+    }
+
+    public static GameScriptable GetCurrentScriptable()
+    {
+        return mInstance.mActiveGameObjectAsset;
     }
 
     public static VisualElement CreateNewGameObjectEditorUI()
@@ -134,7 +140,7 @@ public class GameObjectEditor : IBindable
                 mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
                 mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
                 mItemSprite.objectType = typeof(Sprite);
-                mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
+                mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue,mItemSprite));
                 break;
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
@@ -181,7 +187,7 @@ public class GameObjectEditor : IBindable
                 mCurrentObjectElement = aAsset.CloneTree();
                 mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
                 mSObjSprite.objectType = typeof(Sprite);
-                mSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
+                mSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue, mSObjSprite));
                 mColliderType = mCurrentObjectElement.Q<EnumField>("static_object_collider");
                 mColliderType.Init(GameScriptable.ColliderType.None);
                 mColliderType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnColliderTypeChanged((GameScriptable.ColliderType) aEv.newValue));
@@ -238,7 +244,7 @@ public class GameObjectEditor : IBindable
                 break;
             case GameObjectType.Pickable:
                 Item aItem = (Item)pSelectedObject;
-                ResetSpriteSelection(aItem);
+                GenHelpers.ResetSpriteSelection(mItemSprite);
                 mLayerType.value = aItem.mRenderLayer;
                 mItemType.value = aItem.mType;
                 mCurrentObjectElement.Bind(new SerializedObject(aItem));
@@ -260,7 +266,7 @@ public class GameObjectEditor : IBindable
                 break;
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
-                ResetSpriteSelection(aStObj);
+                GenHelpers.ResetSpriteSelection(mSObjSprite);
                 mLayerType.value = aStObj.mRenderLayer;
                 mColliderType.value = aStObj.mColliderType;
                 mCurrentObjectElement.Bind(new SerializedObject(aStObj));
@@ -359,87 +365,6 @@ public class GameObjectEditor : IBindable
         mActiveGameObjectAsset.mColliderType = pType;
     }
 
-    void OnStaticSpriteSelection(Sprite pNewSprite)
-    {
-        if(pNewSprite == null)
-        {
-            return;
-        }
-        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
-        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
-        {
-            ResetSpriteSelectionWithWarning();
-            return;
-        }
-        string[] aAssetGUIDs = AssetDatabase.FindAssets(pNewSprite.texture.name, aAssetFolder);
-        if (aAssetGUIDs.Length > 0)
-        {
-            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
-            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
-            {
-                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
-                if(aCurrentAssetData.mType == AssetMetaData.AssetType.TextureAsset)
-                {
-                    if (mActiveType == GameObjectType.StaticObject)
-                    {
-                        StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
-                        aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
-                        aTempObj.mDisplaySprite = pNewSprite;
-                    }
-                    else if(mActiveType == GameObjectType.Pickable)
-                    {
-                        Item aTempObj = (Item)mActiveGameObjectAsset;
-                        aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
-                        aTempObj.mDisplaySprite = pNewSprite;
-                    }
-                }
-                else
-                {
-                    ResetSpriteSelectionWithWarning();
-                    return;
-                }
-            }
-            else
-            {
-                ResetSpriteSelectionWithWarning();
-                return;
-            }
-        }
-        else
-        {
-            ResetSpriteSelectionWithWarning();
-            return;
-        }
-    }
-
-    void ResetSpriteSelectionWithWarning()
-    {
-        EditorUtility.DisplayDialog("Warning Sprite Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning the sprite to a Game Object", "Okay");
-        if(mActiveType == GameObjectType.StaticObject)
-        {
-            ResetSpriteSelection((StaticObject)mActiveGameObjectAsset);
-        }
-        else
-        {
-            ResetSpriteSelection((Item)mActiveGameObjectAsset);
-        }
-    }
-
-    void ResetSpriteSelection(Item pStObj)
-    {
-        if (!string.IsNullOrEmpty(pStObj.mTextureGUID))
-        {
-            mItemSprite.SetEnabled(false);
-            mItemSprite.value = pStObj.mDisplaySprite;
-            mItemSprite.SetEnabled(true);
-        }
-        else
-        {
-            mItemSprite.SetEnabled(false);
-            mItemSprite.value = null;
-            mItemSprite.SetEnabled(true);
-        }
-    }
     void OnItemTypeChanged(Item.Type pType)
     {
         if (mActiveGameObjectAsset == null)
@@ -457,24 +382,6 @@ public class GameObjectEditor : IBindable
         }
         aItem.mItemType = pType;
     }
-
-
-    void ResetSpriteSelection(StaticObject pStObj)
-    {
-        if (!string.IsNullOrEmpty(pStObj.mTextureGUID))
-        {
-            mSObjSprite.SetEnabled(false);
-            mSObjSprite.value = pStObj.mDisplaySprite;
-            mSObjSprite.SetEnabled(true);
-        }
-        else
-        {
-            mSObjSprite.SetEnabled(false);
-            mSObjSprite.value = null;
-            mSObjSprite.SetEnabled(true);
-        }
-    }
-
     #endregion
 
     void SaveAsScriptableAsset()
