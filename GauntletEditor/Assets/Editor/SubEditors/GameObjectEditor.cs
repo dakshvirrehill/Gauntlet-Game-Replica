@@ -38,6 +38,10 @@ public class GameObjectEditor : IBindable
     Vector2 mProjectileGUIScrollPos;
     #endregion
 
+    #region Item Elements
+    ObjectField mItemSprite;
+    #endregion
+
     #region Enemy Elements
     ReorderableList mEnemyAnimList;
     List<AnimationData> mEnemyAnimations;
@@ -126,7 +130,9 @@ public class GameObjectEditor : IBindable
                 EnumField aItemType = mCurrentObjectElement.Q<EnumField>("item_type");
                 aItemType.Init(Item.Type.TempType1);
                 mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
-                mCurrentObjectElement.Q<ObjectField>("item_idle_sprite").objectType = typeof(Sprite);
+                mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
+                mItemSprite.objectType = typeof(Sprite);
+                mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => OnStaticSpriteSelection((Sprite)aEv.newValue));
                 break;
             case GameObjectType.Projectile:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
@@ -370,18 +376,17 @@ public class GameObjectEditor : IBindable
                 AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
                 if(aCurrentAssetData.mType == AssetMetaData.AssetType.TextureAsset)
                 {
-                    StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
-                    aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
-                    aTempObj.mDimensions = new Rect(pNewSprite.rect.x, (pNewSprite.texture.height - pNewSprite.rect.y), pNewSprite.rect.width, pNewSprite.rect.height);
-                    aTempObj.mDisplaySprite = pNewSprite;
-                    Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(pNewSprite.texture));
-                    for(int aI = 0; aI < aAllSprites.Length; aI ++)
+                    if (mActiveType == GameObjectType.StaticObject)
                     {
-                        if(pNewSprite.GetInstanceID() == aAllSprites[aI].GetInstanceID())
-                        {
-                            aTempObj.mSpriteIndex = aI;
-                            break;
-                        }
+                        StaticObject aTempObj = (StaticObject)mActiveGameObjectAsset;
+                        aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
+                        aTempObj.mDisplaySprite = pNewSprite;
+                    }
+                    else if(mActiveType == GameObjectType.Pickable)
+                    {
+                        Item aTempObj = (Item)mActiveGameObjectAsset;
+                        aTempObj.mTextureGUID = aCurrentAssetData.mGUID;
+                        aTempObj.mDisplaySprite = pNewSprite;
                     }
                 }
                 else
@@ -406,16 +411,39 @@ public class GameObjectEditor : IBindable
     void ResetSpriteSelectionWithWarning()
     {
         EditorUtility.DisplayDialog("Warning Sprite Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning the sprite to a Game Object", "Okay");
-        ResetSpriteSelection((StaticObject)mActiveGameObjectAsset);
+        if(mActiveType == GameObjectType.StaticObject)
+        {
+            ResetSpriteSelection((StaticObject)mActiveGameObjectAsset);
+        }
+        else
+        {
+            ResetSpriteSelection((Item)mActiveGameObjectAsset);
+        }
     }
+
+    void ResetSpriteSelection(Item pStObj)
+    {
+        if (!string.IsNullOrEmpty(pStObj.mTextureGUID))
+        {
+            mItemSprite.SetEnabled(false);
+            mItemSprite.value = pStObj.mDisplaySprite;
+            mItemSprite.SetEnabled(true);
+        }
+        else
+        {
+            mItemSprite.SetEnabled(false);
+            mItemSprite.value = null;
+            mItemSprite.SetEnabled(true);
+        }
+    }
+
 
     void ResetSpriteSelection(StaticObject pStObj)
     {
         if (!string.IsNullOrEmpty(pStObj.mTextureGUID))
         {
-            Object[] aAllSprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(pStObj.mTextureGUID));
             mSObjSprite.SetEnabled(false);
-            mSObjSprite.value = aAllSprites[pStObj.mSpriteIndex];
+            mSObjSprite.value = pStObj.mDisplaySprite;
             mSObjSprite.SetEnabled(true);
         }
         else

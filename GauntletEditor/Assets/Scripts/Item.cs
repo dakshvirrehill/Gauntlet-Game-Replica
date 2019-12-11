@@ -11,6 +11,8 @@ public class Item : GameScriptable
         TempType3
     }
 
+    public string mTextureGUID;
+
     public override void Init()
     {
         mType = ObjectType.Item;
