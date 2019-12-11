@@ -40,6 +40,7 @@ public class GameObjectEditor : IBindable
 
     #region Item Elements
     ObjectField mItemSprite;
+    EnumField mItemType;
     #endregion
 
     #region Enemy Elements
@@ -127,8 +128,9 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Pickable:
                 aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PickableEditor.uxml");
                 mCurrentObjectElement = aAsset.CloneTree();
-                EnumField aItemType = mCurrentObjectElement.Q<EnumField>("item_type");
-                aItemType.Init(Item.Type.TempType1);
+                mItemType = mCurrentObjectElement.Q<EnumField>("item_type");
+                mItemType.Init(Item.Type.HealthBoost);
+                mItemType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnItemTypeChanged((Item.Type)aEv.newValue));
                 mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
                 mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
                 mItemSprite.objectType = typeof(Sprite);
@@ -236,7 +238,9 @@ public class GameObjectEditor : IBindable
                 break;
             case GameObjectType.Pickable:
                 Item aItem = (Item)pSelectedObject;
-                //do item specific things
+                ResetSpriteSelection(aItem);
+                mLayerType.value = aItem.mRenderLayer;
+                mItemType.value = aItem.mType;
                 mCurrentObjectElement.Bind(new SerializedObject(aItem));
                 break;
             case GameObjectType.Projectile:
@@ -244,7 +248,7 @@ public class GameObjectEditor : IBindable
                 mLayerType.value = aProjectile.mRenderLayer;
                 if (aProjectile.mProjectileAnimation == null)
                 {
-                    aProjectile.mProjectileAnimation = new List<AnimationData>();
+                    aProjectile.mProjectileAnimation = new AnimationDataList();
                 }
                 mProjectileAnimList.list = aProjectile.mProjectileAnimation;
                 mCurrentObjectElement.Bind(new SerializedObject(aProjectile));
@@ -435,6 +439,23 @@ public class GameObjectEditor : IBindable
             mItemSprite.value = null;
             mItemSprite.SetEnabled(true);
         }
+    }
+    void OnItemTypeChanged(Item.Type pType)
+    {
+        if (mActiveGameObjectAsset == null)
+        {
+            return;
+        }
+        Item aItem = (Item)mActiveGameObjectAsset;
+        if(aItem == null)
+        {
+            return;
+        }
+        if (pType == aItem.mItemType)
+        {
+            return;
+        }
+        aItem.mItemType = pType;
     }
 
 
