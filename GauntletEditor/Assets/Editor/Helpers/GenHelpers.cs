@@ -8,6 +8,155 @@ using UnityEditor.UIElements;
 
 public class GenHelpers
 {
+    static void ShowSelectionWarning()
+    {
+        EditorUtility.DisplayDialog("Warning Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning to a Game Object", "Okay");
+    }
+
+    public static void OnAttackSoundSelection(AudioClip pAttackSound, ObjectField pField)
+    {
+        if (pAttackSound == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            ShowSelectionWarning();
+            ResetAttackSoundSelection(pField);
+            return;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pAttackSound.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                if (aCurrentAssetData.mType == AssetMetaData.AssetType.AudioAsset)
+                {
+                    Enemy aTmpObj = (Enemy)GameObjectEditor.GetCurrentScriptable();
+                    aTmpObj.mAttackSoundGUID = aCurrentAssetData.mGUID;
+                    aTmpObj.mAttackSound = pAttackSound;
+                }
+                else
+                {
+                    ShowSelectionWarning();
+                    ResetAttackSoundSelection(pField);
+                    return;
+                }
+            }
+            else
+            {
+                ShowSelectionWarning();
+                ResetAttackSoundSelection(pField);
+                return;
+            }
+        }
+        else
+        {
+            ShowSelectionWarning();
+            ResetAttackSoundSelection(pField);
+            return;
+        }
+
+    }
+    public static void OnDeathSoundSelection(AudioClip pDeathSound, ObjectField pField)
+    {
+        if (pDeathSound == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            ShowSelectionWarning();
+            ResetSpawnEnemySelection(pField);
+            return;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pDeathSound.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                if (aCurrentAssetData.mType == AssetMetaData.AssetType.AudioAsset)
+                {
+                    Enemy aTmpObj = (Enemy)GameObjectEditor.GetCurrentScriptable();
+                    aTmpObj.mDeathSoundGUID = aCurrentAssetData.mGUID;
+                    aTmpObj.mDeathSound = pDeathSound;
+                }
+                else
+                {
+                    ShowSelectionWarning();
+                    ResetDeathSoundSelection(pField);
+                    return;
+                }
+            }
+            else
+            {
+                ShowSelectionWarning();
+                ResetDeathSoundSelection(pField);
+                return;
+            }
+        }
+        else
+        {
+            ShowSelectionWarning();
+            ResetDeathSoundSelection(pField);
+            return;
+        }
+
+    }
+    public static void OnEnemyProjectileSelection(Projectile pProjectile, ObjectField pField)
+    {
+        if (pProjectile == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            ShowSelectionWarning();
+            ResetSpawnEnemySelection(pField);
+            return;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pProjectile.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                if (aCurrentAssetData.mType == AssetMetaData.AssetType.PrefabAsset)
+                {
+                    Enemy aTmpObj = (Enemy)GameObjectEditor.GetCurrentScriptable();
+                    aTmpObj.mProjectileGUID = aCurrentAssetData.mGUID;
+                    aTmpObj.mProjectile = pProjectile;
+                }
+                else
+                {
+                    ShowSelectionWarning();
+                    ResetProjectileSelection(pField);
+                    return;
+                }
+            }
+            else
+            {
+                ShowSelectionWarning();
+                ResetProjectileSelection(pField);
+                return;
+            }
+        }
+        else
+        {
+            ShowSelectionWarning();
+            ResetProjectileSelection(pField);
+            return;
+        }
+
+    }
     public static void OnSpawnEnemySelection(Enemy pEnemy, ObjectField pField)
     {
         if (pEnemy == null)
@@ -180,10 +329,6 @@ public class GenHelpers
             return;
         }
     }
-    static void ShowSelectionWarning()
-    {
-        EditorUtility.DisplayDialog("Warning Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning to a Game Object", "Okay");
-    }
     public static void ResetCollectSelection(ObjectField pField)
     {
         switch(GameObjectEditor.GetCurrentScriptable().mType)
@@ -252,7 +397,36 @@ public class GenHelpers
             pField.SetEnabled(true);
         }
     }
-
+    public static void ResetAttackSoundSelection(ObjectField pField)
+    {
+        Enemy aTem = (Enemy)GameObjectEditor.GetCurrentScriptable();
+        if (!string.IsNullOrEmpty(aTem.mAttackSoundGUID))
+        {
+            pField.SetEnabled(false);
+            pField.value = aTem.mAttackSound;
+            pField.SetEnabled(true);
+        }
+    }
+    public static void ResetDeathSoundSelection(ObjectField pField)
+    {
+        Enemy aTem = (Enemy)GameObjectEditor.GetCurrentScriptable();
+        if (!string.IsNullOrEmpty(aTem.mDeathSoundGUID))
+        {
+            pField.SetEnabled(false);
+            pField.value = aTem.mDeathSound;
+            pField.SetEnabled(true);
+        }
+    }
+    public static void ResetProjectileSelection(ObjectField pField)
+    {
+        Enemy aTem = (Enemy)GameObjectEditor.GetCurrentScriptable();
+        if (!string.IsNullOrEmpty(aTem.mProjectileGUID))
+        {
+            pField.SetEnabled(false);
+            pField.value = aTem.mProjectile;
+            pField.SetEnabled(true);
+        }
+    }
 
 
 

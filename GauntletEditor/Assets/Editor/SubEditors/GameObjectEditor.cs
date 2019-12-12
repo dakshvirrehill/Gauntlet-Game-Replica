@@ -53,6 +53,10 @@ public class GameObjectEditor : IBindable
     #region Enemy Elements
     ReorderableList mEnemyAnimList;
     Vector2 mEnemyGUIScrollPos;
+    ObjectField mEnAttackSound;
+    ObjectField mEnDeathSound;
+    EnumField mEnemyType;
+    ObjectField mEnProjectile;
     #endregion
 
     public IBinding binding { get; set; }
@@ -80,14 +84,29 @@ public class GameObjectEditor : IBindable
         mInstance.mEditoryBlock = mInstance.mGameObjectEditorUI.Q<VisualElement>("gobj_editor_data");
         mInstance.mTypeEnum = mInstance.mEditoryBlock.Q<EnumField>("gobj_type");
         mInstance.mTypeEnum.Init(GameObjectType.None);
+        if(mInstance.mActiveGameObjectAsset != null)
+        {
+            mInstance.mTypeEnum.value = mInstance.mActiveType;
+        }
         mInstance.mTypeEnum.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => mInstance.OnTypeChanged((GameObjectType)aEv.newValue));
         mInstance.mSelectionField = mInstance.mEditoryBlock.Q<ObjectField>("scriptable_gobj_field");
         mInstance.mSelectionField.RegisterCallback<ChangeEvent<Object>>((aEv) => mInstance.OnSelectionChanged(aEv.newValue));
-        mInstance.mSelectionField.SetEnabled(false);
+        if(mInstance.mActiveGameObjectAsset == null)
+        {
+            mInstance.mSelectionField.SetEnabled(false);
+        }
         mInstance.mCreateNewButton = mInstance.mEditoryBlock.Q<Button>("gobj_create_new");
         mInstance.mCreateNewButton.RegisterCallback<MouseUpEvent>((aEv) => mInstance.OnCreateNewObject());
-        mInstance.mCreateNewButton.SetEnabled(false);
+        if(mInstance.mActiveGameObjectAsset == null)
+        {
+            mInstance.mCreateNewButton.SetEnabled(false);
+        }
         mInstance.mNameField = mInstance.mEditoryBlock.Q<TextField>("gobj_name");
+        if(mInstance.mActiveGameObjectAsset != null)
+        {
+            mInstance.mSelectionField.value = mInstance.mActiveGameObjectAsset;
+            mInstance.OnSelectionChanged(mInstance.mActiveGameObjectAsset);
+        }
         return mInstance.mGameObjectEditorUI;
     }
 
@@ -128,7 +147,7 @@ public class GameObjectEditor : IBindable
         }
         mCurrentObjectElement = null;
     }
-
+    #region Setup Region
     VisualTreeAsset SetUpPickable()
     {
         VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PickableEditor.uxml");
@@ -179,13 +198,19 @@ public class GameObjectEditor : IBindable
     {
         VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
         mCurrentObjectElement = aAsset.CloneTree();
-        mCurrentObjectElement.Q<ObjectField>("enemy_attack_sound").objectType = typeof(AudioClip);
-        mCurrentObjectElement.Q<ObjectField>("enemy_death_sound").objectType = typeof(AudioClip);
-        EnumField aEnemyType = mCurrentObjectElement.Q<EnumField>("enemy_type");
-        mCurrentObjectElement.Q<ObjectField>("enemy_projectile").objectType = typeof(Projectile);
-        aEnemyType.Init(Enemy.Type.Collider);
-        mEnemyAnimations = new List<AnimationData>();
-        mEnemyAnimList = new ReorderableList(mEnemyAnimations, typeof(AnimationData));
+        mEnAttackSound = mCurrentObjectElement.Q<ObjectField>("enemy_attack_sound");
+        mEnAttackSound.objectType = typeof(AudioClip);
+        mEnAttackSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnAttackSoundSelection((AudioClip)aEv.newValue, mEnAttackSound));
+        mEnDeathSound = mCurrentObjectElement.Q<ObjectField>("enemy_death_sound");
+        mEnDeathSound.objectType = typeof(AudioClip);
+        mEnDeathSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnDeathSoundSelection((AudioClip)aEv.newValue, mEnDeathSound));
+        mEnemyType = mCurrentObjectElement.Q<EnumField>("enemy_type");
+        mEnemyType.Init(Enemy.Type.Collider);
+        mEnemyType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnEnemyTypeChanged((Enemy.Type)aEv.newValue));
+        mEnProjectile = mCurrentObjectElement.Q<ObjectField>("enemy_projectile");
+        mEnProjectile.objectType = typeof(Projectile);
+        mEnProjectile.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnEnemyProjectileSelection((Projectile)aEv.newValue, mEnProjectile));
+        mEnemyAnimList = new ReorderableList(new List<AnimationData>(), typeof(AnimationData));
         mEnemyAnimList.drawHeaderCallback = (Rect aRect) =>
         {
             EditorGUI.LabelField(aRect, "Move Animation Sprites");
@@ -208,7 +233,6 @@ public class GameObjectEditor : IBindable
         mColliderType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnColliderTypeChanged((GameScriptable.ColliderType)aEv.newValue));
         return aAsset;
     }
-
     void CreateNewObjectVE()
     {
         VisualTreeAsset aAsset;
@@ -244,28 +268,56 @@ public class GameObjectEditor : IBindable
         mCurrentObjectElement.Q<Button>("gobj_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mEditoryBlock.Add(mCurrentObjectElement);
     }
+    #endregion
 
-    void SaveCurrentActiveAsset()
+    #region Selection Changed Setup
+    void SelectEnemy(Enemy pEnemy)
     {
-        if (mActiveGameObjectAsset != null)
+        mLayerType.value = pEnemy.mRenderLayer;
+        mEnemyType.value = pEnemy.mEnemyType;
+        GenHelpers.ResetDeathSoundSelection(mEnDeathSound);
+        GenHelpers.ResetAttackSoundSelection(mEnAttackSound);
+        GenHelpers.ResetProjectileSelection(mEnProjectile);
+        if (pEnemy.mEnemyAnimations == null)
         {
-            EditorUtility.SetDirty(mActiveGameObjectAsset);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            mEditoryBlock.Unbind();
-            mActiveGameObjectAsset = null;
-            mNameField.value = "";
+            pEnemy.mEnemyAnimations = new List<AnimationData>();
         }
+        mEnemyAnimList.list = pEnemy.mEnemyAnimations;
+        mEditoryBlock.Bind(new SerializedObject(pEnemy));
     }
-
-    void OnTypeChanged(GameObjectType pNewType)
+    void SelectPickable(Item pItem)
     {
-        SaveCurrentActiveAsset();
-        RemoveCurrentObjectVE();
-        mActiveType = pNewType;
-        SetObjectFieldType();
+        GenHelpers.ResetSpriteSelection(mItemSprite);
+        GenHelpers.ResetCollectSelection(mItemSound);
+        mLayerType.value = pItem.mRenderLayer;
+        mItemType.value = pItem.mItemType;
+        mEditoryBlock.Bind(new SerializedObject(pItem));
     }
-
+    void SelectProjectile(Projectile pProj)
+    {
+        mLayerType.value = pProj.mRenderLayer;
+        if (pProj.mProjectileAnimation == null)
+        {
+            pProj.mProjectileAnimation = new List<AnimationData>();
+        }
+        mProjectileAnimList.list = pProj.mProjectileAnimation;
+        mEditoryBlock.Bind(new SerializedObject(pProj));
+    }
+    void SelectStaticObject(StaticObject pObject)
+    {
+        GenHelpers.ResetSpriteSelection(mSObjSprite);
+        mLayerType.value = pObject.mRenderLayer;
+        mColliderType.value = pObject.mColliderType;
+        mEditoryBlock.Bind(new SerializedObject(pObject));
+    }
+    void SelectSpawnFactory(SpawnFactory pSpawnFactory)
+    {
+        mLayerType.value = pSpawnFactory.mRenderLayer;
+        GenHelpers.ResetSpawnEnemySelection(mSpawnEnemy);
+        GenHelpers.ResetSpriteSelection(mFactorySprite);
+        GenHelpers.ResetCollectSelection(mSpawnSound);
+        mEditoryBlock.Bind(new SerializedObject(pSpawnFactory));
+    }
     void OnSelectionChanged(Object pSelectedObject)
     {
         SaveCurrentActiveAsset();
@@ -279,46 +331,24 @@ public class GameObjectEditor : IBindable
         switch(mActiveType)
         {
             case GameObjectType.Enemy:
-                Enemy aEnemy = (Enemy)pSelectedObject;
-                //do enemy specific things like setting up the anim values
-                mEditoryBlock.Bind(new SerializedObject(aEnemy));
+                SelectEnemy((Enemy)mActiveGameObjectAsset);
                 break;
             case GameObjectType.Pickable:
-                Item aItem = (Item)pSelectedObject;
-                GenHelpers.ResetSpriteSelection(mItemSprite);
-                GenHelpers.ResetCollectSelection(mItemSound);
-                mLayerType.value = aItem.mRenderLayer;
-                mItemType.value = aItem.mType;
-                mEditoryBlock.Bind(new SerializedObject(aItem));
+                SelectPickable((Item)mActiveGameObjectAsset);
                 break;
             case GameObjectType.Projectile:
-                Projectile aProjectile = (Projectile)pSelectedObject;
-                mLayerType.value = aProjectile.mRenderLayer;
-                if (aProjectile.mProjectileAnimation == null)
-                {
-                    aProjectile.mProjectileAnimation = new List<AnimationData>();
-                }
-                mProjectileAnimList.list = aProjectile.mProjectileAnimation;
-                mEditoryBlock.Bind(new SerializedObject(aProjectile));
+                SelectProjectile((Projectile)mActiveGameObjectAsset);
                 break;
             case GameObjectType.SpawnFactory:
-                SpawnFactory aFactory = (SpawnFactory)pSelectedObject;
-                GenHelpers.ResetSpawnEnemySelection(mSpawnEnemy);
-                GenHelpers.ResetSpriteSelection(mFactorySprite);
-                GenHelpers.ResetCollectSelection(mSpawnSound);
-                mEditoryBlock.Bind(new SerializedObject(aFactory));
+                SelectSpawnFactory((SpawnFactory)mActiveGameObjectAsset);
                 break;
             case GameObjectType.StaticObject:
-                StaticObject aStObj = (StaticObject)pSelectedObject;
-                GenHelpers.ResetSpriteSelection(mSObjSprite);
-                mLayerType.value = aStObj.mRenderLayer;
-                mColliderType.value = aStObj.mColliderType;
-                mEditoryBlock.Bind(new SerializedObject(aStObj));
+                SelectStaticObject((StaticObject)mActiveGameObjectAsset);
                 break;
         }
         EditorUtility.SetDirty(mActiveGameObjectAsset);
     }
-
+    #endregion
     void OnCreateNewObject()
     {
         if(mActiveType == GameObjectType.None)
@@ -382,20 +412,26 @@ public class GameObjectEditor : IBindable
         mSelectionField.value = mActiveGameObjectAsset;
     }
 
+    #region Type Change Callbacks
+    void OnTypeChanged(GameObjectType pNewType)
+    {
+        SaveCurrentActiveAsset();
+        RemoveCurrentObjectVE();
+        mActiveType = pNewType;
+        SetObjectFieldType();
+    }
     void OnLayerChanged(Level.LayerTypes pType)
     {
-        if(mActiveGameObjectAsset == null)
+        if (mActiveGameObjectAsset == null)
         {
             return;
         }
-        if(pType == mActiveGameObjectAsset.mRenderLayer)
+        if (pType == mActiveGameObjectAsset.mRenderLayer)
         {
             return;
         }
         mActiveGameObjectAsset.mRenderLayer = pType;
     }
-
-    #region Static Objects Callbacks
     void OnColliderTypeChanged(GameScriptable.ColliderType pType)
     {
         if(mActiveGameObjectAsset == null)
@@ -408,7 +444,6 @@ public class GameObjectEditor : IBindable
         }
         mActiveGameObjectAsset.mColliderType = pType;
     }
-
     void OnItemTypeChanged(Item.Type pType)
     {
         if (mActiveGameObjectAsset == null)
@@ -426,12 +461,65 @@ public class GameObjectEditor : IBindable
         }
         aItem.mItemType = pType;
     }
+    void OnEnemyTypeChanged(Enemy.Type pType)
+    {
+        if (mActiveGameObjectAsset == null)
+        {
+            return;
+        }
+        Enemy aEnemy = (Enemy)mActiveGameObjectAsset;
+        if (aEnemy == null)
+        {
+            return;
+        }
+        if (pType == aEnemy.mEnemyType)
+        {
+            return;
+        }
+        aEnemy.mEnemyType = pType;
+
+    }
     #endregion
+
+    void SaveCurrentActiveAsset()
+    {
+        if (mActiveGameObjectAsset != null)
+        {
+            EditorUtility.SetDirty(mActiveGameObjectAsset);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            mEditoryBlock.Unbind();
+            mActiveGameObjectAsset = null;
+            mNameField.value = "";
+        }
+    }
+
+    bool IsDataValid()
+    {
+        if(mActiveGameObjectAsset == null)
+        {
+            return true;
+        }
+
+
+
+        return true;
+    }
 
     void SaveAsScriptableAsset()
     {
-        SaveCurrentActiveAsset();
-        mTypeEnum.value = GameObjectType.None;
+        if (IsDataValid())
+        {
+            SaveCurrentActiveAsset();
+            mTypeEnum.value = GameObjectType.None;
+        }
+        else
+        {
+            if(!EditorUtility.DisplayDialog("Some Required Values Are Missing",mActiveType.ToString() + " requires a few fields that you haven't filled. Please fill them before saving, or delete the asset.","Keep Editing","Delete Asset"))
+            {
+                //delete asset
+            }
+        }
     }
 
 
@@ -478,8 +566,10 @@ public class GameObjectEditor : IBindable
         switch (mInstance.mActiveType)
         {
             case GameObjectType.Enemy:
-                mInstance.mEnemyAnimations.Add(pData);
-                EditorUtility.SetDirty((Enemy)mInstance.mActiveGameObjectAsset);
+                Enemy aEnemy = (Enemy)mInstance.mActiveGameObjectAsset;
+                aEnemy.mEnemyAnimations.Add(pData);
+                mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
+                EditorUtility.SetDirty(aEnemy);
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)mInstance.mActiveGameObjectAsset;

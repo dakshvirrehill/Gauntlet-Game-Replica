@@ -3,6 +3,7 @@
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="assetData">
+    <uieed:EnumField name ="gobj_layer" class ="enumField" type ="" label="Render Layer" />
     <Slider label ="Move Speed" binding-path="mSpeed" name ="enemy_speed" class ="rowData" low-value="4" high-value="30" value="4"/>
     <uieed:ObjectField name ="enemy_attack_sound" class ="objectField" allow-scene-objects="false" label="Attack Sound"/>
     <uieed:ObjectField name ="enemy_death_sound" class ="objectField" allow-scene-objects="false" label="Death Sound"/>

@@ -10,10 +10,13 @@ public class Item : GameScriptable
         ScoreMultiplier,
         Invincibility
     }
-
+    [HideInInspector]
     public string mTextureGUID;
+    [HideInInspector]
     public Type mItemType;
+    [HideInInspector]
     public string mSoundGUID;
+    [HideInInspector]
     public AudioClip mItemCollectSound;
 
     public override void Init()
