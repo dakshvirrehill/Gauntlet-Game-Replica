@@ -15,5 +15,8 @@ public class Projectile : GameScriptable
     public override void Init()
     {
         mType = ObjectType.Projectile;
+        mSpeed = 4;
+        mPoolCount = 4;
+        mProjectileAnimation = new List<AnimationData>();
     }
 }
