@@ -12,13 +12,18 @@ public class PlayerEditor
     List<AnimationData> mAnimationData;
     ReorderableList mAnimationList;
     Vector2 mPlayerGUIScrollPos;
-
+    Player mActivePlayer;
     static void CreateInstance()
     {
         if(mInstance == null)
         {
             mInstance = new PlayerEditor();
         }
+    }
+
+    public static Player GetActivePlayer()
+    {
+        return mInstance.mActivePlayer;
     }
 
     public static VisualElement CreateNewPlayerEditorUI()

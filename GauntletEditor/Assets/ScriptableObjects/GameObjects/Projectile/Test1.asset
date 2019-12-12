@@ -18,8 +18,15 @@ MonoBehaviour:
   mName: Tefdhst1
   mRenderLayer: 3
   mType: 3
-  mDisplaySprite: {fileID: 8381111290613614903, guid: 1c0c47c07214b1340b9c9272f39d2940,
+  mDisplaySprite: {fileID: 3715899403775863448, guid: 1c0c47c07214b1340b9c9272f39d2940,
     type: 3}
   mBrushId: -1
   mSpeed: 19.026726
   mPoolCount: 13
+  mProjectileAnimation:
+  - mAnimationName: gdr
+    mAnimSpeed: 25.7
+    mTextureAssetGUID: 1c0c47c07214b1340b9c9272f39d2940
+    mSprites:
+    - {fileID: 3715899403775863448, guid: 1c0c47c07214b1340b9c9272f39d2940, type: 3}
+    - {fileID: 925038087268274908, guid: 1c0c47c07214b1340b9c9272f39d2940, type: 3}

@@ -9,7 +9,8 @@ public class Projectile : GameScriptable
     [HideInInspector]
     public int mPoolCount;
     [HideInInspector]
-    public AnimationDataList mProjectileAnimation;
+    [SerializeField]
+    public List<AnimationData> mProjectileAnimation;
 
     public override void Init()
     {

@@ -2,16 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class LayerTypesList : List<Level.LayerTypes> { }
-
-[System.Serializable]
-public class GameScriptableList : List<GameScriptable> { }
-[System.Serializable]
-public class PositionsVsLayerTypesDict : Dictionary<Vector2Int, LayerTypesList> { }
-[System.Serializable]
-public class PositionsVsGameScriptableDict : Dictionary<Vector2Int, GameScriptableList> { }
-
 public class Level : ScriptableObject
 {
     public enum LayerTypes
@@ -41,20 +31,17 @@ public class Level : ScriptableObject
     public GamePositions mStartPosition;
     [HideInInspector]
     public GamePositions mEndPosition;
-    public PositionsVsLayerTypesDict mLevelData;
-    public PositionsVsGameScriptableDict mLevelDataScriptable;
-    //public Dictionary<Vector2Int, List<LayerTypes>> mLevelData;
-    //public Dictionary<Vector2Int, List<GameScriptable>> mLevelDataScriptable;
-    //public Dictionary<LayerTypes, List<GameScriptable>> mLayerVsScriptable;
+    public Dictionary<Vector2Int, List<LayerTypes>> mLevelData;
+    public Dictionary<Vector2Int, List<GameScriptable>> mLevelDataScriptable;
+    public Dictionary<LayerTypes, List<Vector2Int>> mLayersVsPosition;
     public void Init()
     {
         mName = "Untitled Level";
         mColumns = 32;
         mRows = 32;
         mTime = 60;
-        mLevelData = new PositionsVsLayerTypesDict();
-        mLevelDataScriptable = new PositionsVsGameScriptableDict();
-        //mLayerVsScriptable = new Dictionary<LayerTypes, List<GameScriptable>>();
+        mLevelData = new Dictionary<Vector2Int, List<LayerTypes>>();
+        mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
     }
 
     public bool IsLayerObjectPresent(Vector2Int pPosition, LayerTypes pLayer)
@@ -95,27 +82,22 @@ public class Level : ScriptableObject
     {
         if(mLevelData == null)
         {
-            mLevelData = new PositionsVsLayerTypesDict();
+            mLevelData = new Dictionary<Vector2Int, List<LayerTypes>>();
         }
         if(!mLevelData.ContainsKey(pPosition))
         {
-            mLevelData.Add(pPosition, new LayerTypesList());
+            mLevelData.Add(pPosition, new List<LayerTypes>());
         }
         mLevelData[pPosition].Add(pObject.mRenderLayer);
         if(mLevelDataScriptable == null)
         {
-            mLevelDataScriptable = new PositionsVsGameScriptableDict();
+            mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
         }
         if(!mLevelDataScriptable.ContainsKey(pPosition))
         {
-            mLevelDataScriptable.Add(pPosition, new GameScriptableList());
+            mLevelDataScriptable.Add(pPosition, new List<GameScriptable>());
         }
         mLevelDataScriptable[pPosition].Add(pObject);
-        //if(!mLayerVsScriptable.ContainsKey(pObject.mRenderLayer))
-        //{
-        //    mLayerVsScriptable.Add(pObject.mRenderLayer, new List<GameScriptable>());
-        //}
-        //mLayerVsScriptable[pObject.mRenderLayer].Add(pObject);
     }
 
     public void RemoveScriptable(Vector2Int pPosition, GameScriptable pObject)
@@ -126,7 +108,6 @@ public class Level : ScriptableObject
         }
         mLevelData[pPosition].Remove(pObject.mRenderLayer);
         mLevelDataScriptable[pPosition].Remove(pObject);
-        //mLayerVsScriptable[pObject.mRenderLayer].Remove(pObject);
     }
 
     public void SetResetStartPosition(Vector2Int pPosition)

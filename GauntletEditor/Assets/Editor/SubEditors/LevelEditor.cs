@@ -157,19 +157,22 @@ public class LevelEditor : IBindable
 
     void RenderAll()
     {
-        //if(mActiveLevel.mLayerVsScriptable.ContainsKey(Level.LayerTypes.Environment))
-        //{
-        //    foreach(GameScriptable aScriptable in mActiveLevel.mLayerVsScriptable[Level.LayerTypes.Environment])
-        //    {
-        //        DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
-        //    }
-        //}
-        //will change design as this doesn't guarantee proper rendering in tool right now
-        foreach (KeyValuePair<Vector2Int, GameScriptableList> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        foreach(Level.LayerTypes aLayerTypes in System.Enum.GetValues(typeof(Level.LayerTypes)))
         {
-            foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+            foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
             {
-                DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                if(!mActiveLevel.mLevelData[aPlacedObjs.Key].Contains(aLayerTypes))
+                {
+                    continue;
+                }
+                foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+                {
+                    if(aScriptable.mRenderLayer == aLayerTypes)
+                    {
+                        DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -188,7 +191,7 @@ public class LevelEditor : IBindable
             }
         }
 
-        foreach (KeyValuePair<Vector2Int, GameScriptableList> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
         {
             foreach (GameScriptable aScriptable in aPlacedObjs.Value)
             {
@@ -421,6 +424,7 @@ public class LevelEditor : IBindable
         {
             EditorUtility.SetDirty(mActiveLevel);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             mActiveLevel = null;
         }
     }

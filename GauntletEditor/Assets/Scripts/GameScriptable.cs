@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class AnimationDataList : List<AnimationData> { }
-
-[System.Serializable]
-public class SpriteList : List<Sprite> { }
-
-[System.Serializable]
 public struct AnimationData
 {
     public string mAnimationName;
     public float mAnimSpeed;
     public string mTextureAssetGUID;
-    public SpriteList mSprites;
+    [SerializeField]
+    public List<Sprite> mSprites;
 }
 public class GameScriptable : ScriptableObject
 {

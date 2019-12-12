@@ -214,6 +214,7 @@ public class GameObjectEditor : IBindable
         {
             EditorUtility.SetDirty(mActiveGameObjectAsset);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             mGameObjectEditorUI.Unbind();
             mActiveGameObjectAsset = null;
             mNameField.value = "";
@@ -258,7 +259,7 @@ public class GameObjectEditor : IBindable
                 mLayerType.value = aProjectile.mRenderLayer;
                 if (aProjectile.mProjectileAnimation == null)
                 {
-                    aProjectile.mProjectileAnimation = new AnimationDataList();
+                    aProjectile.mProjectileAnimation = new List<AnimationData>();
                 }
                 mProjectileAnimList.list = aProjectile.mProjectileAnimation;
                 mGameObjectEditorUI.Bind(new SerializedObject(aProjectile));
@@ -440,14 +441,12 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Enemy:
                 mInstance.mEnemyAnimations.Add(pData);
                 EditorUtility.SetDirty((Enemy)mInstance.mActiveGameObjectAsset);
-                AssetDatabase.SaveAssets();
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)mInstance.mActiveGameObjectAsset;
                 aProjectile.mProjectileAnimation.Add(pData);
                 mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
                 EditorUtility.SetDirty(aProjectile);
-                AssetDatabase.SaveAssets();
                 break;
         }
     }

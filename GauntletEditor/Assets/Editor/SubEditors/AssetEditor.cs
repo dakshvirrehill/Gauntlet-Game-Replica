@@ -102,6 +102,7 @@ public class AssetEditor : IBindable
         {
             EditorUtility.SetDirty(mCurrentAssetData);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             mCurrentAssetData = null;
         }
         mSelectionField.value = null;
@@ -169,6 +170,7 @@ public class AssetEditor : IBindable
     {
         EditorUtility.SetDirty(mCurrentAssetData);
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
         mCurrentAssetData = null;
         mTypeOfAsset.value = AssetMetaData.AssetType.None;
     }
