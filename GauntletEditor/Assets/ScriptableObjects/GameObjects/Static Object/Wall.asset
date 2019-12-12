@@ -22,10 +22,3 @@ MonoBehaviour:
     type: 3}
   mBrushId: 0
   mTextureGUID: 2439332a10b084e43b3670f1578ade3b
-  mSpriteIndex: 17
-  mDimensions:
-    serializedVersion: 2
-    x: 384
-    y: 128
-    width: 64
-    height: 64

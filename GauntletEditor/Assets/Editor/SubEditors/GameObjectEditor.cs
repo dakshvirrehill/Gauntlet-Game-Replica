@@ -137,7 +137,9 @@ public class GameObjectEditor : IBindable
                 mItemType = mCurrentObjectElement.Q<EnumField>("item_type");
                 mItemType.Init(Item.Type.HealthBoost);
                 mItemType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnItemTypeChanged((Item.Type)aEv.newValue));
-                mCurrentObjectElement.Q<ObjectField>("item_collect_sound").objectType = typeof(AudioClip);
+                mItemSound = mCurrentObjectElement.Q<ObjectField>("item_collect_sound");
+                mItemSound.objectType = typeof(AudioClip);
+                mItemSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnCollectSoundSelection((AudioClip)aEv.newValue, mItemSound));
                 mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
                 mItemSprite.objectType = typeof(Sprite);
                 mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue,mItemSprite));
@@ -212,6 +214,7 @@ public class GameObjectEditor : IBindable
         {
             EditorUtility.SetDirty(mActiveGameObjectAsset);
             AssetDatabase.SaveAssets();
+            mGameObjectEditorUI.Unbind();
             mActiveGameObjectAsset = null;
             mNameField.value = "";
         }
@@ -240,14 +243,15 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Enemy:
                 Enemy aEnemy = (Enemy)pSelectedObject;
                 //do enemy specific things like setting up the anim values
-                mCurrentObjectElement.Bind(new SerializedObject(aEnemy));
+                mGameObjectEditorUI.Bind(new SerializedObject(aEnemy));
                 break;
             case GameObjectType.Pickable:
                 Item aItem = (Item)pSelectedObject;
                 GenHelpers.ResetSpriteSelection(mItemSprite);
+                GenHelpers.ResetCollectSelection(mItemSound);
                 mLayerType.value = aItem.mRenderLayer;
                 mItemType.value = aItem.mType;
-                mCurrentObjectElement.Bind(new SerializedObject(aItem));
+                mGameObjectEditorUI.Bind(new SerializedObject(aItem));
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)pSelectedObject;
@@ -257,19 +261,19 @@ public class GameObjectEditor : IBindable
                     aProjectile.mProjectileAnimation = new AnimationDataList();
                 }
                 mProjectileAnimList.list = aProjectile.mProjectileAnimation;
-                mCurrentObjectElement.Bind(new SerializedObject(aProjectile));
+                mGameObjectEditorUI.Bind(new SerializedObject(aProjectile));
                 break;
             case GameObjectType.SpawnFactory:
                 SpawnFactory aFactory = (SpawnFactory)pSelectedObject;
                 //do spawn factory specific things
-                mCurrentObjectElement.Bind(new SerializedObject(aFactory));
+                mGameObjectEditorUI.Bind(new SerializedObject(aFactory));
                 break;
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
                 GenHelpers.ResetSpriteSelection(mSObjSprite);
                 mLayerType.value = aStObj.mRenderLayer;
                 mColliderType.value = aStObj.mColliderType;
-                mCurrentObjectElement.Bind(new SerializedObject(aStObj));
+                mGameObjectEditorUI.Bind(new SerializedObject(aStObj));
                 break;
         }
         EditorUtility.SetDirty(mActiveGameObjectAsset);
@@ -435,13 +439,14 @@ public class GameObjectEditor : IBindable
         {
             case GameObjectType.Enemy:
                 mInstance.mEnemyAnimations.Add(pData);
-                EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
+                EditorUtility.SetDirty((Enemy)mInstance.mActiveGameObjectAsset);
                 AssetDatabase.SaveAssets();
                 break;
             case GameObjectType.Projectile:
-                ((Projectile)mInstance.mActiveGameObjectAsset).mProjectileAnimation.Add(pData);
+                Projectile aProjectile = (Projectile)mInstance.mActiveGameObjectAsset;
+                aProjectile.mProjectileAnimation.Add(pData);
                 mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
-                EditorUtility.SetDirty(mInstance.mActiveGameObjectAsset);
+                EditorUtility.SetDirty(aProjectile);
                 AssetDatabase.SaveAssets();
                 break;
         }

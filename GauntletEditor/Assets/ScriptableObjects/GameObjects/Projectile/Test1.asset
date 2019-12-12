@@ -15,11 +15,11 @@ MonoBehaviour:
   mIsPrefab: 0
   mColliderType: 0
   mIsTrigger: 0
-  mName: Test1
+  mName: Tefdhst1
   mRenderLayer: 3
   mType: 3
-  mDisplaySprite: {fileID: -1229858627709956937, guid: bfcf2e62fde23844eb11486ed1e84b69,
+  mDisplaySprite: {fileID: 8381111290613614903, guid: 1c0c47c07214b1340b9c9272f39d2940,
     type: 3}
   mBrushId: -1
-  mSpeed: 9.906459
-  mPoolCount: 20
+  mSpeed: 19.026726
+  mPoolCount: 13
