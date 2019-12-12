@@ -494,6 +494,8 @@ public class GameObjectEditor : IBindable
         }
     }
 
+
+    #region Validity Checks
     bool IsDataValid()
     {
         if(mActiveGameObjectAsset == null)
@@ -501,10 +503,11 @@ public class GameObjectEditor : IBindable
             return true;
         }
 
-
+        //check validity
 
         return true;
     }
+    #endregion
 
     void SaveAsScriptableAsset()
     {
@@ -517,11 +520,10 @@ public class GameObjectEditor : IBindable
         {
             if(!EditorUtility.DisplayDialog("Some Required Values Are Missing",mActiveType.ToString() + " requires a few fields that you haven't filled. Please fill them before saving, or delete the asset.","Keep Editing","Delete Asset"))
             {
-                //delete asset
+                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(mActiveGameObjectAsset));
             }
         }
     }
-
 
     #region IMGUI OnGUIs
     void ProjectileOnGUI()
