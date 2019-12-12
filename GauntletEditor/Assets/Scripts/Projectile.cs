@@ -18,5 +18,7 @@ public class Projectile : GameScriptable
         mSpeed = 4;
         mPoolCount = 4;
         mProjectileAnimation = new List<AnimationData>();
+        mColliderType = ColliderType.Circle;
+        mIsTrigger = true;
     }
 }

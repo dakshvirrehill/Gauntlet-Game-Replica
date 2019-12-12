@@ -8,7 +8,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
     <uieed:ObjectField name ="enemy_attack_sound" class ="objectField" allow-scene-objects="false" label="Attack Sound"/>
     <uieed:ObjectField name ="enemy_death_sound" class ="objectField" allow-scene-objects="false" label="Death Sound"/>
     <uieed:EnumField name ="enemy_type" class ="enumField" type ="" label ="Enemy Type"/>
-    <Slider label ="Stop Range" binding-path="mSpeed" name ="enemy_stop_range" class ="rowData" low-value="4" high-value="30" value="4"/>
+    <Slider label ="Stop Range" binding-path="mStopRange" name ="enemy_stop_range" class ="rowData" low-value="4" high-value="30" value="4"/>
     <uieed:ObjectField name ="enemy_projectile" class ="objectField" allow-scene-objects="false" label="Enemy Projectile"/>
     <IMGUIContainer name="enemy_animation_sprites" class ="imguiContainer"/>
     <Button name="gobj_data" text="Save Game Object Data" class ="columnData"/>

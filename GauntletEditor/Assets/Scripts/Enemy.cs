@@ -14,6 +14,8 @@ public class Enemy : GameScriptable
     [SerializeField]
     public List<AnimationData> mEnemyAnimations;
     [HideInInspector]
+    public float mStopRange;
+    [HideInInspector]
     public float mSpeed;
     [HideInInspector]
     public Type mEnemyType;
@@ -34,6 +36,8 @@ public class Enemy : GameScriptable
         mType = ObjectType.Enemy;
         mEnemyAnimations = new List<AnimationData>();
         mSpeed = 4;
+        mColliderType = ColliderType.Circle;
+        mIsTrigger = false;
     }
 
 }

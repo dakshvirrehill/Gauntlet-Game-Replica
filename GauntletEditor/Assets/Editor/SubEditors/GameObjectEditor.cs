@@ -496,16 +496,50 @@ public class GameObjectEditor : IBindable
 
 
     #region Validity Checks
+    bool IsPickableDataValid(Item pItem)
+    {
+        return pItem.mIsTrigger && pItem.mColliderType == GameScriptable.ColliderType.Box && pItem.mDisplaySprite != null
+            && !string.IsNullOrEmpty(pItem.mName) && !string.IsNullOrEmpty(pItem.mTextureGUID) && pItem.mRenderLayer == Level.LayerTypes.StaticObjects;
+    }
+    bool IsProjectileValid(Projectile pProjectile)
+    {
+        return !string.IsNullOrEmpty(pProjectile.mName) && pProjectile.mColliderType == GameScriptable.ColliderType.Circle
+            && pProjectile.mIsTrigger && pProjectile.mRenderLayer == Level.LayerTypes.Players && pProjectile.mProjectileAnimation.Count >= 1;
+    }
+    bool IsEnemyValid(Enemy pEnemy)
+    {
+        return !string.IsNullOrEmpty(pEnemy.mName) && pEnemy.mColliderType == GameScriptable.ColliderType.Circle &&
+            !pEnemy.mIsTrigger && pEnemy.mRenderLayer == Level.LayerTypes.Enemies && pEnemy.mEnemyAnimations.Count >= 1 &&
+            ( pEnemy.mEnemyType != Enemy.Type.ProjectileThrower || (pEnemy.mEnemyType == Enemy.Type.ProjectileThrower && 
+            pEnemy.mProjectile != null && !string.IsNullOrEmpty(pEnemy.mProjectileGUID)));
+    }
+    bool IsSpawnFactoryValid(SpawnFactory pFactory)
+    {
+        return !string.IsNullOrEmpty(pFactory.mName) && pFactory.mColliderType == GameScriptable.ColliderType.Box &&
+            !pFactory.mIsTrigger && pFactory.mRenderLayer == Level.LayerTypes.StaticObjects && pFactory.mDisplaySprite != null
+            && !string.IsNullOrEmpty(pFactory.mEnemyGUID) && pFactory.mSpawnEnemy != null;
+    }
+    bool IsStaticObjectValid(StaticObject pObject)
+    {
+        return !string.IsNullOrEmpty(pObject.mName) && pObject.mRenderLayer == Level.LayerTypes.Environment
+            && (pObject.mColliderType == GameScriptable.ColliderType.None || !pObject.mIsTrigger)
+            && !string.IsNullOrEmpty(pObject.mTextureGUID) && pObject.mDisplaySprite != null;
+    }
     bool IsDataValid()
     {
         if(mActiveGameObjectAsset == null)
         {
             return true;
         }
-
-        //check validity
-
-        return true;
+        switch(mActiveType)
+        {
+            case GameObjectType.Pickable: return IsPickableDataValid((Item)mActiveGameObjectAsset);
+            case GameObjectType.Enemy: return IsEnemyValid((Enemy)mActiveGameObjectAsset);
+            case GameObjectType.Projectile: return IsProjectileValid((Projectile)mActiveGameObjectAsset);
+            case GameObjectType.StaticObject: return IsStaticObjectValid((StaticObject)mActiveGameObjectAsset);
+            case GameObjectType.SpawnFactory: return IsSpawnFactoryValid((SpawnFactory)mActiveGameObjectAsset);
+        }
+        return false;
     }
     #endregion
 
@@ -514,15 +548,18 @@ public class GameObjectEditor : IBindable
         if (IsDataValid())
         {
             SaveCurrentActiveAsset();
-            mTypeEnum.value = GameObjectType.None;
         }
         else
         {
             if(!EditorUtility.DisplayDialog("Some Required Values Are Missing",mActiveType.ToString() + " requires a few fields that you haven't filled. Please fill them before saving, or delete the asset.","Keep Editing","Delete Asset"))
             {
                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(mActiveGameObjectAsset));
+                mEditoryBlock.Unbind();
+                mActiveGameObjectAsset = null;
+                mNameField.value = "";
             }
         }
+        mTypeEnum.value = GameObjectType.None;
     }
 
     #region IMGUI OnGUIs

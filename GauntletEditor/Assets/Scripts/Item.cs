@@ -22,5 +22,7 @@ public class Item : GameScriptable
     public override void Init()
     {
         mType = ObjectType.Item;
+        mColliderType = ColliderType.Box;
+        mIsTrigger = true;
     }
 }

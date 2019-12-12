@@ -8,6 +8,8 @@ public class SpawnFactory : GameScriptable
     {
         mType = ObjectType.SpawnFactory;
         mSpawnTime = new Vector2(4, 10);
+        mIsTrigger = false;
+        mColliderType = ColliderType.Box;
     }
 
     [HideInInspector]
