@@ -8,6 +8,54 @@ using UnityEditor.UIElements;
 
 public class GenHelpers
 {
+    public static void OnSpawnEnemySelection(Enemy pEnemy, ObjectField pField)
+    {
+        if (pEnemy == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            ShowSelectionWarning();
+            ResetSpawnEnemySelection(pField);
+            return;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pEnemy.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                if (aCurrentAssetData.mType == AssetMetaData.AssetType.PrefabAsset)
+                {
+                    SpawnFactory aTmpObj = (SpawnFactory)GameObjectEditor.GetCurrentScriptable();
+                    aTmpObj.mEnemyGUID = aCurrentAssetData.mGUID;
+                    aTmpObj.mSpawnEnemy = pEnemy;
+                }
+                else
+                {
+                    ShowSelectionWarning();
+                    ResetSpawnEnemySelection(pField);
+                    return;
+                }
+            }
+            else
+            {
+                ShowSelectionWarning();
+                ResetSpawnEnemySelection(pField);
+                return;
+            }
+        }
+        else
+        {
+            ShowSelectionWarning();
+            ResetSpawnEnemySelection(pField);
+            return;
+        }
+
+    }
     public static void OnCollectSoundSelection(AudioClip pClip, ObjectField pField)
     {
         if (pClip == null)
@@ -30,9 +78,19 @@ public class GenHelpers
                 AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
                 if (aCurrentAssetData.mType == AssetMetaData.AssetType.AudioAsset)
                 {
-                    Item aTempObj = (Item)GameObjectEditor.GetCurrentScriptable();
-                    aTempObj.mSoundGUID = aCurrentAssetData.mGUID;
-                    aTempObj.mItemCollectSound = pClip;
+                    switch(GameObjectEditor.GetCurrentScriptable().mType)
+                    {
+                        case GameScriptable.ObjectType.Item:
+                            Item aTempObj = (Item)GameObjectEditor.GetCurrentScriptable();
+                            aTempObj.mSoundGUID = aCurrentAssetData.mGUID;
+                            aTempObj.mItemCollectSound = pClip;
+                            break;
+                        case GameScriptable.ObjectType.SpawnFactory:
+                            SpawnFactory aTmpObj = (SpawnFactory)GameObjectEditor.GetCurrentScriptable();
+                            aTmpObj.mSoundGUID = aCurrentAssetData.mGUID;
+                            aTmpObj.mSpawnSound = pClip;
+                            break;
+                    }
                 }
                 else
                 {
@@ -56,7 +114,6 @@ public class GenHelpers
         }
 
     }
-
     public static void OnSpriteSelection(Sprite pSelectedSprite, ObjectField pField)
     {
         if (pSelectedSprite == null)
@@ -129,12 +186,26 @@ public class GenHelpers
     }
     public static void ResetCollectSelection(ObjectField pField)
     {
-        Item aItem = (Item)GameObjectEditor.GetCurrentScriptable();
-        if(!string.IsNullOrEmpty(aItem.mSoundGUID))
+        switch(GameObjectEditor.GetCurrentScriptable().mType)
         {
-            pField.SetEnabled(false);
-            pField.value = aItem.mItemCollectSound;
-            pField.SetEnabled(true);
+            case GameScriptable.ObjectType.Item:
+                Item aItem = (Item)GameObjectEditor.GetCurrentScriptable();
+                if (!string.IsNullOrEmpty(aItem.mSoundGUID))
+                {
+                    pField.SetEnabled(false);
+                    pField.value = aItem.mItemCollectSound;
+                    pField.SetEnabled(true);
+                }
+                break;
+            case GameScriptable.ObjectType.SpawnFactory:
+                SpawnFactory aTem = (SpawnFactory)GameObjectEditor.GetCurrentScriptable();
+                if (!string.IsNullOrEmpty(aTem.mSoundGUID))
+                {
+                    pField.SetEnabled(false);
+                    pField.value = aTem.mSpawnSound;
+                    pField.SetEnabled(true);
+                }
+                break;
         }
     }
     public static void ResetSpriteSelection(ObjectField pField)
@@ -171,6 +242,19 @@ public class GenHelpers
         }
 
     }
+    public static void ResetSpawnEnemySelection(ObjectField pField)
+    {
+        SpawnFactory aTem = (SpawnFactory)GameObjectEditor.GetCurrentScriptable();
+        if (!string.IsNullOrEmpty(aTem.mEnemyGUID))
+        {
+            pField.SetEnabled(false);
+            pField.value = aTem.mSpawnEnemy;
+            pField.SetEnabled(true);
+        }
+    }
+
+
+
 
 
 }

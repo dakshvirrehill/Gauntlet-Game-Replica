@@ -3,13 +3,11 @@
 xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation=" UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd
 UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
   <VisualElement class ="assetData">
+    <uieed:EnumField name ="gobj_layer" class ="enumField" type ="" label="Render Layer" />
     <uieed:ObjectField name ="spawn_enemy" class ="objectField" allow-scene-objects="false" label="Spawn Enemy"/>
-    <MinMaxSlider name="spawn_time" min-value ="4" max-value ="10" low-limit="4" high-limit="40" label ="Spawn Time Range"/>
+    <MinMaxSlider name="spawn_time" min-value ="4" max-value ="10" low-limit="4" high-limit="40" label ="Spawn Time Range" binding-path="mSpawnTime"/>
     <SliderInt label="Pool Count" binding-path="mPoolCount" name="pool_count" class ="rowData" low-value="4" high-value="30" value="4"/>    
     <uieed:ObjectField name ="spawn_sound" class ="objectField" allow-scene-objects="false" label="Spawn Sound"/>
-    <uieed:ObjectField name ="item_1" class ="objectField" allow-scene-objects="false" label="Item 1"/>
-    <uieed:ObjectField name ="item_2" class ="objectField" allow-scene-objects="false" label="Item 2"/>
-    <uieed:ObjectField name ="item_3" class ="objectField" allow-scene-objects="false" label="Item 3"/>
     <uieed:ObjectField name ="factory_sprite" class ="objectField" allow-scene-objects="false" label="Spawn Factory Sprite"/>
     <Button name="gobj_data" text="Save Game Object Data" class ="columnData"/>
   </VisualElement>

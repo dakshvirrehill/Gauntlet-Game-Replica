@@ -44,9 +44,14 @@ public class GameObjectEditor : IBindable
     EnumField mItemType;
     #endregion
 
+    #region Spawn Factory Elements
+    ObjectField mSpawnEnemy;
+    ObjectField mSpawnSound;
+    ObjectField mFactorySprite;
+    #endregion
+
     #region Enemy Elements
     ReorderableList mEnemyAnimList;
-    List<AnimationData> mEnemyAnimations;
     Vector2 mEnemyGUIScrollPos;
     #endregion
 
@@ -124,6 +129,86 @@ public class GameObjectEditor : IBindable
         mCurrentObjectElement = null;
     }
 
+    VisualTreeAsset SetUpPickable()
+    {
+        VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PickableEditor.uxml");
+        mCurrentObjectElement = aAsset.CloneTree();
+        mItemType = mCurrentObjectElement.Q<EnumField>("item_type");
+        mItemType.Init(Item.Type.HealthBoost);
+        mItemType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnItemTypeChanged((Item.Type)aEv.newValue));
+        mItemSound = mCurrentObjectElement.Q<ObjectField>("item_collect_sound");
+        mItemSound.objectType = typeof(AudioClip);
+        mItemSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnCollectSoundSelection((AudioClip)aEv.newValue, mItemSound));
+        mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
+        mItemSprite.objectType = typeof(Sprite);
+        mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue, mItemSprite));
+        return aAsset;
+    }
+
+    VisualTreeAsset SetUpProjectile()
+    {
+        VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
+        mCurrentObjectElement = aAsset.CloneTree();
+        mProjectileAnimList = new ReorderableList(new List<AnimationData>(), typeof(AnimationData));
+        mProjectileAnimList.drawHeaderCallback = (Rect aRect) => {
+            EditorGUI.LabelField(aRect, "Move Animation Sprites");
+        };
+        mProjectileAnimList.drawElementCallback = UpdateAnimList;
+        mProjectileAnimList.onAddCallback = AddNewAnimation;
+        mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
+        return aAsset;
+    }
+
+    VisualTreeAsset SetUpSpawnFactory()
+    {
+        VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
+        mCurrentObjectElement = aAsset.CloneTree();
+        mSpawnEnemy = mCurrentObjectElement.Q<ObjectField>("spawn_enemy");
+        mSpawnEnemy.objectType = typeof(Enemy);
+        mSpawnEnemy.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpawnEnemySelection((Enemy)aEv.newValue, mSpawnEnemy));
+        mSpawnSound = mCurrentObjectElement.Q<ObjectField>("spawn_sound");
+        mSpawnSound.objectType = typeof(AudioClip);
+        mSpawnSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnCollectSoundSelection((AudioClip)aEv.newValue, mSpawnSound));
+        mFactorySprite = mCurrentObjectElement.Q<ObjectField>("factory_sprite");
+        mFactorySprite.objectType = typeof(Sprite);
+        mFactorySprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue, mFactorySprite));
+        return aAsset;
+    }
+
+    VisualTreeAsset SetUpEnemy()
+    {
+        VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
+        mCurrentObjectElement = aAsset.CloneTree();
+        mCurrentObjectElement.Q<ObjectField>("enemy_attack_sound").objectType = typeof(AudioClip);
+        mCurrentObjectElement.Q<ObjectField>("enemy_death_sound").objectType = typeof(AudioClip);
+        EnumField aEnemyType = mCurrentObjectElement.Q<EnumField>("enemy_type");
+        mCurrentObjectElement.Q<ObjectField>("enemy_projectile").objectType = typeof(Projectile);
+        aEnemyType.Init(Enemy.Type.Collider);
+        mEnemyAnimations = new List<AnimationData>();
+        mEnemyAnimList = new ReorderableList(mEnemyAnimations, typeof(AnimationData));
+        mEnemyAnimList.drawHeaderCallback = (Rect aRect) =>
+        {
+            EditorGUI.LabelField(aRect, "Move Animation Sprites");
+        };
+        mEnemyAnimList.drawElementCallback = UpdateEnemyAnimationList;
+        mEnemyAnimList.onAddCallback = AddNewAnimation;
+        mCurrentObjectElement.Q<IMGUIContainer>("enemy_animation_sprites").onGUIHandler = EnemyOnGUI;
+        return aAsset;
+    }
+
+    VisualTreeAsset SetUpStaticObject()
+    {
+        VisualTreeAsset aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
+        mCurrentObjectElement = aAsset.CloneTree();
+        mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
+        mSObjSprite.objectType = typeof(Sprite);
+        mSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue, mSObjSprite));
+        mColliderType = mCurrentObjectElement.Q<EnumField>("static_object_collider");
+        mColliderType.Init(GameScriptable.ColliderType.None);
+        mColliderType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnColliderTypeChanged((GameScriptable.ColliderType)aEv.newValue));
+        return aAsset;
+    }
+
     void CreateNewObjectVE()
     {
         VisualTreeAsset aAsset;
@@ -132,67 +217,19 @@ public class GameObjectEditor : IBindable
             case GameObjectType.None:
                 return;
             case GameObjectType.Pickable:
-                aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PickableEditor.uxml");
-                mCurrentObjectElement = aAsset.CloneTree();
-                mItemType = mCurrentObjectElement.Q<EnumField>("item_type");
-                mItemType.Init(Item.Type.HealthBoost);
-                mItemType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnItemTypeChanged((Item.Type)aEv.newValue));
-                mItemSound = mCurrentObjectElement.Q<ObjectField>("item_collect_sound");
-                mItemSound.objectType = typeof(AudioClip);
-                mItemSound.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnCollectSoundSelection((AudioClip)aEv.newValue, mItemSound));
-                mItemSprite = mCurrentObjectElement.Q<ObjectField>("item_idle_sprite");
-                mItemSprite.objectType = typeof(Sprite);
-                mItemSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue,mItemSprite));
+                aAsset = SetUpPickable();
                 break;
             case GameObjectType.Projectile:
-                aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/ProjectileEditor.uxml");
-                mCurrentObjectElement = aAsset.CloneTree();
-                
-                mProjectileAnimList = new ReorderableList(new List<AnimationData>(), typeof(AnimationData));
-                mProjectileAnimList.drawHeaderCallback = (Rect aRect) => {
-                    EditorGUI.LabelField(aRect, "Move Animation Sprites");
-                };
-                mProjectileAnimList.drawElementCallback = UpdateAnimList;
-                mProjectileAnimList.onAddCallback = AddNewAnimation;
-                mCurrentObjectElement.Q<IMGUIContainer>("projectile_animation_sprites").onGUIHandler = ProjectileOnGUI;
+                aAsset = SetUpProjectile();
                 break;
             case GameObjectType.SpawnFactory:
-                aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/SpawnFactoryEditor.uxml");
-                mCurrentObjectElement = aAsset.CloneTree();
-                mCurrentObjectElement.Q<ObjectField>("spawn_enemy").objectType = typeof(Enemy);
-                mCurrentObjectElement.Q<ObjectField>("spawn_sound").objectType = typeof(AudioClip);
-                mCurrentObjectElement.Q<ObjectField>("item_1").objectType = typeof(Item);
-                mCurrentObjectElement.Q<ObjectField>("item_2").objectType = typeof(Item);
-                mCurrentObjectElement.Q<ObjectField>("item_3").objectType = typeof(Item);
-                mCurrentObjectElement.Q<ObjectField>("factory_sprite").objectType = typeof(Sprite);
+                aAsset = SetUpSpawnFactory();
                 break;
             case GameObjectType.Enemy:
-                aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/EnemyEditor.uxml");
-                mCurrentObjectElement = aAsset.CloneTree();
-                mCurrentObjectElement.Q<ObjectField>("enemy_attack_sound").objectType = typeof(AudioClip);
-                mCurrentObjectElement.Q<ObjectField>("enemy_death_sound").objectType = typeof(AudioClip);
-                EnumField aEnemyType = mCurrentObjectElement.Q<EnumField>("enemy_type");
-                mCurrentObjectElement.Q<ObjectField>("enemy_projectile").objectType = typeof(Projectile);                
-                aEnemyType.Init(Enemy.Type.Collider);
-                mEnemyAnimations = new List<AnimationData>();
-                mEnemyAnimList = new ReorderableList(mEnemyAnimations, typeof(AnimationData));
-                mEnemyAnimList.drawHeaderCallback = (Rect aRect) =>
-                {
-                    EditorGUI.LabelField(aRect, "Move Animation Sprites");
-                };
-                mEnemyAnimList.drawElementCallback = UpdateEnemyAnimationList;
-                mEnemyAnimList.onAddCallback = AddNewAnimation;
-                mCurrentObjectElement.Q<IMGUIContainer>("enemy_animation_sprites").onGUIHandler = EnemyOnGUI;
+                aAsset = SetUpEnemy();
                 break;
             case GameObjectType.StaticObject:
-                aAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/StaticObjectEditor.uxml");
-                mCurrentObjectElement = aAsset.CloneTree();
-                mSObjSprite = mCurrentObjectElement.Q<ObjectField>("static_object_sprite");
-                mSObjSprite.objectType = typeof(Sprite);
-                mSObjSprite.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnSpriteSelection((Sprite)aEv.newValue, mSObjSprite));
-                mColliderType = mCurrentObjectElement.Q<EnumField>("static_object_collider");
-                mColliderType.Init(GameScriptable.ColliderType.None);
-                mColliderType.RegisterCallback<ChangeEvent<System.Enum>>((aEv) => OnColliderTypeChanged((GameScriptable.ColliderType) aEv.newValue));
+                aAsset = SetUpStaticObject();
                 break;
             default:
                 return;
@@ -215,7 +252,7 @@ public class GameObjectEditor : IBindable
             EditorUtility.SetDirty(mActiveGameObjectAsset);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            mGameObjectEditorUI.Unbind();
+            mEditoryBlock.Unbind();
             mActiveGameObjectAsset = null;
             mNameField.value = "";
         }
@@ -244,7 +281,7 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Enemy:
                 Enemy aEnemy = (Enemy)pSelectedObject;
                 //do enemy specific things like setting up the anim values
-                mGameObjectEditorUI.Bind(new SerializedObject(aEnemy));
+                mEditoryBlock.Bind(new SerializedObject(aEnemy));
                 break;
             case GameObjectType.Pickable:
                 Item aItem = (Item)pSelectedObject;
@@ -252,7 +289,7 @@ public class GameObjectEditor : IBindable
                 GenHelpers.ResetCollectSelection(mItemSound);
                 mLayerType.value = aItem.mRenderLayer;
                 mItemType.value = aItem.mType;
-                mGameObjectEditorUI.Bind(new SerializedObject(aItem));
+                mEditoryBlock.Bind(new SerializedObject(aItem));
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)pSelectedObject;
@@ -262,19 +299,21 @@ public class GameObjectEditor : IBindable
                     aProjectile.mProjectileAnimation = new List<AnimationData>();
                 }
                 mProjectileAnimList.list = aProjectile.mProjectileAnimation;
-                mGameObjectEditorUI.Bind(new SerializedObject(aProjectile));
+                mEditoryBlock.Bind(new SerializedObject(aProjectile));
                 break;
             case GameObjectType.SpawnFactory:
                 SpawnFactory aFactory = (SpawnFactory)pSelectedObject;
-                //do spawn factory specific things
-                mGameObjectEditorUI.Bind(new SerializedObject(aFactory));
+                GenHelpers.ResetSpawnEnemySelection(mSpawnEnemy);
+                GenHelpers.ResetSpriteSelection(mFactorySprite);
+                GenHelpers.ResetCollectSelection(mSpawnSound);
+                mEditoryBlock.Bind(new SerializedObject(aFactory));
                 break;
             case GameObjectType.StaticObject:
                 StaticObject aStObj = (StaticObject)pSelectedObject;
                 GenHelpers.ResetSpriteSelection(mSObjSprite);
                 mLayerType.value = aStObj.mRenderLayer;
                 mColliderType.value = aStObj.mColliderType;
-                mGameObjectEditorUI.Bind(new SerializedObject(aStObj));
+                mEditoryBlock.Bind(new SerializedObject(aStObj));
                 break;
         }
         EditorUtility.SetDirty(mActiveGameObjectAsset);
