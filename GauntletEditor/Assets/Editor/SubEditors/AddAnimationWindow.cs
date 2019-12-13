@@ -24,6 +24,8 @@ public class AddAnimationWindow : EditorWindow
         mWindow.minSize = new Vector2(500, 500);
         mWindow.titleContent = new GUIContent("Add New Animation");
         mIsPlayer = pIsPlayer;
+        mWindow.mAnimationData.mAnimationName = "New Animation";
+        mWindow.mAnimationData.mAnimSpeed = 5.0f;
         mWindow.mAnimationData = new AnimationData();
         mWindow.mAnimationData.mSprites = new List<Sprite>();
         mWindow.mAnimations = new ReorderableList(mWindow.mAnimationData.mSprites, typeof(Sprite));
@@ -89,15 +91,22 @@ public class AddAnimationWindow : EditorWindow
         EditorGUILayout.EndScrollView();
         if(GUILayout.Button("Save Animation"))
         {
-            if(!mIsPlayer)
+            if(mAnimationData.mSprites.Count <= 0)
             {
-                GameObjectEditor.AddToCurrentAnimationList(mAnimationData);
-                mWindow.Close();
+                EditorUtility.DisplayDialog("Animation Data Empty", "Cannot add an empty animation to the animation data", "Okay");
             }
             else
             {
-                PlayerEditor.AddToPlayerAnimation(mAnimationData);
-                mWindow.Close();
+                if (!mIsPlayer)
+                {
+                    GameObjectEditor.AddToCurrentAnimationList(mAnimationData);
+                    mWindow.Close();
+                }
+                else
+                {
+                    PlayerEditor.AddToPlayerAnimation(mAnimationData);
+                    mWindow.Close();
+                }
             }
         }
         EditorGUILayout.EndVertical();
