@@ -8,7 +8,7 @@ using UnityEditor.UIElements;
 
 public class GenHelpers
 {
-    static void ShowSelectionWarning()
+    public static void ShowSelectionWarning()
     {
         EditorUtility.DisplayDialog("Warning Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning to a Game Object", "Okay");
     }
@@ -71,7 +71,7 @@ public class GenHelpers
         if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
         {
             ShowSelectionWarning();
-            ResetSpawnEnemySelection(pField);
+            ResetDeathSoundSelection(pField);
             return;
         }
         string[] aAssetGUIDs = AssetDatabase.FindAssets(pDeathSound.name, aAssetFolder);
@@ -119,7 +119,7 @@ public class GenHelpers
         if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
         {
             ShowSelectionWarning();
-            ResetSpawnEnemySelection(pField);
+            ResetProjectileSelection(pField);
             return;
         }
         string[] aAssetGUIDs = AssetDatabase.FindAssets(pProjectile.name, aAssetFolder);

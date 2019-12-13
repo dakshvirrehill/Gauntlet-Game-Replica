@@ -33,7 +33,6 @@ public class Level : ScriptableObject
     public GamePositions mEndPosition;
     public Dictionary<Vector2Int, List<LayerTypes>> mLevelData;
     public Dictionary<Vector2Int, List<GameScriptable>> mLevelDataScriptable;
-    public Dictionary<LayerTypes, List<Vector2Int>> mLayersVsPosition;
     public void Init()
     {
         mName = "Untitled Level";

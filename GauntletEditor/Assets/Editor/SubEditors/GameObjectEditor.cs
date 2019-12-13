@@ -607,13 +607,19 @@ public class GameObjectEditor : IBindable
             case GameObjectType.Enemy:
                 Enemy aEnemy = (Enemy)mInstance.mActiveGameObjectAsset;
                 aEnemy.mEnemyAnimations.Add(pData);
-                mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
+                if(mInstance.mActiveGameObjectAsset.mDisplaySprite == null)
+                {
+                    mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
+                }
                 EditorUtility.SetDirty(aEnemy);
                 break;
             case GameObjectType.Projectile:
                 Projectile aProjectile = (Projectile)mInstance.mActiveGameObjectAsset;
                 aProjectile.mProjectileAnimation.Add(pData);
-                mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
+                if (mInstance.mActiveGameObjectAsset.mDisplaySprite == null)
+                {
+                    mInstance.mActiveGameObjectAsset.mDisplaySprite = pData.mSprites[0];
+                }
                 EditorUtility.SetDirty(aProjectile);
                 break;
         }
