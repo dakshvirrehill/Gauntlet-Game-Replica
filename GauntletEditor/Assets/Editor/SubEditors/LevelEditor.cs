@@ -10,7 +10,7 @@ public class LevelEditor : IBindable
     static LevelEditor mInstance;
     VisualElement mLevelEditorUI = null;
 
-    List<Level> mAllLevels;
+    LevelOrder mAllLevels;
     ReorderableList mLevelList;
 
     Vector2 mLevelListGUIScrollPos;
@@ -60,17 +60,22 @@ public class LevelEditor : IBindable
     {
         if(mAllLevels == null)
         {
-            mAllLevels = new List<Level>();
-            string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
-            foreach (string aCurLevelGUID in aCurLevels)
+            string[] aCurLevelOrder = AssetDatabase.FindAssets("LevelOrder", new[] { "Assets/ScriptableObjects/Level Data" });
+            if(aCurLevelOrder.Length >= 1)
             {
-                string aPath = AssetDatabase.GUIDToAssetPath(aCurLevelGUID);
-                if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(Level))
+                for (int aI = 1; aI < aCurLevelOrder.Length; aI++)
                 {
-                    mAllLevels.Add(AssetDatabase.LoadAssetAtPath<Level>(aPath));
+                    AssetDatabase.DeleteAsset(AssetDatabase.GUIDToAssetPath(aCurLevelOrder[aI]));
                 }
+                mAllLevels = AssetDatabase.LoadAssetAtPath<LevelOrder>(AssetDatabase.GUIDToAssetPath(aCurLevelOrder[0]));
             }
-            mLevelList = new ReorderableList(mAllLevels, typeof(Level));
+            if(mAllLevels == null)
+            {
+                mAllLevels = ScriptableObject.CreateInstance<LevelOrder>();
+                mAllLevels.Init();
+                AssetDatabase.CreateAsset(mAllLevels, "Assets/ScriptableObjects/Level Data/LevelOrder.asset");
+            }
+            mLevelList = new ReorderableList(mAllLevels.mAllLevels, typeof(Level));
             mLevelList.drawHeaderCallback = (Rect aRect) => {
                 EditorGUI.LabelField(aRect, "Current Levels In Order");
             };
@@ -344,7 +349,8 @@ public class LevelEditor : IBindable
         string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
         int aLevelId = aCurLevels.Length + 1;
         AssetDatabase.CreateAsset(mActiveLevel, "Assets/ScriptableObjects/Level Data/Level" + aLevelId + ".asset");
-        mAllLevels.Add(mActiveLevel);
+        mAllLevels.mAllLevels.Add(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         pList.index = pList.list.IndexOf(mActiveLevel);
         SetupNewLevel();
     }
@@ -353,6 +359,7 @@ public class LevelEditor : IBindable
     {
         SaveAsScriptableAsset();
         mActiveLevel = (Level)pList.list[pList.index];
+        EditorUtility.SetDirty(mAllLevels);
         SetupNewLevel();
     }
 
@@ -439,10 +446,10 @@ public class LevelEditor : IBindable
         if(mActiveLevel != null)
         {
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             mActiveLevel = null;
-            mLevelList.index = -1;
         }
     }
 
