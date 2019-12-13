@@ -6,6 +6,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
     <VisualElement class ="editorMain">
       <Label text="Main Player Editor" class ="header"/>
       <VisualElement class ="editorData" name ="player_editor_data">
+        <TextField name ="player_name" binding-path="mName" class ="rowData" label ="Player Character Name" />
         <Slider label ="Move Speed" binding-path="mSpeed" name ="player_speed" class ="rowData" low-value="4" high-value="30" value="4"/>
         <SliderInt label ="Health" binding-path="mHealth" name ="player_speed" class ="rowData" low-value="3" high-value="10" value="4"/>
         <uieed:ObjectField name ="player_projectile" class ="objectField" allow-scene-objects="false" label="Player Projectile"/>
