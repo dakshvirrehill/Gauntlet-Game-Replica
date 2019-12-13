@@ -12,7 +12,54 @@ public class GenHelpers
     {
         EditorUtility.DisplayDialog("Warning Asset GUID Not Set", "Use the Asset Meta Data Editor to Generate Game Metas before assigning to a Game Object", "Okay");
     }
+    public static void OnGamePlayMusicSelection(AudioClip pGamePlayMusic, ObjectField pField)
+    {
+        if (pGamePlayMusic == null)
+        {
+            return;
+        }
+        string[] aAssetFolder = { "Assets/ScriptableObjects/Asset Meta Data" };
+        if (!AssetDatabase.IsValidFolder(aAssetFolder[0]))
+        {
+            ShowSelectionWarning();
+            ResetGameplayMusic(pField);
+            return;
+        }
+        string[] aAssetGUIDs = AssetDatabase.FindAssets(pGamePlayMusic.name, aAssetFolder);
+        if (aAssetGUIDs.Length > 0)
+        {
+            string aPath = AssetDatabase.GUIDToAssetPath(aAssetGUIDs[0]);
+            if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(AssetMetaData))
+            {
+                AssetMetaData aCurrentAssetData = (AssetMetaData)AssetDatabase.LoadAssetAtPath(aPath, typeof(AssetMetaData));
+                if (aCurrentAssetData.mType == AssetMetaData.AssetType.AudioAsset)
+                {
+                    Level aTmpObj =LevelEditor.GetActiveLevel();
+                    aTmpObj.mGUIDGameplayMusic = aCurrentAssetData.mGUID;
+                    aTmpObj.mGameplayMusic = pGamePlayMusic;
+                }
+                else
+                {
+                    ShowSelectionWarning();
+                    ResetGameplayMusic(pField);
+                    return;
+                }
+            }
+            else
+            {
+                ShowSelectionWarning();
+                ResetGameplayMusic(pField);
+                return;
+            }
+        }
+        else
+        {
+            ShowSelectionWarning();
+            ResetGameplayMusic(pField);
+            return;
+        }
 
+    }
     public static void OnAttackSoundSelection(AudioClip pAttackSound, ObjectField pField)
     {
         if (pAttackSound == null)
@@ -424,6 +471,17 @@ public class GenHelpers
         {
             pField.SetEnabled(false);
             pField.value = aTem.mProjectile;
+            pField.SetEnabled(true);
+        }
+    }
+
+    public static void ResetGameplayMusic(ObjectField pField)
+    {
+        Level aTem = LevelEditor.GetActiveLevel();
+        if (!string.IsNullOrEmpty(aTem.mGUIDGameplayMusic))
+        {
+            pField.SetEnabled(false);
+            pField.value = aTem.mGameplayMusic;
             pField.SetEnabled(true);
         }
     }

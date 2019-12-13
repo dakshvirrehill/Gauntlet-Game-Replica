@@ -24,9 +24,12 @@ public class LevelEditor : IBindable
     Level mActiveLevel;
     Level.LayerTypes mActiveLayer;
     bool mShowAll;
+
     VisualElement mLevelData;
     VisualElement mEditorMain;
     IMGUIContainer mMapContainer;
+    ObjectField mGameMusic;
+
     Dictionary<Level.LayerTypes, List<GameScriptable>> mBrushes;
     int mActiveBrushesCount = 0;
     int mActiveBrushId = -1;
@@ -36,6 +39,11 @@ public class LevelEditor : IBindable
         {
             mInstance = new LevelEditor();
         }
+    }
+
+    public static Level GetActiveLevel()
+    {
+        return mInstance.mActiveLevel;
     }
 
     public static VisualElement CreateNewLevelEditorUI()
@@ -50,27 +58,30 @@ public class LevelEditor : IBindable
 
     void CreateReorderableList()
     {
-        mAllLevels = new List<Level>();
-        string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
-        foreach(string aCurLevelGUID in aCurLevels)
+        if(mAllLevels == null)
         {
-            string aPath = AssetDatabase.GUIDToAssetPath(aCurLevelGUID);
-            if(AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(Level))
+            mAllLevels = new List<Level>();
+            string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
+            foreach (string aCurLevelGUID in aCurLevels)
             {
-                mAllLevels.Add(AssetDatabase.LoadAssetAtPath<Level>(aPath));
+                string aPath = AssetDatabase.GUIDToAssetPath(aCurLevelGUID);
+                if (AssetDatabase.GetMainAssetTypeAtPath(aPath) == typeof(Level))
+                {
+                    mAllLevels.Add(AssetDatabase.LoadAssetAtPath<Level>(aPath));
+                }
             }
+            mLevelList = new ReorderableList(mAllLevels, typeof(Level));
+            mLevelList.drawHeaderCallback = (Rect aRect) => {
+                EditorGUI.LabelField(aRect, "Current Levels In Order");
+            };
+            mLevelList.drawElementCallback = UpdateLevelList;
+            mLevelList.onAddCallback = AddNewLevel;
+            mLevelList.onCanRemoveCallback = (ReorderableList pList) =>
+            {
+                return pList.count > 1;
+            };
+            mLevelList.onSelectCallback = SelectLevel;
         }
-        mLevelList = new ReorderableList(mAllLevels, typeof(Level));
-        mLevelList.drawHeaderCallback = (Rect aRect) => {
-            EditorGUI.LabelField(aRect, "Current Levels In Order");
-        };
-        mLevelList.drawElementCallback = UpdateLevelList;
-        mLevelList.onAddCallback = AddNewLevel;
-        mLevelList.onCanRemoveCallback = (ReorderableList pList) =>
-        {
-            return pList.count > 1;
-        };
-        mLevelList.onSelectCallback = SelectLevel;
         mEditorMain.Q<IMGUIContainer>("level_list").onGUIHandler = LevelListOnGUI;
     }
 
@@ -82,7 +93,9 @@ public class LevelEditor : IBindable
         }
         VisualTreeAsset aLevelDataAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PerLevelEditor.uxml");
         mLevelData = aLevelDataAsset.CloneTree();
-        mLevelData.Q<ObjectField>("gameplay_music").objectType = typeof(AudioClip);
+        mGameMusic = mLevelData.Q<ObjectField>("gameplay_music");
+        mGameMusic.objectType = typeof(AudioClip);
+        mGameMusic.RegisterCallback<ChangeEvent<Object>>((aEv) => GenHelpers.OnGamePlayMusicSelection((AudioClip)aEv.newValue, mGameMusic));
         mLevelData.Q<Button>("level_data").RegisterCallback<MouseUpEvent>((aEv) => SaveAsScriptableAsset());
         mMapContainer = mLevelData.Q<IMGUIContainer>("level_map");
         mActiveBrushId = -1;
@@ -107,7 +120,10 @@ public class LevelEditor : IBindable
             GameScriptable aAsset = AssetDatabase.LoadAssetAtPath<GameScriptable>(aPath);
             if(aAsset != null)
             {
-                mBrushes[aAsset.mRenderLayer].Add(aAsset);
+                if(!aAsset.mIsPrefab)
+                {
+                    mBrushes[aAsset.mRenderLayer].Add(aAsset);
+                }
             }
         }
     }
@@ -373,11 +389,11 @@ public class LevelEditor : IBindable
                 {
                     if(mActiveBrushId == 0)
                     {
-                        mActiveLevel.SetResetStartPosition(actP);
+                        SetResetStartPosition(actP);
                     }
                     else
                     {
-                        mActiveLevel.SetResetEndPosition(actP);
+                        SetResetEndPosition(actP);
                     }
                 }
                 else
@@ -385,15 +401,15 @@ public class LevelEditor : IBindable
                     GameScriptable aObject = GetActiveBrushObject();
                     if (aObject != null)
                     {
-                        if(mActiveLevel.IsScriptablePresent(actP,aObject))
+                        if(IsScriptablePresent(actP,aObject))
                         {
-                            mActiveLevel.RemoveScriptable(actP, aObject);
+                            RemoveScriptable(actP, aObject);
                         }
                         else
                         {
-                            if(!mActiveLevel.IsLayerObjectPresent(actP, mActiveLayer))
+                            if(!IsLayerObjectPresent(actP, mActiveLayer))
                             {
-                                mActiveLevel.AddScriptable(actP, aObject);
+                                AddScriptable(actP, aObject);
                             }
                         }
                     }
@@ -426,6 +442,7 @@ public class LevelEditor : IBindable
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             mActiveLevel = null;
+            mLevelList.index = -1;
         }
     }
 
@@ -434,5 +451,110 @@ public class LevelEditor : IBindable
     public IBinding binding { get; set; }
     public string bindingPath { get; set; }
 
+    #region Level Editing Functions
+    public bool IsLayerObjectPresent(Vector2Int pPosition, Level.LayerTypes pLayer)
+    {
+        if (mActiveLevel.mLevelData == null)
+        {
+            return false;
+        }
+        if (!mActiveLevel.mLevelData.ContainsKey(pPosition))
+        {
+            return false;
+        }
+        if (mActiveLevel.mLevelData[pPosition].Contains(pLayer))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsScriptablePresent(Vector2Int pPosition, GameScriptable pObject)
+    {
+        if (mActiveLevel.mLevelDataScriptable == null)
+        {
+            return false;
+        }
+        if (!mActiveLevel.mLevelDataScriptable.ContainsKey(pPosition))
+        {
+            return false;
+        }
+        if (mActiveLevel.mLevelDataScriptable[pPosition].Contains(pObject))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void AddScriptable(Vector2Int pPosition, GameScriptable pObject)
+    {
+        if (mActiveLevel.mLevelData == null)
+        {
+            mActiveLevel.mLevelData = new Dictionary<Vector2Int, List<Level.LayerTypes>>();
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        if (!mActiveLevel.mLevelData.ContainsKey(pPosition))
+        {
+            mActiveLevel.mLevelData.Add(pPosition, new List<Level.LayerTypes>());
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        mActiveLevel.mLevelData[pPosition].Add(pObject.mRenderLayer);
+        EditorUtility.SetDirty(mActiveLevel);
+        if (mActiveLevel.mLevelDataScriptable == null)
+        {
+            mActiveLevel.mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        if (!mActiveLevel.mLevelDataScriptable.ContainsKey(pPosition))
+        {
+            mActiveLevel.mLevelDataScriptable.Add(pPosition, new List<GameScriptable>());
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        mActiveLevel.mLevelDataScriptable[pPosition].Add(pObject);
+        EditorUtility.SetDirty(mActiveLevel);
+    }
+
+    public void RemoveScriptable(Vector2Int pPosition, GameScriptable pObject)
+    {
+        if (mActiveLevel.mLevelData == null || mActiveLevel.mLevelDataScriptable == null)
+        {
+            return;
+        }
+        mActiveLevel.mLevelData[pPosition].Remove(pObject.mRenderLayer);
+        EditorUtility.SetDirty(mActiveLevel);
+        mActiveLevel.mLevelDataScriptable[pPosition].Remove(pObject);
+        EditorUtility.SetDirty(mActiveLevel);
+    }
+
+    public void SetResetStartPosition(Vector2Int pPosition)
+    {
+        if (mActiveLevel.mStartPosition.mWorldPosition == pPosition)
+        {
+            mActiveLevel.mStartPosition.mWorldPosition = new Vector2Int(-1, -1);
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        else
+        {
+            mActiveLevel.mStartPosition.mWorldPosition = pPosition;
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+    }
+
+    public void SetResetEndPosition(Vector2Int pPosition)
+    {
+        if (mActiveLevel.mEndPosition.mWorldPosition == pPosition)
+        {
+            mActiveLevel.mEndPosition.mWorldPosition = new Vector2Int(-1, -1);
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+        else
+        {
+            mActiveLevel.mEndPosition.mWorldPosition = pPosition;
+            EditorUtility.SetDirty(mActiveLevel);
+        }
+
+    }
+
+    #endregion
 
 }
