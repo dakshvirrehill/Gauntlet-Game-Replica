@@ -4,7 +4,7 @@ class UIManager : public ISystem
 {
 	DECLARE_SINGLETON(UIManager)
 	friend class GauntletEngine;
-
+	void registerClasses();
 protected:
 	// Inherited via ISystem
 	virtual void initialize() override;
