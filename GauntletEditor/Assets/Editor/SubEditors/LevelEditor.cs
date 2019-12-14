@@ -181,17 +181,17 @@ public class LevelEditor : IBindable
     {
         foreach (Level.LayerTypes aLayerTypes in System.Enum.GetValues(typeof(Level.LayerTypes)))
         {
-            foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+            for(int aI = 0; aI < mActiveLevel.mLevelData.Count; aI ++)
             {
-                if(!mActiveLevel.mLevelData[aPlacedObjs.Key].Contains(aLayerTypes))
+                if(!mActiveLevel.mLevelData[aI].mLayerTypes.Contains(aLayerTypes))
                 {
                     continue;
                 }
-                foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+                foreach (GameScriptable aScriptable in mActiveLevel.mLevelData[aI].mScriptables)
                 {
-                    if(aScriptable.mRenderLayer == aLayerTypes)
+                    if (aScriptable.mRenderLayer == aLayerTypes)
                     {
-                        DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                        DrawTexturePreview(new Rect(mActiveLevel.mLevelData[aI].mPosition.x * mCellSize, mActiveLevel.mLevelData[aI].mPosition.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
                         break;
                     }
                 }
@@ -218,14 +218,18 @@ public class LevelEditor : IBindable
         {
             RenderPlayerPositions();
         }
-
-        foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
+        for (int aI = 0; aI < mActiveLevel.mLevelData.Count; aI++)
         {
-            foreach (GameScriptable aScriptable in aPlacedObjs.Value)
+            if (!mActiveLevel.mLevelData[aI].mLayerTypes.Contains(mActiveLayer))
+            {
+                continue;
+            }
+            foreach (GameScriptable aScriptable in mActiveLevel.mLevelData[aI].mScriptables)
             {
                 if (aScriptable.mRenderLayer == mActiveLayer)
                 {
-                    DrawTexturePreview(new Rect(aPlacedObjs.Key.x * mCellSize, aPlacedObjs.Key.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                    DrawTexturePreview(new Rect(mActiveLevel.mLevelData[aI].mPosition.x * mCellSize, mActiveLevel.mLevelData[aI].mPosition.y * mCellSize, mCellSize, mCellSize), aScriptable.mDisplaySprite);
+                    break;
                 }
             }
         }
@@ -355,13 +359,28 @@ public class LevelEditor : IBindable
         SaveAsScriptableAsset();
         mActiveLevel = ScriptableObject.CreateInstance<Level>();
         mActiveLevel.Init();
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         mActiveLevel.mStartPosition.mDisplayName = "Start Point";
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         mActiveLevel.mStartPosition.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/StartPoint.png");
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         mActiveLevel.mStartPosition.mWorldPosition = mActiveLevel.mEndPosition.mWorldPosition = new Vector2Int(-1, -1);
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         mActiveLevel.mEndPosition.mDisplayName = "End Point";
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         mActiveLevel.mEndPosition.mDisplaySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Textures/EndPoint.png");
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
+        mActiveLevel.mLevelData= new List<LevelMapData>();
+        EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
         string[] aCurLevels = AssetDatabase.FindAssets("Level", new[] { "Assets/ScriptableObjects/Level Data" });
-        int aLevelId = aCurLevels.Length + 1;
+        int aLevelId = aCurLevels.Length;
         AssetDatabase.CreateAsset(mActiveLevel, "Assets/ScriptableObjects/Level Data/Level" + aLevelId + ".asset");
         mAllLevels.mAllLevels.Add(mActiveLevel);
         EditorUtility.SetDirty(mAllLevels);
@@ -373,6 +392,7 @@ public class LevelEditor : IBindable
     {
         SaveAsScriptableAsset();
         mActiveLevel = (Level)pList.list[pList.index];
+        EditorUtility.SetDirty(mActiveLevel);
         EditorUtility.SetDirty(mAllLevels);
         SetupNewLevel();
     }
@@ -474,17 +494,31 @@ public class LevelEditor : IBindable
     public string bindingPath { get; set; }
 
     #region Level Editing Functions
+
+    public int GetPositionIndex(Vector2Int pPosition)
+    {
+        foreach(LevelMapData aData in mActiveLevel.mLevelData)
+        {
+            if(aData.mPosition == pPosition)
+            {
+                return mActiveLevel.mLevelData.IndexOf(aData);
+            }
+        }
+        return -1;
+    }
+
     public bool IsLayerObjectPresent(Vector2Int pPosition, Level.LayerTypes pLayer)
     {
         if (mActiveLevel.mLevelData == null)
         {
             return false;
         }
-        if (!mActiveLevel.mLevelData.ContainsKey(pPosition))
+        int aLIx = GetPositionIndex(pPosition);
+        if (aLIx == -1)
         {
             return false;
         }
-        if (mActiveLevel.mLevelData[pPosition].Contains(pLayer))
+        if (mActiveLevel.mLevelData[aLIx].mLayerTypes.Contains(pLayer))
         {
             return true;
         }
@@ -493,15 +527,16 @@ public class LevelEditor : IBindable
 
     public bool IsScriptablePresent(Vector2Int pPosition, GameScriptable pObject)
     {
-        if (mActiveLevel.mLevelDataScriptable == null)
+        if (mActiveLevel.mLevelData == null)
         {
             return false;
         }
-        if (!mActiveLevel.mLevelDataScriptable.ContainsKey(pPosition))
+        int aLIx = GetPositionIndex(pPosition);
+        if (aLIx == -1)
         {
             return false;
         }
-        if (mActiveLevel.mLevelDataScriptable[pPosition].Contains(pObject))
+        if (mActiveLevel.mLevelData[aLIx].mScriptables.Contains(pObject))
         {
             return true;
         }
@@ -512,45 +547,43 @@ public class LevelEditor : IBindable
     {
         if (mActiveLevel.mLevelData == null)
         {
-            mActiveLevel.mLevelData = new Dictionary<Vector2Int, List<Level.LayerTypes>>();
+            mActiveLevel.mLevelData = new List<LevelMapData>();
             EditorUtility.SetDirty(mActiveLevel);
             EditorUtility.SetDirty(mAllLevels);
         }
-        if (!mActiveLevel.mLevelData.ContainsKey(pPosition))
+        int aLIx = GetPositionIndex(pPosition);
+        if (aLIx == -1)
         {
-            mActiveLevel.mLevelData.Add(pPosition, new List<Level.LayerTypes>());
+            aLIx = mActiveLevel.mLevelData.Count;
+            LevelMapData aData = new LevelMapData();
+            aData.mLayerTypes = new List<Level.LayerTypes>();
+            aData.mPosition = pPosition;
+            aData.mScriptables = new List<GameScriptable>();
+            mActiveLevel.mLevelData.Add(aData);
             EditorUtility.SetDirty(mActiveLevel);
             EditorUtility.SetDirty(mAllLevels);
         }
-        mActiveLevel.mLevelData[pPosition].Add(pObject.mRenderLayer);
+        mActiveLevel.mLevelData[aLIx].mLayerTypes.Add(pObject.mRenderLayer);
         EditorUtility.SetDirty(mActiveLevel);
-        if (mActiveLevel.mLevelDataScriptable == null)
-        {
-            mActiveLevel.mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
-            EditorUtility.SetDirty(mActiveLevel);
-            EditorUtility.SetDirty(mAllLevels);
-        }
-        if (!mActiveLevel.mLevelDataScriptable.ContainsKey(pPosition))
-        {
-            mActiveLevel.mLevelDataScriptable.Add(pPosition, new List<GameScriptable>());
-            EditorUtility.SetDirty(mActiveLevel);
-            EditorUtility.SetDirty(mAllLevels);
-        }
-        mActiveLevel.mLevelDataScriptable[pPosition].Add(pObject);
+        EditorUtility.SetDirty(mAllLevels);
+        mActiveLevel.mLevelData[aLIx].mScriptables.Add(pObject);
         EditorUtility.SetDirty(mActiveLevel);
         EditorUtility.SetDirty(mAllLevels);
     }
 
     public void RemoveScriptable(Vector2Int pPosition, GameScriptable pObject)
     {
-        if (mActiveLevel.mLevelData == null || mActiveLevel.mLevelDataScriptable == null)
+        if (mActiveLevel.mLevelData == null)
         {
             return;
         }
-        mActiveLevel.mLevelData[pPosition].Remove(pObject.mRenderLayer);
+        int aIx = GetPositionIndex(pPosition);
+        mActiveLevel.mLevelData[aIx].mLayerTypes.Remove(pObject.mRenderLayer);
         EditorUtility.SetDirty(mActiveLevel);
-        mActiveLevel.mLevelDataScriptable[pPosition].Remove(pObject);
+        EditorUtility.SetDirty(mAllLevels);
+        mActiveLevel.mLevelData[aIx].mScriptables.Remove(pObject);
         EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
     }
 
     public void SetResetStartPosition(Vector2Int pPosition)

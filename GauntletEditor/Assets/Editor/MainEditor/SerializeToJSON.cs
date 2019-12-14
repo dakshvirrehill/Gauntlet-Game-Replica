@@ -69,11 +69,11 @@ public class SerializeToJSON
             aLevelJSON.Append(",");
             aLevelJSON.Append(GetEndPositionJson(aLevel.mEndPosition,ref aResourcesArray));
             aLevelJSON.Append(",");
-            foreach(KeyValuePair<Vector2Int , List<GameScriptable>> aLevelData in aLevel.mLevelDataScriptable)
+            for (int aJ = 0; aJ < aLevel.mLevelData.Count; aJ++)
             {
-                foreach(GameScriptable aScriptable in aLevelData.Value)
+                foreach (GameScriptable aScriptable in aLevel.mLevelData[aJ].mScriptables)
                 {
-                    aLevelJSON.Append(GetGameScriptableJson(aLevelData.Key, aScriptable,ref aResourcesArray));
+                    aLevelJSON.Append(GetGameScriptableJson(aLevel.mLevelData[aJ].mPosition, aScriptable,ref aResourcesArray));
                     aLevelJSON.Append(",");
                 }
             }
@@ -94,6 +94,7 @@ public class SerializeToJSON
         aLevelOrderJSON.Append("," + aItems[1]);
         aLevelOrderJSON.Append("\n}");
         SaveToFile(aLevelOrderJSON.ToString(), Application.dataPath + "/Assets/GauntletGame.json");
+        AssetDatabase.Refresh();
     }
     static void SetAssetData()
     {
