@@ -131,6 +131,7 @@ public class AssetEditor : IBindable
                 break;
             case AssetMetaData.AssetType.PrefabAsset:
                 ((GameScriptable)pObject).mIsPrefab = true;
+                EditorUtility.SetDirty(pObject);
                 aAssetExtension = "Prefabs/" + aAssetExtension + ".json";
                 break;
         }
