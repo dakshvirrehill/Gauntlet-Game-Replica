@@ -1,0 +1,14 @@
+{
+"name" : "enemytest",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"db968ceb82e5f2d41a728772278c7fc6","Dimensions":{"Left":576,"Top":256,"Width":64,"Height":64},"layer":2},
+{"class":"Enemy","mProjectileGUID":"NoID","mSpeed":6.663697242736816,"mType":1,"mStopRange":11.614699363708496},
+{"class":"CircleCollider","radius":32.0,"trigger":false},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "enemytest"
+},
+{"textureAssetGUID":"db968ceb82e5f2d41a728772278c7fc6","class":"Animation","Name":"asd","Speed":26.799999237060548,"Loopable":true,"Frames":[{"Left":448,"Top":192,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+

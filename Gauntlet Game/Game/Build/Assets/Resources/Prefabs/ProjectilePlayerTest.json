@@ -1,0 +1,14 @@
+{
+"name" : "ProjectilePlayerTest",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"bfcf2e62fde23844eb11486ed1e84b69","Dimensions":{"Left":0,"Top":64,"Width":64,"Height":64},"layer":3},
+{"class":"Projectile","mSpeed":8.661469459533692,"mPoolCount":13},
+{"class":"CircleCollider","radius":32.0,"trigger":true},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "ProjectilePlayerTest"
+},
+{"textureAssetGUID":"bfcf2e62fde23844eb11486ed1e84b69","class":"Animation","Name":"projectile1","Speed":21.100000381469728,"Loopable":true,"Frames":[{"Left":64,"Top":64,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+
