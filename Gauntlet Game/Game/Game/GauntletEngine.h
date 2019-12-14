@@ -12,17 +12,19 @@ class GauntletEngine final : public ISystem
 public:
 	enum State
 	{
+		None,
 		MainMenu,
 		Paused,
 		GameOver
 	};
 private:
-	State mState;
+	State mState = State::None;
+	void registerClasses();
 protected:
 	// Inherited via ISystem
 	virtual void initialize() override;
 	virtual void update(float deltaTime) override;
-	void StartGame();
+	void StartGame(bool pLoadMode);
 
 
 public:
