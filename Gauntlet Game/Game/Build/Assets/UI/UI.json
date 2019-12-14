@@ -1,0 +1,391 @@
+{
+	"resources" : [
+		"../Assets/Resources/Fonts/xyz.ttf"
+	],
+	"Gameobjects" : [
+		{
+			"name" : "MainCamera",
+			"Components" : [
+				{
+					"class": "Transform",
+					"Position": {
+						"X": 960.0,
+						"Y": 540.0
+					}
+				},
+				{
+					"class" : "CameraController"
+				}
+			]
+		}
+	],
+	"UIComponents" : {
+		"HUD" : [
+			{
+				"name" : "Timer",
+				"class" : "Text",
+				"enabled" : false,
+				"offset" : {
+					"X" : -940.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Red"
+			},
+			{
+				"name" : "Lives",
+				"class" : "Text",
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Blue"
+			},
+			{
+				"name" : "HighScore",
+				"class" : "Text",
+				"enabled" : false,
+				"offset" : {
+					"X" : 20.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Green"
+			},
+			{
+				"name" : "Kills",
+				"class" : "Text",
+				"enabled" : false,
+				"offset" : {
+					"X" : 500.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Yellow"
+			}			
+		],
+		"MainMenu" : [
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 400.0,
+					"height" : 600.0
+				},
+				"offset" : {
+					"X" : -200.0,
+					"Y" : -300.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 0,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5
+			},
+			{
+				"name" : "NewGameText",
+				"class" : "Text",
+				"String" : "New Game"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},			
+			{
+				"name" : "NewGameButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -270.0
+				}
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -270.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5				
+			},
+			{
+				"name" : "LoadGameText",
+				"class" : "Text",
+				"String" : "Load Game"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},			
+			{
+				"name" : "LoadGameButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -70.0
+				}
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -70.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				}			
+			},
+			{
+				"name" : "ExitGameText",
+				"class" : "Text",
+				"String" : "Quit Game"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan"
+			},			
+			{
+				"name" : "ExitButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : 130.0
+				},
+				"layer" : 6
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : 130.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5			
+			}			
+		],
+		"PauseMenu" :[
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 400.0,
+					"height" : 600.0
+				},
+				"offset" : {
+					"X" : -200.0,
+					"Y" : -300.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 0,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5
+			},
+			{
+				"name" : "ContinueGameText",
+				"class" : "Text",
+				"String" : "Continue"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},			
+			{
+				"name" : "ContinueGameButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -270.0
+				}
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -270.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5				
+			},
+			{
+				"name" : "SaveGameText",
+				"class" : "Text",
+				"String" : "Save Game"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},			
+			{
+				"name" : "SaveGameButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -70.0
+				}
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : -70.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5			
+			},
+			{
+				"name" : "MainMenuText",
+				"class" : "Text",
+				"String" : "Quit To Menu"
+				"enabled" : false,
+				"offset" : {
+					"X" : -460.0,
+					"Y" : -520.0
+				},
+				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"Character Size": 10,
+				"Fill Color": "Cyan",
+				"layer" : 5
+			},			
+			{
+				"name" : "MainMenuButton",
+				"enabled" : false,
+				"class" : "Button",
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : 130.0
+				}
+			},
+			{
+				"class" : "Rectangle",
+				"enabled" : false,
+				"Size" : {
+					"width" : 300.0,
+					"height" : 140.0
+				},
+				"offset" : {
+					"X" : -150.0,
+					"Y" : 130.0
+				},
+				"color" : {
+					"r" : 255,
+					"g" : 255,
+					"b" : 0,
+					"a" : 255
+				},
+				"layer" : 5			
+			}
+		]
+	}
+}

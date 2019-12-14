@@ -1,0 +1,8 @@
+{
+	"resources" :
+	[
+		"../Assets/DefaultAssets/DefaultTexture.meta",
+		"../Assets/DefaultAssets/DefaultSound.meta",
+		"../Assets/DefaultAssets/DefaultFont.meta"			
+	]
+}
