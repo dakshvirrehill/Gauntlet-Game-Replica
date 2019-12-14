@@ -1,7 +1,10 @@
 #include "GameCore.h"
+#include "GameEngine.h"
+#include "GauntletEngine.h"
 
 int main()
 {
-	std::cout << "It Works!!";
+	GameEngine::instance().initialize(&GauntletEngine::instance());
+	GameEngine::instance().gameLoop();
 	return 0;
 }
