@@ -150,7 +150,7 @@ public class PlayerEditor : IBindable
     #region Helpers
     bool IsDataValid()
     {
-        return mActivePlayer != null && string.IsNullOrEmpty(mActivePlayer.mName)
+        return mActivePlayer != null && !string.IsNullOrEmpty(mActivePlayer.mName)
             && mActivePlayer.mColliderType == GameScriptable.ColliderType.Circle
             && mActivePlayer.mRenderLayer == Level.LayerTypes.Players
             && mActivePlayer.mAnimationData.Count >= 1;

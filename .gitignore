@@ -9,3 +9,37 @@ GauntletEditor/Assembly-CSharp-Editor.csproj
 GauntletEditor/.vs/
 GauntletEditor/obj/
 *.csproj
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/projpl.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/MainPlayer.asset
+GauntletEditor/Assets/Assets/Resources/Prefabs/test1.json.json
+GauntletEditor/Assets/Assets/Resources/Prefabs/test1.json
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Projectile/projpl.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Item/qweee.asset
+GauntletEditor/Assets/Assets/Resources/Textures/Dungeon.png.json
+GauntletEditor/Assets/Assets/Resources/Textures/Dungeon.png
+GauntletEditor/Assets/Assets/Resources/Prefabs/mynewplayer.json.json
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Spawn Factory/testspwfac.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Projectile/test1.asset
+GauntletEditor/Assets/Assets/Resources/Prefabs/qweee.json.json
+GauntletEditor/Assets/Assets/Resources/Prefabs/qweee.json
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Static Object/teststat2.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Static Object/teststat.asset
+GauntletEditor/Assets/Assets/Resources/Textures/Projectile.png.json
+GauntletEditor/Assets/Assets/Resources/Textures/Projectile.png
+GauntletEditor/Assets/Assets/Resources/Prefabs/projpl.json.json
+GauntletEditor/Assets/Assets/Resources/Prefabs/projpl.json
+GauntletEditor/Assets/ScriptableObjects/Player/MainPlayer.asset
+GauntletEditor/Assets/ScriptableObjects/Level Data/Level3.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Enemy/testen.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/testen.asset
+GauntletEditor/Assets/Assets/Resources/Prefabs/testen.json.json
+GauntletEditor/Assets/Assets/Resources/Prefabs/testen.json
+GauntletEditor/Assets/ScriptableObjects/Level Data/Level2.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Static Object/tty.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/test1.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/qweee.asset
+GauntletEditor/Assets/Assets/Resources/Textures/EndPoint.png.json
+GauntletEditor/Assets/Assets/Resources/Textures/Witch.png.json
+GauntletEditor/Assets/Assets/Resources/Textures/Witch.png
+GauntletEditor/Assets/Assets/Resources/Prefabs/mynewplayer.json
+GauntletEditor/Assets/Assets/Resources/Textures/EndPoint.png

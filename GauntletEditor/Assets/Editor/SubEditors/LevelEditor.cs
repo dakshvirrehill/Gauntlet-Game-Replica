@@ -81,9 +81,14 @@ public class LevelEditor : IBindable
             };
             mLevelList.drawElementCallback = UpdateLevelList;
             mLevelList.onAddCallback = AddNewLevel;
-            mLevelList.onCanRemoveCallback = (ReorderableList pList) =>
+            mLevelList.onRemoveCallback = (ReorderableList pList) =>
             {
-                return pList.count > 1;
+                if(EditorUtility.DisplayDialog("Warning!",
+                    "Are you sure you want to delete the level?", "Yes", "No"))
+                {
+                    AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(mActiveLevel));
+                    ReorderableList.defaultBehaviours.DoRemoveButton(pList);
+                }
             };
             mLevelList.onSelectCallback = SelectLevel;
         }
@@ -92,10 +97,6 @@ public class LevelEditor : IBindable
 
     void SetDataFromUXML()
     {
-        if(mEditorMain.Contains(mLevelData))
-        {
-            mEditorMain.Remove(mLevelData);
-        }
         VisualTreeAsset aLevelDataAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/UXML Files/PerLevelEditor.uxml");
         mLevelData = aLevelDataAsset.CloneTree();
         mGameMusic = mLevelData.Q<ObjectField>("gameplay_music");
@@ -178,7 +179,7 @@ public class LevelEditor : IBindable
 
     void RenderAll()
     {
-        foreach(Level.LayerTypes aLayerTypes in System.Enum.GetValues(typeof(Level.LayerTypes)))
+        foreach (Level.LayerTypes aLayerTypes in System.Enum.GetValues(typeof(Level.LayerTypes)))
         {
             foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
             {
@@ -196,20 +197,26 @@ public class LevelEditor : IBindable
                 }
             }
         }
+        RenderPlayerPositions();
+    }
+
+    void RenderPlayerPositions()
+    {
+        if (mActiveLevel.mStartPosition.mWorldPosition.x != -1)
+        {
+            DrawTexturePreview(new Rect(mActiveLevel.mStartPosition.mWorldPosition.x * mCellSize, mActiveLevel.mStartPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mStartPosition.mDisplaySprite);
+        }
+        if (mActiveLevel.mEndPosition.mWorldPosition.x != -1)
+        {
+            DrawTexturePreview(new Rect(mActiveLevel.mEndPosition.mWorldPosition.x * mCellSize, mActiveLevel.mEndPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mEndPosition.mDisplaySprite);
+        }
     }
 
     void RenderLayerOnly()
     {
         if (mActiveLayer == Level.LayerTypes.Players)
         {
-            if(mActiveLevel.mStartPosition.mWorldPosition.x != -1)
-            {
-                DrawTexturePreview(new Rect(mActiveLevel.mStartPosition.mWorldPosition.x * mCellSize, mActiveLevel.mStartPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mStartPosition.mDisplaySprite);
-            }
-            if(mActiveLevel.mEndPosition.mWorldPosition.x != -1)
-            {
-                DrawTexturePreview(new Rect(mActiveLevel.mEndPosition.mWorldPosition.x * mCellSize, mActiveLevel.mEndPosition.mWorldPosition.y * mCellSize, mCellSize, mCellSize), mActiveLevel.mEndPosition.mDisplaySprite);
-            }
+            RenderPlayerPositions();
         }
 
         foreach (KeyValuePair<Vector2Int, List<GameScriptable>> aPlacedObjs in mActiveLevel.mLevelDataScriptable)
@@ -299,9 +306,16 @@ public class LevelEditor : IBindable
     #endregion
     void SetupNewLevel()
     {
-        SetDataFromUXML();
-        mLevelData.Bind(new SerializedObject(mActiveLevel));
-        mEditorMain.Add(mLevelData);
+        if (mEditorMain.Contains(mLevelData))
+        {
+            mEditorMain.Remove(mLevelData);
+        }
+        if (mActiveLevel != null)
+        {
+            SetDataFromUXML();
+            mLevelData.Bind(new SerializedObject(mActiveLevel));
+            mEditorMain.Add(mLevelData);
+        }
     }
 
     void DrawTexturePreview(Rect pPosition, Sprite pSprite)
@@ -450,6 +464,7 @@ public class LevelEditor : IBindable
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             mActiveLevel = null;
+            SetupNewLevel();
         }
     }
 
@@ -499,11 +514,13 @@ public class LevelEditor : IBindable
         {
             mActiveLevel.mLevelData = new Dictionary<Vector2Int, List<Level.LayerTypes>>();
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         if (!mActiveLevel.mLevelData.ContainsKey(pPosition))
         {
             mActiveLevel.mLevelData.Add(pPosition, new List<Level.LayerTypes>());
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         mActiveLevel.mLevelData[pPosition].Add(pObject.mRenderLayer);
         EditorUtility.SetDirty(mActiveLevel);
@@ -511,14 +528,17 @@ public class LevelEditor : IBindable
         {
             mActiveLevel.mLevelDataScriptable = new Dictionary<Vector2Int, List<GameScriptable>>();
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         if (!mActiveLevel.mLevelDataScriptable.ContainsKey(pPosition))
         {
             mActiveLevel.mLevelDataScriptable.Add(pPosition, new List<GameScriptable>());
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         mActiveLevel.mLevelDataScriptable[pPosition].Add(pObject);
         EditorUtility.SetDirty(mActiveLevel);
+        EditorUtility.SetDirty(mAllLevels);
     }
 
     public void RemoveScriptable(Vector2Int pPosition, GameScriptable pObject)
@@ -539,11 +559,13 @@ public class LevelEditor : IBindable
         {
             mActiveLevel.mStartPosition.mWorldPosition = new Vector2Int(-1, -1);
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         else
         {
             mActiveLevel.mStartPosition.mWorldPosition = pPosition;
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
     }
 
@@ -553,11 +575,13 @@ public class LevelEditor : IBindable
         {
             mActiveLevel.mEndPosition.mWorldPosition = new Vector2Int(-1, -1);
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
         else
         {
             mActiveLevel.mEndPosition.mWorldPosition = pPosition;
             EditorUtility.SetDirty(mActiveLevel);
+            EditorUtility.SetDirty(mAllLevels);
         }
 
     }
