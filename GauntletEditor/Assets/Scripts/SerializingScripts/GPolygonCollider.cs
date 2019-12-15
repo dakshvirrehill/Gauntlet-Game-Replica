@@ -19,8 +19,8 @@ public class GPolygonCollider
         trigger = pTrigger;
         box = new Box
         {
-            width = 64.0f,
-            height = 64.0f
+            width = 64.00001f,
+            height = 64.00001f
         };
     }
 

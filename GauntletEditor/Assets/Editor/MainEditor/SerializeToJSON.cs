@@ -120,7 +120,7 @@ public class SerializeToJSON
         aStartPositionGobj.Append("\"name\" : \"Start Position\",\n");
         aStartPositionGobj.Append("\"Components\" : [\n");
         GTransform aTransform = new GTransform();
-        aTransform.Position = new position(pStartPosition.mWorldPosition.x * 64.0f, pStartPosition.mWorldPosition.y * 64.0f);
+        aTransform.Position = new position(pStartPosition.mWorldPosition.x * 64.00001f, pStartPosition.mWorldPosition.y * 64.00001f);
         aStartPositionGobj.Append(aTransform.ToString());
         aStartPositionGobj.Append(",\n");
         PlayerSpawner aSpawner = new PlayerSpawner();
@@ -184,7 +184,7 @@ public class SerializeToJSON
             GSprite aSprite = new GSprite(aPlScriptable.mDisplaySprite.rect, aPlScriptable.mAnimationData[0].mTextureAssetGUID,
                 aPlScriptable.mDisplaySprite.texture.height, (int)aPlScriptable.mRenderLayer);
             SaveAssetData(GetAssetFromGUID(aPlScriptable.mAnimationData[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
-            GCircleCollider aCircleCollider = new GCircleCollider(32.0f, false);
+            GCircleCollider aCircleCollider = new GCircleCollider(32.00001f, false);
             GRigidbody aRigidBody = new GRigidbody();
             StringBuilder aPlayerObject = new StringBuilder("{\n");
             aPlayerObject.Append("\"name\" : \"" + aPlScriptable.mName + "\",\n");
@@ -235,7 +235,7 @@ public class SerializeToJSON
             GProjectile aProj = new GProjectile();
             aProj.mPoolCount = aProjectile.mPoolCount;
             aProj.mSpeed = aProjectile.mSpeed;
-            GCircleCollider aCollider = new GCircleCollider(32.0f, true);
+            GCircleCollider aCollider = new GCircleCollider(32.00001f, true);
             GRigidbody aRigidBody = new GRigidbody();
             GSprite aSprite = new GSprite(aProjectile.mDisplaySprite.rect, aProjectile.mProjectileAnimation[0].mTextureAssetGUID,
                 aProjectile.mDisplaySprite.texture.height, (int)aProjectile.mRenderLayer);
@@ -287,7 +287,7 @@ public class SerializeToJSON
             GSprite aSprite = new GSprite(aEnemy.mDisplaySprite.rect, aEnemy.mEnemyAnimations[0].mTextureAssetGUID,
                 aEnemy.mDisplaySprite.texture.height, (int)aEnemy.mRenderLayer);
             GRigidbody aRigidBody = new GRigidbody();
-            GCircleCollider aCollider = new GCircleCollider(32.0f, false);
+            GCircleCollider aCollider = new GCircleCollider(32.00001f, false);
             StringBuilder aEnemyObject = new StringBuilder("{\n");
             aEnemyObject.Append("\"name\" : \"" + aEnemy.mName + "\",\n");
             aEnemyObject.Append("\"Components\" : [\n");
@@ -363,7 +363,7 @@ public class SerializeToJSON
         aEndPositionGobj.Append("\"name\" : \"End Position\",\n");
         aEndPositionGobj.Append("\"Components\" : [\n");
         GTransform aTransform = new GTransform();
-        aTransform.Position = new position(pEndPosition.mWorldPosition.x * 64.0f, pEndPosition.mWorldPosition.y * 64.0f);
+        aTransform.Position = new position(pEndPosition.mWorldPosition.x * 64.00001f, pEndPosition.mWorldPosition.y * 64.00001f);
         aEndPositionGobj.Append(aTransform.ToString());
         aEndPositionGobj.Append(",\n");
         string aSpGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(pEndPosition.mDisplaySprite));
@@ -386,7 +386,7 @@ public class SerializeToJSON
         aGameScriptable.Append("\"name\" : \"" + pScriptable.mName + "\",\n");
         aGameScriptable.Append("\"Components\" : [\n");
         GTransform aTransform = new GTransform();
-        aTransform.Position = new position(pPosition.x * 64.0f, pPosition.y * 64.0f);
+        aTransform.Position = new position(pPosition.x * 64.00001f, pPosition.y * 64.00001f);
         aGameScriptable.Append(aTransform.ToString() + ",\n");
         switch (pScriptable.mType)
         {
@@ -407,16 +407,16 @@ public class SerializeToJSON
         GSprite aSprite = new GSprite(pObject.mDisplaySprite.rect, pObject.mTextureGUID, 
             pObject.mDisplaySprite.texture.height, (int)pObject.mRenderLayer);
         SaveAssetData(GetAssetFromGUID(pObject.mTextureGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
-        aObjectComponents.Append(aSprite.ToString() + ",\n");
+        aObjectComponents.Append(aSprite.ToString());
         if(pObject.mColliderType == GameScriptable.ColliderType.Box)
         {
             GPolygonCollider aCollider = new GPolygonCollider(pObject.mIsTrigger);
-            aObjectComponents.Append(aCollider.ToString());
+            aObjectComponents.Append(",\n" + aCollider.ToString());
         }
         else if(pObject.mColliderType == GameScriptable.ColliderType.Circle)
         {
-            GCircleCollider aCollider = new GCircleCollider(32.0f, pObject.mIsTrigger);
-            aObjectComponents.Append(aCollider.ToString());
+            GCircleCollider aCollider = new GCircleCollider(32.00001f, pObject.mIsTrigger);
+            aObjectComponents.Append(",\n" + aCollider.ToString());
         }
         return aObjectComponents;
     }
