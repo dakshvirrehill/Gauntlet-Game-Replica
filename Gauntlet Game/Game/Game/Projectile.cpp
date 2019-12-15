@@ -5,6 +5,10 @@
 IMPLEMENT_DYNAMIC_CLASS(Projectile)
 void Projectile::initialize()
 {
+	if (!isEnabled())
+	{
+		return;
+	}
 	Component::initialize();
 }
 
