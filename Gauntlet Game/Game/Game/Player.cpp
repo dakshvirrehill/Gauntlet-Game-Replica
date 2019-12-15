@@ -2,7 +2,9 @@
 #include "GameObject.h"
 #include "PrefabAsset.h"
 #include "Projectile.h"
+#include "CameraManager.h"
 #include "Player.h"
+#include "GauntletEngine.h"
 
 IMPLEMENT_DYNAMIC_CLASS(Player)
 
@@ -21,6 +23,7 @@ void Player::initialize()
 			GameObject* aGameObject = new GameObject();
 			aGameObject->load(aPrefabAsset->getPrefab());
 			aGameObject->setEnabled(false);
+			GameObjectManager::instance().addGameObject(aGameObject);
 			Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 			mPoolCount = aProjectile->getPoolCount();
 			mAvailableProjectiles.push_back(aGameObject);
@@ -30,11 +33,16 @@ void Player::initialize()
 				GameObject* aGameObject = new GameObject();
 				aGameObject->load(aPrefabAsset->getPrefab());
 				aGameObject->setEnabled(false);
+				GameObjectManager::instance().addGameObject(aGameObject);
 				Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 				aProjectile->setPlayer(this);
 				mAvailableProjectiles.push_back(aGameObject);
 			}
 		}
+		GameObject* aGObj = GameObjectManager::instance().getGameObjectWithComponent("CameraManager");
+		CameraManager* aCM = static_cast<CameraManager*>(aGObj->getComponent("CameraManager"));
+		aCM->setPlayer(this);
+		GauntletEngine::instance().setPlayer(this);
 	}
 }
 
@@ -65,11 +73,11 @@ void Player::update(float deltaTime)
 	sf::Vector2f aMovementVector(0.f, 0.f);
 	if (InputManager::instance().getKeyState(sf::Keyboard::W) == InputManager::PushState::Held)
 	{
-		aMovementVector.y = 1;
+		aMovementVector.y = -1;
 	}
 	if (InputManager::instance().getKeyState(sf::Keyboard::S) == InputManager::PushState::Held)
 	{
-		aMovementVector.y == -1;
+		aMovementVector.y = 1;
 	}
 	if (InputManager::instance().getKeyState(sf::Keyboard::A) == InputManager::PushState::Held)
 	{
@@ -93,8 +101,8 @@ void Player::update(float deltaTime)
 		aMousePosition = RenderSystem::instance().getRenderWindow()->mapPixelToCoords(sf::Vector2i((int)aMousePosition.x, (int)aMousePosition.y));
 		sf::Vector2f aPlayerPosition = getGameObject()->getTransform()->getPosition();
 		Projectile* aProj = static_cast<Projectile*>(aProjectile->getComponent("Projectile"));
-		aProj->setMovePosition(aMousePosition - aPlayerPosition);
 		aProjectile->getTransform()->setPosition(aPlayerPosition);
+		aProj->setMovePosition(aMousePosition - aPlayerPosition);
 		aProjectile->setEnabled(true);
 	}
 }
@@ -117,6 +125,13 @@ void Player::addProjectileToPool(GameObject* pProjectile)
 
 Player::~Player()
 {
+	GameObject* aGObj = GameObjectManager::instance().getGameObjectWithComponent("CameraManager");
+	if (aGObj != nullptr)
+	{
+		CameraManager* aCM = static_cast<CameraManager*>(aGObj->getComponent("CameraManager"));
+		aCM->setPlayer(nullptr);
+	}
+	GauntletEngine::instance().setPlayer(nullptr);
 	mAvailableProjectiles.clear();
 	mUnavailableProjectiles.clear();
 }

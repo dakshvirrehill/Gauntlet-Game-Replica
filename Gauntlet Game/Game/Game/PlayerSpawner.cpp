@@ -1,5 +1,6 @@
 #include "GameCore.h"
 #include "PrefabAsset.h"
+#include "GameObject.h"
 #include "PlayerSpawner.h"
 IMPLEMENT_DYNAMIC_CLASS(PlayerSpawner)
 void PlayerSpawner::initialize()
@@ -12,7 +13,8 @@ void PlayerSpawner::initialize()
 	if (mPlayerStrCode > 0)
 	{
 		PrefabAsset* aPlayer = static_cast<PrefabAsset*>(AssetManager::instance().GetAssetBySTRCODE(mPlayerStrCode));
-		GameObjectManager::instance().instantiatePrefab(aPlayer);
+		GameObject* aGobj = GameObjectManager::instance().instantiatePrefab(aPlayer);
+		aGobj->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
 		GameObjectManager::instance().removeGameObject(getGameObject());
 	}
 }

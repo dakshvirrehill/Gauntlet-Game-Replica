@@ -55,6 +55,18 @@ void UIManager::initialize()
 
 		}
 	}
+	Button* aNewGameButton = static_cast<Button*>(mUIMap[GauntletEngine::State::MainMenu]["NewGameButton"]);
+	aNewGameButton->mClickEvent = &GauntletEngine::StartGame;
+	Button* aLoadGameButton = static_cast<Button*>(mUIMap[GauntletEngine::State::MainMenu]["LoadGameButton"]);
+	aLoadGameButton->mClickEvent = &GauntletEngine::LoadGame;
+	Button* aExitButton = static_cast<Button*>(mUIMap[GauntletEngine::State::MainMenu]["ExitButton"]);
+	aExitButton->mClickEvent = &GauntletEngine::ExitGame;
+	Button* aContinueButton = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["ContinueGameButton"]);
+	aContinueButton->mClickEvent = &GauntletEngine::ContinueGame;
+	Button* aSaveButton = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["SaveGameButton"]);
+	aSaveButton->mClickEvent = &GauntletEngine::SaveGame;
+	Button* aExitMENU = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["MainMenuButton"]);
+	aExitMENU->mClickEvent = &GauntletEngine::ExitGame;
 }
 
 void UIManager::update(float deltaTime)

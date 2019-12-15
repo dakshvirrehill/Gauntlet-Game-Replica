@@ -22,6 +22,7 @@ void Enemy::initialize()
 				GameObject* aGameObject = new GameObject();
 				aGameObject->load(aPrefabAsset->getPrefab());
 				aGameObject->setEnabled(false);
+				GameObjectManager::instance().addGameObject(aGameObject);
 				Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 				mPoolCount = aProjectile->getPoolCount();
 				mAvailableProjectiles.push_back(aGameObject);
@@ -31,6 +32,7 @@ void Enemy::initialize()
 					GameObject* aGameObject = new GameObject();
 					aGameObject->load(aPrefabAsset->getPrefab());
 					aGameObject->setEnabled(false);
+					GameObjectManager::instance().addGameObject(aGameObject);
 					Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 					aProjectile->setEnemy(this);
 					mAvailableProjectiles.push_back(aGameObject);
@@ -85,6 +87,10 @@ void Enemy::update(float deltaTime)
 			if (mFireTime <= 0)
 			{
 				mFireTime = mSpeed * 0.5f;
+				if (mAvailableProjectiles.size() <= 0)
+				{
+					return;
+				}
 				GameObject* aProjectile = mAvailableProjectiles.back();
 				mAvailableProjectiles.pop_back();
 				mUnavailableProjectiles.push_back(aProjectile);

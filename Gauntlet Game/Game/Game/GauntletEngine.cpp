@@ -53,16 +53,39 @@ void GauntletEngine::update(float deltaTime)
 	UIManager::instance().update(deltaTime);
 }
 
-void GauntletEngine::StartGame(bool pLoadMode)
+void GauntletEngine::StartGame()
 {
-	if (pLoadMode)
+	if (GauntletEngine::instance().mState == State::GamePlay)
 	{
-
+		return;
 	}
-	else
-	{
+	GauntletEngine::instance().mState = State::GamePlay;
+	FileSystem::instance().load(GauntletEngine::instance().mLevels[GauntletEngine::instance().mCurrentLevel], true);
+}
 
-	}
+void GauntletEngine::LoadGame()
+{
+
+}
+
+void GauntletEngine::ExitGame()
+{
+
+}
+
+void GauntletEngine::ContinueGame()
+{
+
+}
+
+void GauntletEngine::SaveGame()
+{
+
+}
+
+void GauntletEngine::ExitToMenu()
+{
+
 }
 
 const sf::Vector2f& GauntletEngine::getPlayerPosition()

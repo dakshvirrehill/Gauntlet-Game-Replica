@@ -24,6 +24,7 @@ void SpawnFactory::initialize()
 				GameObject* aGameObject = new GameObject();
 				aGameObject->load(aPrefabAsset->getPrefab());
 				aGameObject->setEnabled(false);
+				GameObjectManager::instance().addGameObject(aGameObject);
 				mAvailableEnemies.push_back(aGameObject);
 			}
 		}
@@ -35,6 +36,23 @@ void SpawnFactory::initialize()
 void SpawnFactory::load(json::JSON& pSpawnFactoryNode)
 {
 	Component::load(pSpawnFactoryNode);
+	if (pSpawnFactoryNode.hasKey("mPoolCount"))
+	{
+		mPoolCount = pSpawnFactoryNode["mPoolCount"].ToInt();
+	}
+	if (pSpawnFactoryNode.hasKey("mMinSpawnTime"))
+	{
+		mMinSpawnTime = pSpawnFactoryNode["mMinSpawnTime"].ToFloat();
+	}
+	if (pSpawnFactoryNode.hasKey("mMaxSpawnTime"))
+	{
+		mMaxSpawnTime = pSpawnFactoryNode["mMaxSpawnTime"].ToFloat();
+	}
+	if (pSpawnFactoryNode.hasKey("mEnemyGUID"))
+	{
+		mEnemyGUID = pSpawnFactoryNode["mEnemyGUID"].ToString();
+		mEnemyStrCode = GUIDToSTRCODE(mEnemyGUID);
+	}
 }
 
 void SpawnFactory::update(float deltaTime)
@@ -48,11 +66,14 @@ void SpawnFactory::update(float deltaTime)
 	{
 		float aPercentage = Random.Random();
 		mSpawnTime = (((aPercentage - 0) * (mMaxSpawnTime - 0)) / (1 - 0)) + mMinSpawnTime;
-		//see distance if issue
+		if (mAvailableEnemies.size() <= 0)
+		{
+			return;
+		}
 		GameObject* aEnemy = mAvailableEnemies.back();
 		mAvailableEnemies.pop_back();
 		mUnavailableEnemies.push_back(aEnemy);
-		aEnemy->getTransform()->setPosition(getGameObject()->getTransform()->getPosition() + sf::Vector2f(Random.Random() * 20, Random.Random() * 20));
+		aEnemy->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
 		aEnemy->setEnabled(true);
 	}
 }

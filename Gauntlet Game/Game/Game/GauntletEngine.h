@@ -28,7 +28,12 @@ protected:
 	// Inherited via ISystem
 	virtual void initialize() override;
 	virtual void update(float deltaTime) override;
-	void StartGame(bool pLoadMode);
+	static void StartGame();
+	static void LoadGame();
+	static void ExitGame();
+	static void ContinueGame();
+	static void SaveGame();
+	static void ExitToMenu();
 	inline void SetState(State pState) { mState = pState; }
 
 public:
