@@ -6,4 +6,10 @@ public class Teleporter
 {
     public string Class = "Teleporter";
 
+    public override string ToString()
+    {
+        string aJSON = JsonUtility.ToJson(this);
+        return aJSON.Replace("Class", "class");
+    }
+
 }

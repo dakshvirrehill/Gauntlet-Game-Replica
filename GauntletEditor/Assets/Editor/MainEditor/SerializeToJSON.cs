@@ -372,7 +372,9 @@ public class SerializeToJSON
         SaveAssetData(GetAssetFromGUID(aSpGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
         aEndPositionGobj.Append(aSprite.ToString() + ",\n");
         GPolygonCollider aPolygonCollider = new GPolygonCollider(true);
-        aEndPositionGobj.Append(aPolygonCollider.ToString());
+        aEndPositionGobj.Append(aPolygonCollider.ToString() +",\n");
+        Teleporter aTeleporter = new Teleporter();
+        aEndPositionGobj.Append(aTeleporter.ToString());
         aEndPositionGobj.Append("]\n");
         aEndPositionGobj.Append("}");
         return aEndPositionGobj;
