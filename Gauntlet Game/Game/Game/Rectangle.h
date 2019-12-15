@@ -12,9 +12,10 @@ class Rectangle : public Component, public IRenderable
 	sf::Color mColor;
 protected:
 	virtual void initialize() override;
-	virtual void load(json::JSON&) override;
 	virtual void update(float deltaTime) override;
 	virtual void render(sf::RenderWindow* _window) override;
+public:
+	virtual void load(json::JSON&) override;
 };
 
 #endif

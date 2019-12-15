@@ -11,10 +11,11 @@ class Button : public Component
 	sf::Vector2f mOffset;
 protected:
 	virtual void initialize() override;
-	virtual void load(json::JSON&) override;
 	virtual void update(float deltaTime) override;
 	inline void addOnClickEvent(std::function<void()> pEvent) { mClickEvents.push_back(pEvent); }
 	inline void removeOnClickEvent(std::function<void()> pEvent) { mClickEvents.remove(pEvent); }
+public:
+	virtual void load(json::JSON&) override;
 };
 
 #endif
