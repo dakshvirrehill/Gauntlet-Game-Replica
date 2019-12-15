@@ -44,3 +44,14 @@ GauntletEditor/Assets/Assets/Resources/Textures/Witch.png
 GauntletEditor/Assets/Assets/Resources/Prefabs/mynewplayer.json
 GauntletEditor/Assets/Assets/Resources/Textures/EndPoint.png
 Gauntlet Game/Game/Build/bin/
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/en1.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/tem.asset
+GauntletEditor/Assets/ScriptableObjects/Asset Meta Data/test2.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Enemy/en1.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Item/tem.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Projectile/test2.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Spawn Factory/ttrt.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Static Object/grr.asset
+GauntletEditor/Assets/ScriptableObjects/GameObjects/Static Object/rtrt.asset
+GauntletEditor/Assets/ScriptableObjects/Level Data/Level1.asset
+GauntletEditor/Assets/ScriptableObjects/Level Data/LevelOrder.asset

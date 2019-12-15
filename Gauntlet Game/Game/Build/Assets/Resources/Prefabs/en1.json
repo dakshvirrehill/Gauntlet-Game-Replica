@@ -1,0 +1,14 @@
+{
+"name" : "en1",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"91f3081ab86cde54e83d6a57dc3b0f5e","Dimensions":{"Left":192,"Top":64,"Width":64,"Height":64},"layer":2},
+{"class":"Enemy","mProjectileGUID":"523802c0e13a9b344ba4cbe6b36451e5","mSpeed":8.876803398132325,"mType":2,"mStopRange":12.310766220092774},
+{"class":"CircleCollider","radius":32.0,"trigger":false},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "en1"
+},
+{"textureAssetGUID":"91f3081ab86cde54e83d6a57dc3b0f5e","class":"Animation","Name":"eff","Speed":17.700000762939454,"Loopable":true,"Frames":[{"Left":0,"Top":64,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+

@@ -75,6 +75,20 @@
 		],
 		"MainMenu" : [
 			{
+				"name" : "GameText",
+				"class" : "Text",
+				"String" : "Sheridan Gauntlet",
+				"enabled" : false,
+				"offset" : {
+					"X" : -130.0,
+					"Y" : -350.0
+				},
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
+				"Character Size": 40,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},
+			{
 				"name" : "MainMenuRect",
 				"class" : "Rectangle",
 				"enabled" : false,
@@ -100,8 +114,8 @@
 				"String" : "New Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -130.0,
-					"Y" : -250.0
+					"X" : -110.0,
+					"Y" : -200.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -147,8 +161,8 @@
 				"String" : "Load Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -130.0,
-					"Y" : -50.0
+					"X" : -110.0,
+					"Y" : 0.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -194,8 +208,8 @@
 				"String" : "Quit Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -130.0,
-					"Y" : 150.0
+					"X" : -110.0,
+					"Y" : 200.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -238,6 +252,21 @@
 		],
 		"PauseMenu" :[
 			{
+				"name" : "GameText",
+				"class" : "Text",
+				"String" : "Sheridan Gauntlet",
+				"enabled" : false,
+				"offset" : {
+					"X" : -130.0,
+					"Y" : -350.0
+				},
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
+				"Character Size": 40,
+				"Fill Color": "Cyan",
+				"layer" : 6
+			},		
+			{
+				"name" : "PauseMenuRect",
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -262,8 +291,8 @@
 				"String" : "Continue",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -110.0,
+					"Y" : -200.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -284,6 +313,7 @@
 				}
 			},
 			{
+				"name" : "ContinueRect",			
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -308,8 +338,8 @@
 				"String" : "Save Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -110.0,
+					"Y" : 0.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -330,6 +360,7 @@
 				}
 			},
 			{
+				"name" : "SaveRect",			
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -354,8 +385,8 @@
 				"String" : "Quit To Menu",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -110.0,
+					"Y" : 200.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
@@ -376,6 +407,7 @@
 				}
 			},
 			{
+				"name" : "BToMRect",				
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {

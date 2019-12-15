@@ -1,9 +1,0 @@
-{
-"name" : "itemtest",
-"Components" : [
-{"class":"Sprite","textureAssetGUID":"2439332a10b084e43b3670f1578ade3b","Dimensions":{"Left":256,"Top":64,"Width":64,"Height":64},"layer":1},
-{"class":"Pickable","mType":0},
-{"class":"PolygonCollider","trigger":true,"box":{"height":64.0,"width":64.0}}
-]
-}
-

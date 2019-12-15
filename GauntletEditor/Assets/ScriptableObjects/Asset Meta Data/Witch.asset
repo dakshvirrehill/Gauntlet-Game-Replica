@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47b98f0c0d1555a4abafcd6c83d5745c, type: 3}
+  m_Script: {fileID: 11500000, guid: f6b1641c9f3f0ed4ea443b2fbe35d518, type: 3}
   m_Name: Witch
   m_EditorClassIdentifier: 
   mType: 1
   mAssetFilePath: ../Assets/Resources/Textures/Witch.png
-  mGUID: f5bb4e4306501e348bbbe07df7cec0d4
+  mGUID: 02474439ed208b34b89c086be1a23554

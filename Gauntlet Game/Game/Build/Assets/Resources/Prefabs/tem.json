@@ -1,0 +1,9 @@
+{
+"name" : "tem",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"3e5b887eb2e95644bb375aa4698c2254","Dimensions":{"Left":256,"Top":64,"Width":64,"Height":64},"layer":1},
+{"class":"Pickable","mType":0},
+{"class":"PolygonCollider","trigger":true,"box":{"height":64.0,"width":64.0}}
+]
+}
+

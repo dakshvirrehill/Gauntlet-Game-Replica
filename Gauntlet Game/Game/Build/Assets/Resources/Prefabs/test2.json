@@ -1,0 +1,14 @@
+{
+"name" : "test2",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"92514d43a081aab409be34225490860e","Dimensions":{"Left":0,"Top":64,"Width":64,"Height":64},"layer":3},
+{"class":"Projectile","mSpeed":8.819089889526368,"mPoolCount":14},
+{"class":"CircleCollider","radius":32.0,"trigger":true},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "test2"
+},
+{"textureAssetGUID":"92514d43a081aab409be34225490860e","class":"Animation","Name":"t","Speed":30.700000762939454,"Loopable":true,"Frames":[{"Left":64,"Top":64,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+
