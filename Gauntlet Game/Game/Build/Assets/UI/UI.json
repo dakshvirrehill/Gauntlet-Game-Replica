@@ -1,6 +1,6 @@
 {
 	"resources" : [
-		"../Assets/Resources/Fonts/xyz.ttf"
+		"../Assets/Resources/Fonts/GameFont.ttf.json"
 	],
 	"Gameobjects" : [
 		{
@@ -29,7 +29,7 @@
 					"X" : -940.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Red"
 			},
@@ -41,7 +41,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Blue"
 			},
@@ -53,7 +53,7 @@
 					"X" : 20.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Green"
 			},
@@ -65,7 +65,7 @@
 					"X" : 500.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Yellow"
 			}			
@@ -99,7 +99,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan",
 				"layer" : 6
@@ -145,7 +145,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan",
 				"layer" : 6
@@ -190,7 +190,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan"
 			},			
@@ -257,7 +257,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan",
 				"layer" : 6
@@ -303,7 +303,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan",
 				"layer" : 6
@@ -349,7 +349,7 @@
 					"X" : -460.0,
 					"Y" : -520.0
 				},
-				"FontGUID": "f24b59b9-8531-4c95-89c3-043b3b738969",
+				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 10,
 				"Fill Color": "Cyan",
 				"layer" : 5
