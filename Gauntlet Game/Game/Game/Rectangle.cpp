@@ -18,8 +18,8 @@ void Rectangle::load(json::JSON& pRectNode)
 	}
 	if (pRectNode.hasKey("color"))
 	{
-		mColor = sf::Color(pRectNode["color"]["r"].ToFloat(), pRectNode["color"]["g"].ToFloat()
-				, pRectNode["color"]["b"].ToFloat(), pRectNode["color"]["a"].ToFloat());
+		mColor = sf::Color(pRectNode["color"]["r"].ToInt(), pRectNode["color"]["g"].ToInt()
+				, pRectNode["color"]["b"].ToInt(), pRectNode["color"]["a"].ToInt());
 	}
 	IRenderable::loadLayer(pRectNode);
 }
@@ -30,8 +30,7 @@ void Rectangle::update(float deltaTime)
 	{
 		return;
 	}
-	sf::Vector2f aGPos = getGameObject()->getTransform()->getPosition();
-	mRectangle.setPosition(mOffset + aGPos);
+	mRectangle.setPosition(mOffset + getGameObject()->getTransform()->getPosition());
 }
 
 void Rectangle::render(sf::RenderWindow* _window)
