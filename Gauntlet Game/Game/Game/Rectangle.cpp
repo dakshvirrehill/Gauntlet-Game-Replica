@@ -10,7 +10,7 @@ void Rectangle::load(json::JSON& pRectNode)
 	Component::load(pRectNode);
 	if (pRectNode.hasKey("Size"))
 	{
-		mSize = sf::Vector2f(pRectNode["Size"]["X"].ToFloat(), pRectNode["Size"]["Y"].ToFloat());
+		mSize = sf::Vector2f(pRectNode["Size"]["width"].ToFloat(), pRectNode["Size"]["height"].ToFloat());
 	}
 	if (pRectNode.hasKey("offset"))
 	{
@@ -30,7 +30,8 @@ void Rectangle::update(float deltaTime)
 	{
 		return;
 	}
-	mRectangle.setPosition(mOffset + getGameObject()->getTransform()->getPosition());
+	sf::Vector2f aGPos = getGameObject()->getTransform()->getPosition();
+	mRectangle.setPosition(mOffset + aGPos);
 }
 
 void Rectangle::render(sf::RenderWindow* _window)

@@ -19,7 +19,7 @@ void Button::load(json::JSON& pButtonNode)
 	Component::load(pButtonNode);
 	if (pButtonNode.hasKey("Size"))
 	{
-		mSize = sf::Vector2f(pButtonNode["Size"]["X"].ToFloat(), pButtonNode["Size"]["Y"].ToFloat());
+		mSize = sf::Vector2f(pButtonNode["Size"]["width"].ToFloat(), pButtonNode["Size"]["height"].ToFloat());
 	}
 	if (pButtonNode.hasKey("offset"))
 	{
