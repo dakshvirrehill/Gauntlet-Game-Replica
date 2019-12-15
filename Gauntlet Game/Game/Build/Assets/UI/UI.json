@@ -33,7 +33,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Red"
 			},
 			{
@@ -45,7 +45,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Blue"
 			},
 			{
@@ -57,7 +57,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Green"
 			},
 			{
@@ -69,12 +69,13 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Yellow"
 			}			
 		],
 		"MainMenu" : [
 			{
+				"name" : "MainMenuRect",
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -99,11 +100,11 @@
 				"String" : "New Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -130.0,
+					"Y" : -250.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Cyan",
 				"layer" : 6
 			},			
@@ -121,6 +122,7 @@
 				}
 			},
 			{
+				"name" : "NewGameRect",				
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -145,11 +147,11 @@
 				"String" : "Load Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -130.0,
+					"Y" : -50.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Cyan",
 				"layer" : 6
 			},			
@@ -167,6 +169,7 @@
 				}
 			},
 			{
+				"name" : "LoadGameRect",
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -182,7 +185,8 @@
 					"g" : 255,
 					"b" : 0,
 					"a" : 255
-				}			
+				},
+				"layer" : 5				
 			},
 			{
 				"name" : "ExitGameText",
@@ -190,12 +194,13 @@
 				"String" : "Quit Game",
 				"enabled" : false,
 				"offset" : {
-					"X" : -460.0,
-					"Y" : -520.0
+					"X" : -130.0,
+					"Y" : 150.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
-				"Fill Color": "Cyan"
+				"Character Size": 30,
+				"Fill Color": "Cyan",
+				"layer" : 6
 			},			
 			{
 				"name" : "ExitButton",
@@ -208,10 +213,10 @@
 				"offset" : {
 					"X" : -150.0,
 					"Y" : 130.0
-				},
-				"layer" : 6
+				}
 			},
 			{
+				"name" : "ExitGameRect",
 				"class" : "Rectangle",
 				"enabled" : false,
 				"Size" : {
@@ -261,7 +266,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Cyan",
 				"layer" : 6
 			},			
@@ -307,7 +312,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Cyan",
 				"layer" : 6
 			},			
@@ -353,7 +358,7 @@
 					"Y" : -520.0
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
-				"Character Size": 10,
+				"Character Size": 30,
 				"Fill Color": "Cyan",
 				"layer" : 5
 			},			
