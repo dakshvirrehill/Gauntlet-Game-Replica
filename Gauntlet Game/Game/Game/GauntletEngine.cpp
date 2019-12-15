@@ -5,6 +5,10 @@
 #include "Player.h"
 #include "Projectile.h"
 #include "Enemy.h"
+#include "Pickable.h"
+#include "PlayerSpawner.h"
+#include "Teleporter.h"
+#include "SpawnFactory.h"
 #include "GauntletEngine.h"
 
 void GauntletEngine::registerClasses()
@@ -13,6 +17,10 @@ void GauntletEngine::registerClasses()
 	REGISTER_DYNAMIC_CLASS(CameraManager)
 	REGISTER_DYNAMIC_CLASS(Projectile)
 	REGISTER_DYNAMIC_CLASS(Enemy)
+	REGISTER_DYNAMIC_CLASS(Pickable)
+	REGISTER_DYNAMIC_CLASS(PlayerSpawner)
+	REGISTER_DYNAMIC_CLASS(Teleporter)
+	REGISTER_DYNAMIC_CLASS(SpawnFactory)
 }
 
 void GauntletEngine::initialize()

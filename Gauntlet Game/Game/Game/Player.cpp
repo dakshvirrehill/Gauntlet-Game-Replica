@@ -32,6 +32,7 @@ void Player::initialize()
 				aGameObject->setEnabled(false);
 				Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 				aProjectile->setPlayer(this);
+				mAvailableProjectiles.push_back(aGameObject);
 			}
 		}
 	}

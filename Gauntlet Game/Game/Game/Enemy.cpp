@@ -33,6 +33,7 @@ void Enemy::initialize()
 					aGameObject->setEnabled(false);
 					Projectile* aProjectile = static_cast<Projectile*>(aGameObject->getComponent("Projectile"));
 					aProjectile->setEnemy(this);
+					mAvailableProjectiles.push_back(aGameObject);
 				}
 			}
 		}
