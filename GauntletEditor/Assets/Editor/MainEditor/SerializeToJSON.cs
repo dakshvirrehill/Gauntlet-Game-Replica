@@ -84,7 +84,7 @@ public class SerializeToJSON
             aLevelJSON.Append("," + aResourcesArray.ToString());
             aLevelJSON.Append("}");
             SaveToFile(aLevelJSON.ToString(), Application.dataPath + "/Assets/Level Data/" + aLevel.mName + ".json");
-            aLevelOrderJSON.Append(aI + " : \"../Assets/Level Data/" + aLevel.mName + ".json\",");
+            aLevelOrderJSON.Append("\"" + aI + "\" : \"../Assets/Level Data/" + aLevel.mName + ".json\",");
             aI++;
         }
         aLevelOrderJSON.Remove(aLevelOrderJSON.Length - 1, 1);

@@ -6,14 +6,13 @@ class Button : public Component
 {
 	friend class UIManager;
 	DECLARE_DYNAMIC_DERIVED_CLASS(Button,Component)
-	std::list<std::function<void()>> mClickEvents;
+	std::function<void()> mClickEvent;
 	sf::Vector2f mSize;
 	sf::Vector2f mOffset;
 protected:
 	virtual void initialize() override;
 	virtual void update(float deltaTime) override;
-	inline void addOnClickEvent(std::function<void()> pEvent) { mClickEvents.push_back(pEvent); }
-	inline void removeOnClickEvent(std::function<void()> pEvent) { mClickEvents.remove(pEvent); }
+	inline void addOnClickEvent(std::function<void()> pEvent) { mClickEvent = pEvent; }
 public:
 	virtual void load(json::JSON&) override;
 };

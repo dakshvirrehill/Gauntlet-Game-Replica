@@ -1,11 +1,13 @@
 {
-"Levels" : {
-0 : "../Assets/Level Data/level2test.json",1 : "../Assets/Level Data/level1test.json"
-}
-,"resources" : [
-"../Assets/Resources/Textures/Dungeon.png.json","../Assets/Resources/Prefabs/itemtest.json.json"]
-
-,"mItemGUIDs" : [
-"ee6dd704b4fe531429894af68257e119"]
-
+  "Levels": {
+    "0": "../Assets/Level Data/level2test.json",
+    "1": "../Assets/Level Data/level1test.json"
+  },
+  "resources": [
+    "../Assets/Resources/Textures/Dungeon.png.json",
+    "../Assets/Resources/Prefabs/itemtest.json.json"
+  ],
+  "mItemGUIDs": [
+    "ee6dd704b4fe531429894af68257e119"
+  ]
 }

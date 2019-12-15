@@ -168,19 +168,31 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GauntletEngine.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Pickable.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerSpawner.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="SpawnFactory.cpp" />
+    <ClCompile Include="Teleporter.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameCore.h" />
     <ClInclude Include="GauntletEngine.h" />
+    <ClInclude Include="Pickable.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerSpawner.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="SpawnFactory.h" />
+    <ClInclude Include="Teleporter.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

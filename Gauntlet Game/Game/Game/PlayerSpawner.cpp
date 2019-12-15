@@ -1,7 +1,7 @@
 #include "GameCore.h"
 #include "PrefabAsset.h"
 #include "PlayerSpawner.h"
-
+IMPLEMENT_DYNAMIC_CLASS(PlayerSpawner)
 void PlayerSpawner::initialize()
 {
 	if (!isEnabled())

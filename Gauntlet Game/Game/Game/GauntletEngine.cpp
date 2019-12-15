@@ -9,6 +9,7 @@
 #include "PlayerSpawner.h"
 #include "Teleporter.h"
 #include "SpawnFactory.h"
+#include "UIManager.h"
 #include "GauntletEngine.h"
 
 void GauntletEngine::registerClasses()
@@ -26,12 +27,30 @@ void GauntletEngine::registerClasses()
 void GauntletEngine::initialize()
 {
 	registerClasses();
-
+	std::string aAssetPath = "../Assets/GauntletGame.json";
+	json::JSON aGauntletGameNode = FileSystem::instance().load(aAssetPath, false);
+	if (aGauntletGameNode.hasKey("Levels"))
+	{
+		for (auto& aLevelObj : aGauntletGameNode["Levels"].ObjectRange())
+		{
+			mLevels.emplace(std::stoi(aLevelObj.first), aLevelObj.second.ToString());
+		}
+	}
+	if (aGauntletGameNode.hasKey("mItemGUIDs"))
+	{
+		for (auto& aItemId : aGauntletGameNode["mItemGUIDs"].ArrayRange())
+		{
+			std::string aGUID = aItemId.ToString();
+			mItemIDs.push_back(GUIDToSTRCODE(aGUID));
+		}
+	}
+	mState = State::MainMenu;
+	UIManager::instance().initialize();
 }
 
 void GauntletEngine::update(float deltaTime)
 {
-
+	UIManager::instance().update(deltaTime);
 }
 
 void GauntletEngine::StartGame(bool pLoadMode)

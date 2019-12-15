@@ -24,7 +24,7 @@ public class AssetMetaData : ScriptableObject
         System.Text.StringBuilder aJSON = new System.Text.StringBuilder("{\n");
         aJSON.Append("\"class\" : \"" + mType.ToString("g") + "\",\n");
         aJSON.Append("\"guid\" : \"" + mGUID + "\",\n");
-        aJSON.Append("\"path\" : \"" + mAssetFilePath + "\",\n");
+        aJSON.Append("\"path\" : \"" + mAssetFilePath + "\"");
         aJSON.Append("\n}");
         return aJSON.ToString();
     }

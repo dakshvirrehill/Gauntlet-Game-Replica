@@ -43,10 +43,7 @@ void Button::update(float deltaTime)
 		{
 			if (aMousePosition.y >= aTopLeftPos.y && aMousePosition.y <= aBottomRightPos.y)
 			{
-				for (auto& aClickEvents : mClickEvents)
-				{
-					aClickEvents();
-				}
+				mClickEvent();
 			}
 		}
 	}

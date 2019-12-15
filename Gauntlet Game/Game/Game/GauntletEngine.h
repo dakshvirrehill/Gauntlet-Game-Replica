@@ -8,6 +8,7 @@ class GauntletEngine final : public ISystem
 	DECLARE_SINGLETON(GauntletEngine)
 	friend class GameEngine;
 	friend class UIManager;
+	int mCurrentLevel = 0;
 	std::list<STRCODE> mItemIDs;
 	std::map<int, std::string> mLevels;
 	Player* mMainPlayer = nullptr;
@@ -16,6 +17,7 @@ public:
 	{
 		None,
 		MainMenu,
+		GamePlay,
 		Paused,
 		GameOver
 	};
