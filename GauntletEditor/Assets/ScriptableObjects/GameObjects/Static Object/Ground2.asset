@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dae6640282fb04468b67e747a5a6292, type: 3}
+  m_Name: Ground2
+  m_EditorClassIdentifier: 
+  mIsPrefab: 0
+  mColliderType: 0
+  mIsTrigger: 0
+  mName: Ground2
+  mRenderLayer: 0
+  mType: 5
+  mDisplaySprite: {fileID: 1373970748780253702, guid: 3e5b887eb2e95644bb375aa4698c2254,
+    type: 3}
+  mBrushId: -1
+  mTextureGUID: 3e5b887eb2e95644bb375aa4698c2254

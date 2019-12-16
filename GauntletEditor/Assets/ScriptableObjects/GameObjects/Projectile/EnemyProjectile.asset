@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435c4cfbf3bef5e4b876c8e45a2d14c3, type: 3}
+  m_Name: EnemyProjectile
+  m_EditorClassIdentifier: 
+  mIsPrefab: 1
+  mColliderType: 2
+  mIsTrigger: 1
+  mName: EnemyProjectile
+  mRenderLayer: 3
+  mType: 3
+  mDisplaySprite: {fileID: 6993031405965254486, guid: 91f3081ab86cde54e83d6a57dc3b0f5e,
+    type: 3}
+  mBrushId: -1
+  mSpeed: 30
+  mPoolCount: 15
+  mProjectileAnimation:
+  - mAnimationName: Move
+    mAnimSpeed: 50
+    mTextureAssetGUID: 91f3081ab86cde54e83d6a57dc3b0f5e
+    mSprites:
+    - {fileID: 6993031405965254486, guid: 91f3081ab86cde54e83d6a57dc3b0f5e, type: 3}
+    - {fileID: 2325743687340750653, guid: 91f3081ab86cde54e83d6a57dc3b0f5e, type: 3}

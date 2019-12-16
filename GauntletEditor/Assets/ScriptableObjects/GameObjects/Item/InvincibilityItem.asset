@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ca669e4a6131c64c9847c2d234670db, type: 3}
+  m_Name: InvincibilityItem
+  m_EditorClassIdentifier: 
+  mIsPrefab: 1
+  mColliderType: 1
+  mIsTrigger: 1
+  mName: InvincibilityItem
+  mRenderLayer: 1
+  mType: 1
+  mDisplaySprite: {fileID: 6984513114953419391, guid: 3e5b887eb2e95644bb375aa4698c2254,
+    type: 3}
+  mBrushId: -1
+  mTextureGUID: 3e5b887eb2e95644bb375aa4698c2254
+  mItemType: 2
+  mSoundGUID: 
+  mItemCollectSound: {fileID: 0}

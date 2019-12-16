@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3a00ca0df730e14cbd247822d6fdc50, type: 3}
+  m_Name: ColliderEnemy
+  m_EditorClassIdentifier: 
+  mIsPrefab: 1
+  mColliderType: 2
+  mIsTrigger: 0
+  mName: ColliderEnemy
+  mRenderLayer: 2
+  mType: 0
+  mDisplaySprite: {fileID: 6647201616227316219, guid: 1fe41e4391d5d0e4b9e1a7f941d5b7fa,
+    type: 3}
+  mBrushId: -1
+  mEnemyAnimations:
+  - mAnimationName: Walk
+    mAnimSpeed: 50
+    mTextureAssetGUID: 1fe41e4391d5d0e4b9e1a7f941d5b7fa
+    mSprites:
+    - {fileID: 6647201616227316219, guid: 1fe41e4391d5d0e4b9e1a7f941d5b7fa, type: 3}
+    - {fileID: -1217731857473686402, guid: 1fe41e4391d5d0e4b9e1a7f941d5b7fa, type: 3}
+    - {fileID: 8345411657915940498, guid: 1fe41e4391d5d0e4b9e1a7f941d5b7fa, type: 3}
+  mStopRange: 0
+  mSpeed: 30
+  mEnemyType: 0
+  mProjectileGUID: 
+  mProjectile: {fileID: 0}
+  mAttackSoundGUID: 
+  mAttackSound: {fileID: 0}
+  mDeathSoundGUID: 
+  mDeathSound: {fileID: 0}

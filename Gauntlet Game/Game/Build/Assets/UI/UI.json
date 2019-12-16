@@ -34,7 +34,8 @@
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
-				"Fill Color": "Red"
+				"Fill Color": "Red",
+				"layer" : 6
 			},
 			{
 				"name" : "Lives",
@@ -46,7 +47,8 @@
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
-				"Fill Color": "Blue"
+				"Fill Color": "Blue",
+				"layer" : 6
 			},
 			{
 				"name" : "HighScore",
@@ -58,7 +60,8 @@
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
-				"Fill Color": "Green"
+				"Fill Color": "Green",
+				"layer" : 6				
 			},
 			{
 				"name" : "Kills",
@@ -70,7 +73,8 @@
 				},
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
-				"Fill Color": "Yellow"
+				"Fill Color": "Yellow",
+				"layer" : 6				
 			}			
 		],
 		"MainMenu" : [
@@ -391,7 +395,7 @@
 				"FontGUID": "7d17ead51096457e9cd9410db2ef2cd7",
 				"Character Size": 30,
 				"Fill Color": "Cyan",
-				"layer" : 5
+				"layer" : 6
 			},			
 			{
 				"name" : "MainMenuButton",

@@ -1,0 +1,14 @@
+{
+"name" : "CloseRangeEnemy",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"90ab05a0d2cd7244b9934909a73c3336","Dimensions":{"Left":192,"Top":448,"Width":64,"Height":64},"layer":2},
+{"class":"Enemy","mProjectileGUID":"NoID","mSpeed":23.218647003173829,"mType":1,"mStopRange":9.655938148498536},
+{"class":"CircleCollider","radius":32.0000114440918,"trigger":false},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "CloseRangeEnemy"
+},
+{"textureAssetGUID":"90ab05a0d2cd7244b9934909a73c3336","class":"Animation","Name":"Walk","Speed":50.0,"Loopable":true,"Frames":[{"Left":384,"Top":448,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+

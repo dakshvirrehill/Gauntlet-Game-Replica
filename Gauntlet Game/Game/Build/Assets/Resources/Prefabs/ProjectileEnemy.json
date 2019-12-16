@@ -1,0 +1,14 @@
+{
+"name" : "ProjectileEnemy",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"91f3081ab86cde54e83d6a57dc3b0f5e","Dimensions":{"Left":128,"Top":192,"Width":64,"Height":64},"layer":2},
+{"class":"Enemy","mProjectileGUID":"052f577725c402940ae8c7201770341b","mSpeed":16.148723602294923,"mType":2,"mStopRange":30.0},
+{"class":"CircleCollider","radius":32.0000114440918,"trigger":false},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "ProjectileEnemy"
+},
+{"textureAssetGUID":"91f3081ab86cde54e83d6a57dc3b0f5e","class":"Animation","Name":"Walk","Speed":50.0,"Loopable":true,"Frames":[{"Left":320,"Top":192,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+

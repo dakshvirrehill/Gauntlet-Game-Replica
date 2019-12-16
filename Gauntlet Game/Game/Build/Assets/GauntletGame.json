@@ -1,11 +1,11 @@
 {
 "Levels" : {
-"0" : "../Assets/Level Data/rtr.json","1" : "../Assets/Level Data/rtrt.json"
+"0" : "../Assets/Level Data/Level 1.json","1" : "../Assets/Level Data/Level 2.json"
 }
 ,"resources" : [
-"../Assets/Resources/Textures/Dungeon.png.json","../Assets/Resources/Prefabs/tem.json.json"]
+"../Assets/Resources/Textures/Dungeon.png.json","../Assets/Resources/Prefabs/HealthItem.json.json","../Assets/Resources/Prefabs/InvincibilityItem.json.json","../Assets/Resources/Prefabs/ScoreItem.json.json"]
 
 ,"mItemGUIDs" : [
-"5910bfc4114f6e64b88b7a52e20704f8"]
+"a03b265bbcec3434684d507aaf9bf5cb","0047d50ebb44e99449eb91058f2aae21","f9feb1eb4488de243bb312267f392b60"]
 
 }

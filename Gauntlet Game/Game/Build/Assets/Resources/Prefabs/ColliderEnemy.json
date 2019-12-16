@@ -1,0 +1,14 @@
+{
+"name" : "ColliderEnemy",
+"Components" : [
+{"class":"Sprite","textureAssetGUID":"1fe41e4391d5d0e4b9e1a7f941d5b7fa","Dimensions":{"Left":192,"Top":192,"Width":64,"Height":64},"layer":2},
+{"class":"Enemy","mProjectileGUID":"NoID","mSpeed":30.0,"mType":0,"mStopRange":0.0},
+{"class":"CircleCollider","radius":32.0000114440918,"trigger":false},
+{"class":"RigidBody","BodyType":1},
+{
+"class" : "Animator",
+"Name" : "ColliderEnemy"
+},
+{"textureAssetGUID":"1fe41e4391d5d0e4b9e1a7f941d5b7fa","class":"Animation","Name":"Walk","Speed":50.0,"Loopable":true,"Frames":[{"Left":320,"Top":192,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+

@@ -1,0 +1,14 @@
+{
+"name" : "MainPlayer",
+"Components" : [
+{"class":"Player","mProjectileGUID":"96c863023d3d49545846e3a07d2307a5","mSpeed":30.0,"mHealth":16.309446334838868},
+{"class":"Sprite","textureAssetGUID":"02474439ed208b34b89c086be1a23554","Dimensions":{"Left":128,"Top":448,"Width":64,"Height":64},"layer":3},
+{"class":"RigidBody","BodyType":1},
+{"class":"CircleCollider","radius":32.0000114440918,"trigger":false},
+{
+"class" : "Animator",
+"Name" : "MainPlayer"
+},
+{"textureAssetGUID":"02474439ed208b34b89c086be1a23554","class":"Animation","Name":"Walk","Speed":50.0,"Loopable":true,"Frames":[{"Left":704,"Top":448,"Width":64,"Height":64},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0},{"Left":0,"Top":0,"Width":0,"Height":0}]}]
+}
+
