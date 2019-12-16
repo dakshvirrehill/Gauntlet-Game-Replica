@@ -15,6 +15,7 @@ protected:
 	virtual void update(float deltaTime) override;
 	virtual void render(sf::RenderWindow* _window) override;
 public:
+	void updatePosition();
 	virtual void load(json::JSON&) override;
 };
 

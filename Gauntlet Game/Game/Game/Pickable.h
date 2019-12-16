@@ -11,10 +11,11 @@ public:
 		ScoreMultiplier,
 		Invincibility
 	};
+	Type mType = Type::HealthBooster;
 	Pickable() = default;
 	~Pickable() = default;
 private:
-	Type mType = Type::HealthBooster;
+	virtual void onTriggerEnter(const Collision* const collisionData);
 protected:
 	virtual void initialize() override;
 	virtual void load(json::JSON&) override;

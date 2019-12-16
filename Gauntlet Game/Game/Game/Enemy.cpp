@@ -4,7 +4,65 @@
 #include "PrefabAsset.h"
 #include "Projectile.h"
 #include "Enemy.h"
+#include "ICollidable.h"
+#include "SpawnFactory.h"
 IMPLEMENT_DYNAMIC_CLASS(Enemy)
+void Enemy::onTriggerEnter(const Collision* const collisionData)
+{
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	Projectile* aProj = static_cast<Projectile*>(aOther->getComponent("Projectile"));
+	if (aProj != nullptr)
+	{
+		if (aProj->mPlayer != nullptr)
+		{
+			if (mFactory != nullptr)
+			{
+				mFactory->addEnemyToPool(getGameObject());
+				GauntletEngine::instance().addScore((int)(mType + 1) * 2);
+			}
+		}
+	}
+}
+void Enemy::onCollisionEnter(const Collision* const collisionData)
+{
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	if (mType == Type::Collider)
+	{
+		if (aOther->getComponent("Player") != nullptr)
+		{
+			if (mFactory != nullptr)
+			{
+				mFactory->addEnemyToPool(getGameObject());
+			}
+		}
+	}
+}
 void Enemy::initialize()
 {
 	if (!isEnabled())
@@ -58,7 +116,7 @@ void Enemy::load(json::JSON& pEnemy)
 		}
 		if (pEnemy.hasKey("mStopRange"))
 		{
-			mStopRange = pEnemy["mStopRange"].ToFloat();
+			mStopRange = pEnemy["mStopRange"].ToFloat() * 100;
 		}
 	}
 	if (pEnemy.hasKey("mSpeed"))
@@ -75,12 +133,14 @@ void Enemy::update(float deltaTime)
 		return;
 	}
 	sf::Vector2f aMovementVector = GauntletEngine::instance().getPlayerPosition() - getGameObject()->getTransform()->getPosition();
+	float aLen = sqrt(aMovementVector.x * aMovementVector.x + aMovementVector.y * aMovementVector.y);
+	aMovementVector = aMovementVector / aLen;
+	aMovementVector *= mSpeed * deltaTime;
+	getGameObject()->getTransform()->translate(aMovementVector);
 	if (mType == Enemy::Type::ProjectileThrower)
 	{
 		mFireTime -= deltaTime;
-		float aLen = sqrt(aMovementVector.x * aMovementVector.x + aMovementVector.y * aMovementVector.y);
-		aMovementVector = aMovementVector / aLen;
-		sf::Vector2f aFinalPos = aMovementVector + getGameObject()->getTransform()->getPosition();
+		sf::Vector2f aFinalPos = getGameObject()->getTransform()->getPosition();
 		aFinalPos = GauntletEngine::instance().getPlayerPosition() - aFinalPos;
 		if ((aFinalPos.x * aFinalPos.x + aFinalPos.y * aFinalPos.y) <= (mStopRange * mStopRange))
 		{
@@ -97,12 +157,17 @@ void Enemy::update(float deltaTime)
 				Projectile* aProj = static_cast<Projectile*>(aProjectile->getComponent("Projectile"));
 				aProj->setMovePosition(GauntletEngine::instance().getPlayerPosition() - getGameObject()->getTransform()->getPosition());
 				aProjectile->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
+				for (auto& aComps : aProjectile->getAllComponents())
+				{
+					aComps.second->updatePosition();
+				}
 				aProjectile->setEnabled(true);
 			}
-			return;
+			aFinalPos = getGameObject()->getTransform()->getPosition() - aMovementVector;
+			getGameObject()->getTransform()->setPosition(aFinalPos);
 		}
 	}
-	getGameObject()->getTransform()->translate(aMovementVector * mSpeed * deltaTime);
+
 }
 
 Enemy::~Enemy()

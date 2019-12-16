@@ -9,9 +9,15 @@ class GauntletEngine final : public ISystem
 	friend class GameEngine;
 	friend class UIManager;
 	int mCurrentLevel = 0;
-	std::list<STRCODE> mItemIDs;
+	std::vector<STRCODE> mItemIDs;
 	std::map<int, std::string> mLevels;
+	int mKills = 0;
+	int mScore = 0;
+	int mHighScore = 0;
+	int mScoreMultiplier = 1;
 	Player* mMainPlayer = nullptr;
+	int mActiveSpawnFactoryCount = 0;
+	float mTimer;
 public:
 	enum State
 	{
@@ -37,9 +43,17 @@ protected:
 	inline void SetState(State pState) { mState = pState; }
 
 public:
-	inline void setPlayer(Player* pPlayer) { mMainPlayer = pPlayer; }
+	void addFactory() { mActiveSpawnFactoryCount++; }
+	void removeFactory();
+	STRCODE getRandomItemGUID();
+	void gameOver();
+	void addScore(int pScore);
+	void doubleMultiplier() { mScoreMultiplier *= 2; }
+	void setPlayer(Player* pPlayer);
 	const sf::Vector2f& getPlayerPosition();
 	inline const State& GetState() { return mState; }
+	void completeLevel();
+	std::string getTime();
 };
 
 #endif

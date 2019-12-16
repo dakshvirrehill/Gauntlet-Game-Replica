@@ -1,15 +1,42 @@
 #include "GameCore.h"
 #include "GameObject.h"
+#include "ICollidable.h"
+#include "Player.h"
 #include "Teleporter.h"
+#include "GauntletEngine.h"
 
 IMPLEMENT_DYNAMIC_CLASS(Teleporter)
+void Teleporter::onTriggerEnter(const Collision* const collisionData)
+{
+	int otherColliderIx = 1;
+	otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+
+	Player* aPlayer = dynamic_cast<Player*>(collisionData->colliders[otherColliderIx]->getGameObject()->getComponent("Player"));
+	if (aPlayer != nullptr)
+	{
+		GauntletEngine::instance().completeLevel();
+		getGameObject()->setEnabled(false);
+		GameObjectManager::instance().removeGameObject(getGameObject());
+	}
+}
 void Teleporter::initialize()
 {
 	if (!isEnabled())
 	{
 		return;
 	}
-	mPlayerGObj = GameObjectManager::instance().getGameObjectWithComponent(std::string("Player"));
 }
 
 void Teleporter::load(json::JSON& pNode)

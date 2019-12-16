@@ -50,6 +50,14 @@ void GauntletEngine::initialize()
 
 void GauntletEngine::update(float deltaTime)
 {
+	if (GauntletEngine::instance().mState == State::GamePlay)
+	{
+		mTimer -= deltaTime;
+		if (mTimer <= 0.0f)
+		{
+			gameOver();
+		}
+	}
 	UIManager::instance().update(deltaTime);
 }
 
@@ -60,7 +68,11 @@ void GauntletEngine::StartGame()
 		return;
 	}
 	GauntletEngine::instance().mState = State::GamePlay;
-	FileSystem::instance().load(GauntletEngine::instance().mLevels[GauntletEngine::instance().mCurrentLevel], true);
+	json::JSON aTimerNode = FileSystem::instance().load(GauntletEngine::instance().mLevels[GauntletEngine::instance().mCurrentLevel], true);
+	if (aTimerNode.hasKey("Timer"))
+	{
+		GauntletEngine::instance().mTimer = aTimerNode["Timer"].ToFloat();
+	}
 }
 
 void GauntletEngine::LoadGame()
@@ -88,6 +100,49 @@ void GauntletEngine::ExitToMenu()
 
 }
 
+void GauntletEngine::removeFactory()
+{
+	mActiveSpawnFactoryCount--;
+	if (mActiveSpawnFactoryCount <= 0)
+	{
+		GameObject* aGOBJ = GameObjectManager::instance().getGameObjectWithComponent("Teleporter");
+		if (aGOBJ != nullptr)
+		{
+			aGOBJ->setEnabled(true);
+		}
+	}
+}
+
+STRCODE GauntletEngine::getRandomItemGUID()
+{
+	return mItemIDs.at(Random.IRandom(0, mItemIDs.size() - 1));
+}
+
+void GauntletEngine::gameOver()
+{
+
+}
+
+void GauntletEngine::addScore(int pScore)
+{
+	mKills += 1;
+	mScore += mScoreMultiplier * pScore; 
+	mHighScore = mHighScore < mScore ? mScore : mHighScore;
+	UIManager::instance().printHUD(mHighScore, mKills, mMainPlayer->mHealth);
+}
+
+void GauntletEngine::setPlayer(Player* pPlayer)
+{
+	mMainPlayer = pPlayer;
+	if (mMainPlayer != nullptr)
+	{
+		UIManager::instance().printHUD(
+			GauntletEngine::instance().mHighScore,
+			GauntletEngine::instance().mKills,
+			GauntletEngine::instance().mMainPlayer->mHealth);
+	}
+}
+
 const sf::Vector2f& GauntletEngine::getPlayerPosition()
 {
 	if (mMainPlayer == nullptr)
@@ -98,4 +153,17 @@ const sf::Vector2f& GauntletEngine::getPlayerPosition()
 	{
 		return mMainPlayer->getGameObject()->getTransform()->getPosition();
 	}
+}
+
+void GauntletEngine::completeLevel()
+{
+
+}
+
+std::string GauntletEngine::getTime()
+{
+	int aMins = (int)(mTimer / 60.f);
+	int aSecs = (int)(mTimer - aMins * 60.f);
+	std::string aTime = std::to_string(aMins) + " : " + std::to_string(aSecs);
+	return aTime;
 }

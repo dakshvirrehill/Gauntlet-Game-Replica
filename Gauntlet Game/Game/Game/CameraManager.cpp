@@ -24,11 +24,15 @@ void CameraManager::update(float deltaTime)
 	{
 		return;
 	}
+	updatePosition();
+
+}
+
+void CameraManager::updatePosition()
+{
 	if (mPlayer == nullptr)
 	{
 		return;
 	}
-
 	getGameObject()->getTransform()->setPosition(mPlayer->getGameObject()->getTransform()->getPosition());
-
 }

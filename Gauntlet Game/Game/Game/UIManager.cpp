@@ -4,7 +4,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "UIManager.h"
-
+#include "Text.h"
 void UIManager::registerClasses()
 {
 	REGISTER_DYNAMIC_CLASS(Rectangle)
@@ -67,6 +67,17 @@ void UIManager::initialize()
 	aSaveButton->mClickEvent = &GauntletEngine::SaveGame;
 	Button* aExitMENU = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["MainMenuButton"]);
 	aExitMENU->mClickEvent = &GauntletEngine::ExitGame;
+	mTimer = static_cast<Text*>(mUIMap[GauntletEngine::State::GamePlay]["Timer"]);
+}
+
+void UIManager::printHUD( int& pHScore, int& pKills, float& pHealth)
+{
+	Text* aLives = static_cast<Text*>(mUIMap[GauntletEngine::State::GamePlay]["Lives"]);
+	aLives->setText("Lives : " + std::to_string((int)pHealth));
+	Text* aScore = static_cast<Text*>(mUIMap[GauntletEngine::State::GamePlay]["HighScore"]);
+	aScore->setText("HighScore : " + std::to_string(pHScore));
+	Text* aKills = static_cast<Text*>(mUIMap[GauntletEngine::State::GamePlay]["Kills"]);
+	aKills->setText("Kills : " + std::to_string(pKills));
 }
 
 void UIManager::update(float deltaTime)
@@ -93,4 +104,5 @@ void UIManager::update(float deltaTime)
 		}
 		
 	}
+	mTimer->setText("Time Left : " + GauntletEngine::instance().getTime());
 }

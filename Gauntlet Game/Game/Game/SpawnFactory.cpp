@@ -3,8 +3,66 @@
 #include "PrefabAsset.h"
 #include "Enemy.h"
 #include "SpawnFactory.h"
+#include "ICollidable.h"
+#include "Projectile.h"
+#include "GauntletEngine.h"
 
 IMPLEMENT_DYNAMIC_CLASS(SpawnFactory)
+
+void SpawnFactory::increasePool(int pAmount)
+{
+	PrefabAsset* aPrefabAsset = static_cast<PrefabAsset*>(AssetManager::instance().GetAssetBySTRCODE(mEnemyStrCode));
+	if (aPrefabAsset != nullptr)
+	{
+		mPoolCount += pAmount;
+		for (int aI = 0; aI < pAmount; aI ++)
+		{
+			GameObject* aGameObject = new GameObject();
+			aGameObject->load(aPrefabAsset->getPrefab());
+			aGameObject->setEnabled(false);
+			GameObjectManager::instance().addGameObject(aGameObject);
+			mAvailableEnemies.push_back(aGameObject);
+			Enemy* aEnemy = static_cast<Enemy*>(aGameObject->getComponent("Enemy"));
+			aEnemy->mFactory = this;
+		}
+	}
+}
+
+void SpawnFactory::onTriggerEnter(const Collision* const collisionData)
+{
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	Projectile* aProj = static_cast<Projectile*>(aOther->getComponent("Projectile"));
+	if (aProj != nullptr)
+	{
+		if (aProj->mPlayer != nullptr)
+		{
+			getGameObject()->setEnabled(false);
+			PrefabAsset* aItem = static_cast<PrefabAsset*>(AssetManager::instance().GetAssetBySTRCODE( 
+				GauntletEngine::instance().getRandomItemGUID()
+			));
+			if (aItem != nullptr)
+			{
+				GameObject* aGObj = GameObjectManager::instance().instance().instantiatePrefab(aItem);
+				aGObj->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
+			}
+			GauntletEngine::instance().removeFactory();
+			GauntletEngine::instance().addScore(5);
+		}
+	}
+}
 
 void SpawnFactory::initialize()
 {
@@ -26,6 +84,8 @@ void SpawnFactory::initialize()
 				aGameObject->setEnabled(false);
 				GameObjectManager::instance().addGameObject(aGameObject);
 				mAvailableEnemies.push_back(aGameObject);
+				Enemy* aEnemy = static_cast<Enemy*>(aGameObject->getComponent("Enemy"));
+				aEnemy->mFactory = this;
 			}
 		}
 	}
@@ -68,7 +128,7 @@ void SpawnFactory::update(float deltaTime)
 		mSpawnTime = (((aPercentage - 0) * (mMaxSpawnTime - 0)) / (1 - 0)) + mMinSpawnTime;
 		if (mAvailableEnemies.size() <= 0)
 		{
-			return;
+			increasePool(5);
 		}
 		GameObject* aEnemy = mAvailableEnemies.back();
 		mAvailableEnemies.pop_back();
@@ -93,5 +153,12 @@ void SpawnFactory::addEnemyToPool(GameObject* pEnemy)
 	mUnavailableEnemies.remove(pEnemy);
 	mAvailableEnemies.push_back(pEnemy);
 }
+
+SpawnFactory::SpawnFactory()
+{
+	GauntletEngine::instance().addFactory();
+}
+
+
 
 

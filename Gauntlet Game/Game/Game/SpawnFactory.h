@@ -13,13 +13,15 @@ class SpawnFactory : public Component
 	float mSpawnTime = 0;
 	std::list<GameObject*> mAvailableEnemies;
 	std::list<GameObject*> mUnavailableEnemies;
+	void increasePool(int pAmount);
+	virtual void onTriggerEnter(const Collision* const collisionData);
 protected:
 	virtual void initialize() override;
 	virtual void load(json::JSON&) override;
 	virtual void update(float deltaTime) override;
 public:
 	void addEnemyToPool(GameObject*);
-	SpawnFactory() = default;
+	SpawnFactory();
 	~SpawnFactory() = default;
 
 };

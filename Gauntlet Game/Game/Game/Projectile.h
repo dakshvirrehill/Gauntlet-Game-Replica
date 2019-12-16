@@ -10,13 +10,14 @@ class Projectile : public Component
 	float mSpeed = 0;
 	int mPoolCount = 0;
 	sf::Vector2f mMovementVector;
-	Player* mPlayer = nullptr;
-	Enemy* mEnemy = nullptr;
+	virtual void onTriggerEnter(const Collision* const collisionData);
 protected:
 	virtual void initialize() override;
 	virtual void load(json::JSON&) override;
 	virtual void update(float deltaTime) override;
 public:
+	Player* mPlayer = nullptr;
+	Enemy* mEnemy = nullptr;
 	Projectile() = default;
 	~Projectile();
 	void setMovePosition(sf::Vector2f pMoveVector);

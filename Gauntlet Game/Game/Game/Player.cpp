@@ -4,9 +4,139 @@
 #include "Projectile.h"
 #include "CameraManager.h"
 #include "Player.h"
+#include "ICollidable.h"
+#include "Pickable.h"
+#include "Enemy.h"
 #include "GauntletEngine.h"
 
 IMPLEMENT_DYNAMIC_CLASS(Player)
+
+void Player::onTriggerEnter(const Collision* const collisionData)
+{
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	if (aOther->getComponent("Teleporter") != nullptr)
+	{
+		return;
+	}
+	Projectile* aProj = static_cast<Projectile*>(aOther->getComponent("Projectile"));
+	if (aProj != nullptr)
+	{
+		if (aProj->mPlayer != nullptr)
+		{
+			return;
+		}
+		else
+		{
+			if (mInvincible)
+			{
+				return;
+			}
+			doDamage(1);
+		}
+	}
+	Pickable* aPickable = static_cast<Pickable*>(aOther->getComponent("Pickable"));
+	if (aPickable != nullptr)
+	{
+		switch (aPickable->mType)
+		{
+		case Pickable::Type::HealthBooster: mHealth += 10;
+			break;
+		case Pickable::Type::Invincibility: mInvincible = true;
+			break;
+		case Pickable::Type::ScoreMultiplier: GauntletEngine::instance().doubleMultiplier();
+			break;
+		}
+	}
+}
+
+void Player::onCollisionEnter(const Collision* const collisionData)
+{
+	if (mInvincible)
+	{
+		return;
+	}
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	Enemy* aEnemy = static_cast<Enemy*>(aOther->getComponent("Enemy"));
+	if (aEnemy == nullptr)
+	{
+		return;
+	}
+	switch (aEnemy->getType())
+	{
+	case Enemy::Type::Collider: doDamage(2);
+		break;
+	case Enemy::Type::CloseRange: doDamage(1);
+		break;
+	}
+}
+
+void Player::onCollisionStay(const Collision* const collisionData)
+{
+	if (mInvincible)
+	{
+		return;
+	}
+	int otherColliderIx = 1;
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		otherColliderIx = 0;
+	}
+	if (collisionData->colliders[otherColliderIx] == nullptr)
+	{
+		return;
+	}
+	if (collisionData->colliders[otherColliderIx]->getGameObject() == getGameObject())
+	{
+		otherColliderIx = 0;
+	}
+	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
+	Enemy* aEnemy = static_cast<Enemy*>(aOther->getComponent("Enemy"));
+	if (aEnemy == nullptr)
+	{
+		return;
+	}
+	if (aEnemy->getType() != Enemy::Type::CloseRange)
+	{
+		return;
+	}
+	doDamage(1);
+}
+
+void Player::doDamage(int pDamage)
+{
+	mHealth -= pDamage;
+	if (mHealth <= 0)
+	{
+		GauntletEngine::instance().gameOver();
+		getGameObject()->setEnabled(false);
+	}
+}
 
 void Player::initialize()
 {
@@ -103,6 +233,10 @@ void Player::update(float deltaTime)
 		Projectile* aProj = static_cast<Projectile*>(aProjectile->getComponent("Projectile"));
 		aProjectile->getTransform()->setPosition(aPlayerPosition);
 		aProj->setMovePosition(aMousePosition - aPlayerPosition);
+		for (auto& aComps : aProjectile->getAllComponents())
+		{
+			aComps.second->updatePosition();
+		}
 		aProjectile->setEnabled(true);
 	}
 }

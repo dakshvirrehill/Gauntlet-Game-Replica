@@ -13,5 +13,6 @@ protected:
 	virtual void update(float deltaTime) override;
 public:
 	void setPlayer(Player* pPlayer) { mPlayer = pPlayer; }
+	void updatePosition();
 };
 #endif

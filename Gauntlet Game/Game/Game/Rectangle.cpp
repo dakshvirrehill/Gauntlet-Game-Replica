@@ -30,6 +30,11 @@ void Rectangle::update(float deltaTime)
 	{
 		return;
 	}
+	updatePosition();
+}
+
+void Rectangle::updatePosition()
+{
 	mRectangle.setPosition(mOffset + getGameObject()->getTransform()->getPosition());
 }
 
