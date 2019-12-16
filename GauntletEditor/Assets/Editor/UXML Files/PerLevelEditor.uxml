@@ -5,7 +5,7 @@ UnityEditor.UIElements ../../../UIElementsSchema/UnityEditor.UIElements.xsd Unit
   <VisualElement>
     <VisualElement>
       <TextField binding-path="mName" name="level_name" label="Level Name" class ="rowData"/>
-      <Slider label ="Level Time" binding-path="mTime" name ="level_time" class ="rowData" low-value="60" high-value="600"/>
+      <Slider label ="Level Time" binding-path="mTime" name ="level_time" class ="rowData" low-value="60" high-value="600.001"/>
       <uieed:ObjectField name ="gameplay_music" allow-scene-objects="false" label ="Game Play Music" class ="objectField"/>
       <VisualElement>
         <SliderInt label ="Number of Rows" name ="row_size" binding-path="mRows" class ="rowData" low-value="32" high-value="120"/>

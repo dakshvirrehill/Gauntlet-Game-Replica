@@ -175,16 +175,16 @@ public class SerializeToJSON
         Player aPlScriptable = AssetDatabase.LoadAssetAtPath<Player>(AssetDatabase.GUIDToAssetPath(pPlayer.mGUID));
         string aPlayerFilePath = "/Assets/Resources/Prefabs/" + aPlScriptable.mName + ".json";
         pPlayer.mAssetFilePath = ".." + aPlayerFilePath;
+        SaveProjectile(GetAssetFromGUID(aPlScriptable.mGUIDProjectile, AssetMetaData.AssetType.PrefabAsset), ref pResources);
+        SaveAssetData(GetAssetFromGUID(aPlScriptable.mAnimationData[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
         if (!IsAssetInResources(Application.dataPath + aPlayerFilePath))
         {
             GPlayer aPlayer = new GPlayer();
             aPlayer.mHealth = aPlScriptable.mHealth;
             aPlayer.mSpeed = aPlScriptable.mSpeed;
             aPlayer.mProjectileGUID = aPlScriptable.mGUIDProjectile;
-            SaveProjectile(GetAssetFromGUID(aPlayer.mProjectileGUID, AssetMetaData.AssetType.PrefabAsset), ref pResources);
             GSprite aSprite = new GSprite(aPlScriptable.mDisplaySprite.rect, aPlScriptable.mAnimationData[0].mTextureAssetGUID,
                 aPlScriptable.mDisplaySprite.texture.height, (int)aPlScriptable.mRenderLayer);
-            SaveAssetData(GetAssetFromGUID(aPlScriptable.mAnimationData[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
             GCircleCollider aCircleCollider = new GCircleCollider(32.00001f, false);
             GRigidbody aRigidBody = new GRigidbody();
             StringBuilder aPlayerObject = new StringBuilder("{\n");
@@ -231,6 +231,7 @@ public class SerializeToJSON
         Projectile aProjectile = AssetDatabase.LoadAssetAtPath<Projectile>(AssetDatabase.GUIDToAssetPath(pProjectile.mGUID));
         string aProjectileFilePath = "/Assets/Resources/Prefabs/" + aProjectile.mName + ".json";
         pProjectile.mAssetFilePath = ".." + aProjectileFilePath;
+        SaveAssetData(GetAssetFromGUID(aProjectile.mProjectileAnimation[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
         if (!IsAssetInResources(Application.dataPath + aProjectileFilePath))
         {
             GProjectile aProj = new GProjectile();
@@ -240,7 +241,6 @@ public class SerializeToJSON
             GRigidbody aRigidBody = new GRigidbody();
             GSprite aSprite = new GSprite(aProjectile.mDisplaySprite.rect, aProjectile.mProjectileAnimation[0].mTextureAssetGUID,
                 aProjectile.mDisplaySprite.texture.height, (int)aProjectile.mRenderLayer);
-            SaveAssetData(GetAssetFromGUID(aProjectile.mProjectileAnimation[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
             StringBuilder aProjectileObject = new StringBuilder("{\n");
             aProjectileObject.Append("\"name\" : \"" + aProjectile.mName + "\",\n");
             aProjectileObject.Append("\"Components\" : [\n");
@@ -274,7 +274,12 @@ public class SerializeToJSON
         Enemy aEnemy = AssetDatabase.LoadAssetAtPath<Enemy>(AssetDatabase.GUIDToAssetPath(pEnemy.mGUID));
         string aEnemyFilePath = "/Assets/Resources/Prefabs/" + aEnemy.mName + ".json";
         pEnemy.mAssetFilePath = ".." + aEnemyFilePath;
-        if(!IsAssetInResources(Application.dataPath + aEnemyFilePath))
+        if(aEnemy.mEnemyType == Enemy.Type.ProjectileThrower)
+        {
+            SaveProjectile(GetAssetFromGUID(aEnemy.mProjectileGUID, AssetMetaData.AssetType.PrefabAsset), ref pResources);
+        }
+        SaveAssetData(GetAssetFromGUID(aEnemy.mEnemyAnimations[0].mTextureAssetGUID, AssetMetaData.AssetType.TextureAsset), ref pResources);
+        if (!IsAssetInResources(Application.dataPath + aEnemyFilePath))
         {
             GEnemy aEnemyComp = new GEnemy();
             aEnemyComp.mType = aEnemy.mEnemyType;
@@ -283,7 +288,6 @@ public class SerializeToJSON
             if (aEnemyComp.mType == Enemy.Type.ProjectileThrower)
             {
                 aEnemyComp.mProjectileGUID = aEnemy.mProjectileGUID;
-                SaveProjectile(GetAssetFromGUID(aEnemy.mProjectileGUID, AssetMetaData.AssetType.PrefabAsset), ref pResources);
             }
             GSprite aSprite = new GSprite(aEnemy.mDisplaySprite.rect, aEnemy.mEnemyAnimations[0].mTextureAssetGUID,
                 aEnemy.mDisplaySprite.texture.height, (int)aEnemy.mRenderLayer);
@@ -362,6 +366,7 @@ public class SerializeToJSON
     {
         StringBuilder aEndPositionGobj = new StringBuilder("{");
         aEndPositionGobj.Append("\"name\" : \"End Position\",\n");
+        aEndPositionGobj.Append("\"enabled\" : false,\n");
         aEndPositionGobj.Append("\"Components\" : [\n");
         GTransform aTransform = new GTransform();
         aTransform.Position = new position(pEndPosition.mWorldPosition.x * 64.00001f, pEndPosition.mWorldPosition.y * 64.00001f);

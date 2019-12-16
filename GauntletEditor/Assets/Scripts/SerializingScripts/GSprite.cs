@@ -24,7 +24,7 @@ public class GSprite
         Dimensions = new dimensions
         {
             Left = (int)pSpriteRect.x,
-            Top = pHeight - (int)pSpriteRect.y,
+            Top = pHeight - (int)pSpriteRect.height - (int)pSpriteRect.y,
             Width = (int)pSpriteRect.width,
             Height = (int)pSpriteRect.height
         };
