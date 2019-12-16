@@ -57,6 +57,10 @@ void GauntletEngine::update(float deltaTime)
 		{
 			gameOver();
 		}
+		if (InputManager::instance().getKeyState(sf::Keyboard::Tilde) == InputManager::PushState::Down)
+		{
+			pauseGame();
+		}
 	}
 	UIManager::instance().update(deltaTime);
 }
@@ -82,12 +86,12 @@ void GauntletEngine::LoadGame()
 
 void GauntletEngine::ExitGame()
 {
-
+	RenderSystem::instance().closeWindow();
 }
 
 void GauntletEngine::ContinueGame()
 {
-
+	GauntletEngine::instance().mState = State::GamePlay;
 }
 
 void GauntletEngine::SaveGame()
@@ -97,7 +101,12 @@ void GauntletEngine::SaveGame()
 
 void GauntletEngine::ExitToMenu()
 {
+	instance().gameOver();
+}
 
+void GauntletEngine::pauseGame()
+{
+	mState = State::Paused;
 }
 
 void GauntletEngine::removeFactory()
@@ -120,7 +129,9 @@ STRCODE GauntletEngine::getRandomItemGUID()
 
 void GauntletEngine::gameOver()
 {
-
+	FileSystem::instance().unload(mLevels[mCurrentLevel]);
+	mState = State::MainMenu;
+	mCurrentLevel = 0;
 }
 
 void GauntletEngine::addScore(int pScore)
@@ -157,7 +168,20 @@ const sf::Vector2f& GauntletEngine::getPlayerPosition()
 
 void GauntletEngine::completeLevel()
 {
-
+	FileSystem::instance().unload(mLevels[mCurrentLevel]);
+	mCurrentLevel++;
+	mScoreMultiplier = 1;
+	if (mLevels.count(mCurrentLevel) == 0)
+	{
+		mState = State::MainMenu;
+		mCurrentLevel = 0;
+		return;
+	}
+	json::JSON aTimerNode = FileSystem::instance().load(mLevels[mCurrentLevel], true);
+	if (aTimerNode.hasKey("Timer"))
+	{
+		GauntletEngine::instance().mTimer = aTimerNode["Timer"].ToFloat();
+	}
 }
 
 std::string GauntletEngine::getTime()

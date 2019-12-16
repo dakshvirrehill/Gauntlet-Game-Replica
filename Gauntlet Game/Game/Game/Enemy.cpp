@@ -9,6 +9,11 @@
 IMPLEMENT_DYNAMIC_CLASS(Enemy)
 void Enemy::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
 	{
@@ -38,6 +43,11 @@ void Enemy::onTriggerEnter(const Collision* const collisionData)
 }
 void Enemy::onCollisionEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
 	{
@@ -116,18 +126,23 @@ void Enemy::load(json::JSON& pEnemy)
 		}
 		if (pEnemy.hasKey("mStopRange"))
 		{
-			mStopRange = pEnemy["mStopRange"].ToFloat() * 100;
+			mStopRange = pEnemy["mStopRange"].ToFloat() * 10;
 		}
 	}
 	if (pEnemy.hasKey("mSpeed"))
 	{
-		mSpeed = pEnemy["mSpeed"].ToFloat();
-		mFireTime = mSpeed * 0.5f;
+		mSpeed = pEnemy["mSpeed"].ToFloat() * 2.f;
+		mFireTime = 1.f;
 	}
 }
 
 void Enemy::update(float deltaTime)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	if (!getGameObject()->isEnabled() || !isEnabled())
 	{
 		return;
@@ -146,7 +161,7 @@ void Enemy::update(float deltaTime)
 		{
 			if (mFireTime <= 0)
 			{
-				mFireTime = mSpeed * 0.5f;
+				mFireTime = 1.5f;
 				if (mAvailableProjectiles.size() <= 0)
 				{
 					return;
@@ -157,11 +172,11 @@ void Enemy::update(float deltaTime)
 				Projectile* aProj = static_cast<Projectile*>(aProjectile->getComponent("Projectile"));
 				aProj->setMovePosition(GauntletEngine::instance().getPlayerPosition() - getGameObject()->getTransform()->getPosition());
 				aProjectile->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
+				aProjectile->setEnabled(true);
 				for (auto& aComps : aProjectile->getAllComponents())
 				{
 					aComps.second->updatePosition();
 				}
-				aProjectile->setEnabled(true);
 			}
 			aFinalPos = getGameObject()->getTransform()->getPosition() - aMovementVector;
 			getGameObject()->getTransform()->setPosition(aFinalPos);
@@ -183,7 +198,7 @@ void Enemy::addProjectileToPool(GameObject* pProjectile)
 	}
 	if (mUnavailableProjectiles.size() <= 0)
 	{
-		GameObjectManager::instance().removeGameObject(pProjectile);
+		pProjectile->setEnabled(false);
 		return;
 	}
 	pProjectile->setEnabled(false);

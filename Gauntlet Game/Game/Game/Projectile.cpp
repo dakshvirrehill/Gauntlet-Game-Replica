@@ -4,9 +4,15 @@
 #include "Player.h"
 #include "ICollidable.h"
 #include "Projectile.h"
+#include "GauntletEngine.h"
 IMPLEMENT_DYNAMIC_CLASS(Projectile)
 void Projectile::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
@@ -22,7 +28,6 @@ void Projectile::onTriggerEnter(const Collision* const collisionData)
 		otherColliderIx = 0;
 	}
 	GameObject* aOther = collisionData->colliders[otherColliderIx]->getGameObject();
-	//if anything else is required
 	if (mPlayer != nullptr)
 	{
 		if (aOther == mPlayer->getGameObject())
@@ -58,7 +63,7 @@ void Projectile::load(json::JSON& pProjectileNode)
 	Component::load(pProjectileNode);
 	if (pProjectileNode.hasKey("mSpeed"))
 	{
-		mSpeed = pProjectileNode["mSpeed"].ToFloat();
+		mSpeed = pProjectileNode["mSpeed"].ToFloat() * 3.f;
 	}
 	if (pProjectileNode.hasKey("mPoolCount"))
 	{
@@ -72,6 +77,11 @@ void Projectile::update(float deltaTime)
 	{
 		return;
 	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	getGameObject()->getTransform()->translate(mMovementVector * mSpeed * deltaTime);
 }
 

@@ -33,6 +33,10 @@ void Button::update(float deltaTime)
 	{
 		return;
 	}
+	if (RenderSystem::instance().getRenderWindow() == nullptr)
+	{
+		return;
+	}
 	if (InputManager::instance().getMouseButtonState(sf::Mouse::Left) == InputManager::PushState::Up)
 	{
 		sf::Vector2f aMousePosition = InputManager::instance().getMousePosition();

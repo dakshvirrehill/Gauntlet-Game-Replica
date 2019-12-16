@@ -40,6 +40,7 @@ protected:
 	static void ContinueGame();
 	static void SaveGame();
 	static void ExitToMenu();
+	void pauseGame();
 	inline void SetState(State pState) { mState = pState; }
 
 public:

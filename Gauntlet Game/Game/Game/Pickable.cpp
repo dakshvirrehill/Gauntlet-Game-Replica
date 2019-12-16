@@ -2,10 +2,15 @@
 #include "GameObject.h"
 #include "Pickable.h"
 #include "ICollidable.h"
+#include "GauntletEngine.h"
 IMPLEMENT_DYNAMIC_CLASS(Pickable)
 
 void Pickable::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
 	int otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
 	{
@@ -49,6 +54,10 @@ void Pickable::load(json::JSON& pPickableNode)
 void Pickable::update(float deltaTime)
 {
 	if (!getGameObject()->isEnabled() || !isEnabled())
+	{
+		return;
+	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
 	{
 		return;
 	}

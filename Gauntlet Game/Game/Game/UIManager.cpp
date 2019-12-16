@@ -66,7 +66,7 @@ void UIManager::initialize()
 	Button* aSaveButton = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["SaveGameButton"]);
 	aSaveButton->mClickEvent = &GauntletEngine::SaveGame;
 	Button* aExitMENU = static_cast<Button*>(mUIMap[GauntletEngine::State::Paused]["MainMenuButton"]);
-	aExitMENU->mClickEvent = &GauntletEngine::ExitGame;
+	aExitMENU->mClickEvent = &GauntletEngine::ExitToMenu;
 	mTimer = static_cast<Text*>(mUIMap[GauntletEngine::State::GamePlay]["Timer"]);
 }
 
@@ -90,7 +90,7 @@ void UIManager::update(float deltaTime)
 			for (auto& components : mUIMap[mPrevState])
 			{
 				components.second->setEnabled(false);
-				aCameraObject->removeComponent(components.second->getID());
+			//	aCameraObject->removeComponent(components.second->getID());
 			}
 		}
 		mPrevState = GauntletEngine::instance().GetState();

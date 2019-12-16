@@ -30,6 +30,11 @@ void SpawnFactory::increasePool(int pAmount)
 
 void SpawnFactory::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
 	{
@@ -121,6 +126,10 @@ void SpawnFactory::update(float deltaTime)
 	{
 		return;
 	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
 	mSpawnTime -= deltaTime;
 	if (mSpawnTime <= 0.f)
 	{
@@ -133,7 +142,8 @@ void SpawnFactory::update(float deltaTime)
 		GameObject* aEnemy = mAvailableEnemies.back();
 		mAvailableEnemies.pop_back();
 		mUnavailableEnemies.push_back(aEnemy);
-		aEnemy->getTransform()->setPosition(getGameObject()->getTransform()->getPosition());
+		aEnemy->getTransform()->setPosition(getGameObject()->getTransform()->getPosition() + 
+			sf::Vector2f(64.f,-64.f));
 		aEnemy->setEnabled(true);
 	}
 }
@@ -146,7 +156,7 @@ void SpawnFactory::addEnemyToPool(GameObject* pEnemy)
 	}
 	if (mUnavailableEnemies.size() <= 0)
 	{
-		GameObjectManager::instance().removeGameObject(pEnemy);
+		pEnemy->setEnabled(false);
 		return;
 	}
 	pEnemy->setEnabled(false);

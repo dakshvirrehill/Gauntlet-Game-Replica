@@ -8,6 +8,11 @@
 IMPLEMENT_DYNAMIC_CLASS(Teleporter)
 void Teleporter::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
@@ -26,9 +31,8 @@ void Teleporter::onTriggerEnter(const Collision* const collisionData)
 	Player* aPlayer = dynamic_cast<Player*>(collisionData->colliders[otherColliderIx]->getGameObject()->getComponent("Player"));
 	if (aPlayer != nullptr)
 	{
-		GauntletEngine::instance().completeLevel();
 		getGameObject()->setEnabled(false);
-		GameObjectManager::instance().removeGameObject(getGameObject());
+		GauntletEngine::instance().completeLevel();
 	}
 }
 void Teleporter::initialize()
@@ -47,6 +51,10 @@ void Teleporter::load(json::JSON& pNode)
 void Teleporter::update(float deltaTime)
 {
 	if (!getGameObject()->isEnabled() || !isEnabled())
+	{
+		return;
+	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
 	{
 		return;
 	}

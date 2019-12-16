@@ -13,6 +13,11 @@ IMPLEMENT_DYNAMIC_CLASS(Player)
 
 void Player::onTriggerEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	int otherColliderIx = 1;
 	if (collisionData->colliders[otherColliderIx] == nullptr)
 	{
@@ -64,6 +69,11 @@ void Player::onTriggerEnter(const Collision* const collisionData)
 
 void Player::onCollisionEnter(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	if (mInvincible)
 	{
 		return;
@@ -98,6 +108,11 @@ void Player::onCollisionEnter(const Collision* const collisionData)
 
 void Player::onCollisionStay(const Collision* const collisionData)
 {
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	if (mInvincible)
 	{
 		return;
@@ -125,12 +140,17 @@ void Player::onCollisionStay(const Collision* const collisionData)
 	{
 		return;
 	}
-	doDamage(1);
+	if (mInAttackTime <= 0)
+	{
+		doDamage(1);
+		mInAttackTime = mSpeed * 0.25f;
+	}
 }
 
 void Player::doDamage(int pDamage)
 {
 	mHealth -= pDamage;
+	GauntletEngine::instance().addScore(0);
 	if (mHealth <= 0)
 	{
 		GauntletEngine::instance().gameOver();
@@ -186,7 +206,7 @@ void Player::load(json::JSON& pPlayerNode)
 	}
 	if (pPlayerNode.hasKey("mSpeed"))
 	{
-		mSpeed = pPlayerNode["mSpeed"].ToFloat();
+		mSpeed = pPlayerNode["mSpeed"].ToFloat() * 3.f;
 	}
 	if (pPlayerNode.hasKey("mHealth"))
 	{
@@ -200,7 +220,13 @@ void Player::update(float deltaTime)
 	{
 		return;
 	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	sf::Vector2f aMovementVector(0.f, 0.f);
+	mInAttackTime -= deltaTime;
 	if (InputManager::instance().getKeyState(sf::Keyboard::W) == InputManager::PushState::Held)
 	{
 		aMovementVector.y = -1;
@@ -233,11 +259,11 @@ void Player::update(float deltaTime)
 		Projectile* aProj = static_cast<Projectile*>(aProjectile->getComponent("Projectile"));
 		aProjectile->getTransform()->setPosition(aPlayerPosition);
 		aProj->setMovePosition(aMousePosition - aPlayerPosition);
+		aProjectile->setEnabled(true);
 		for (auto& aComps : aProjectile->getAllComponents())
 		{
 			aComps.second->updatePosition();
 		}
-		aProjectile->setEnabled(true);
 	}
 }
 
@@ -249,7 +275,7 @@ void Player::addProjectileToPool(GameObject* pProjectile)
 	}
 	if (mUnavailableProjectiles.size() <= 0)
 	{
-		GameObjectManager::instance().removeGameObject(pProjectile);
+		pProjectile->setEnabled(false);
 		return;
 	}
 	pProjectile->setEnabled(false);

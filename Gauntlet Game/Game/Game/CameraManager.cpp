@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "Player.h"
 #include "CameraManager.h"
+#include "GauntletEngine.h"
 IMPLEMENT_DYNAMIC_CLASS(CameraManager)
 void CameraManager::initialize()
 {
@@ -24,6 +25,11 @@ void CameraManager::update(float deltaTime)
 	{
 		return;
 	}
+	if (GauntletEngine::instance().GetState() != GauntletEngine::State::GamePlay)
+	{
+		return;
+	}
+
 	updatePosition();
 
 }

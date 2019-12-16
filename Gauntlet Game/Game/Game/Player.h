@@ -7,6 +7,7 @@ class Player : public Component
 	DECLARE_DYNAMIC_DERIVED_CLASS(Player, Component);
 	std::string mProjectileGUID = "";
 	STRCODE mProjectileSTRCode = -1;
+	float mInAttackTime = 0.f;
 	bool mInvincible = false;
 	float mSpeed = 0;
 	float mMaxHealth = 0;
