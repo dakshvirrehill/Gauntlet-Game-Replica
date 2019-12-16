@@ -82,6 +82,7 @@ public class SerializeToJSON
             aResourcesArray.Remove(aResourcesArray.Length - 1, 1);
             aResourcesArray.Append("]");
             aLevelJSON.Append("," + aResourcesArray.ToString());
+            aLevelJSON.Append("," + "\"Timer\" : " + aLevel.mTime);
             aLevelJSON.Append("}");
             SaveToFile(aLevelJSON.ToString(), Application.dataPath + "/Assets/Level Data/" + aLevel.mName + ".json");
             aLevelOrderJSON.Append("\"" + aI + "\" : \"../Assets/Level Data/" + aLevel.mName + ".json\",");
